@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http;
+package lycoriscafe.nexus.http.httpHelper.requestMethods;
 
-public class Main {
-    public static void main(String[] args) {
-        System.out.println("Hello World");
-    }
+public @interface PATCH {
 }
