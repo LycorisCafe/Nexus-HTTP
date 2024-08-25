@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods;
+package lycoriscafe.nexus.http.httpHelper.requestMethods.methods;
 
-public @interface HEAD {
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface DELETE {
+    String value();
 }

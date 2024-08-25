@@ -16,5 +16,10 @@
 
 package lycoriscafe.nexus.http.httpHelper.requestMethods;
 
-public @interface TRACE {
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface APIEndpoint {
 }

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods;
+package lycoriscafe.nexus.http.httpHelper.requestMethods.methods;
 
-
-public class AnnotationProcessor {
+public @interface CONNECT {
 }
