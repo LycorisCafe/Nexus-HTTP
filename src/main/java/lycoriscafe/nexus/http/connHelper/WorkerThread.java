@@ -16,25 +16,33 @@
 
 package lycoriscafe.nexus.http.connHelper;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.Socket;
 
 public class WorkerThread implements Runnable {
     private final Socket SOCKET;
-    private final BufferedReader READER;
-    private final PrintWriter WRITER;
+    private final InputStream READER;
+    private final OutputStream WRITER;
 
     public WorkerThread(final Socket socket) throws IOException {
         this.SOCKET = socket;
-        READER = new BufferedReader(new InputStreamReader(SOCKET.getInputStream()));
-        WRITER = new PrintWriter(SOCKET.getOutputStream(), true);
+        READER = SOCKET.getInputStream();
+        WRITER = SOCKET.getOutputStream();
     }
 
     @Override
     public void run() {
+        try {
+            int read = 0;
+            while (read != -1) {
+                read = READER.read();
+                System.out.println(READER.read());
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
     }
 }

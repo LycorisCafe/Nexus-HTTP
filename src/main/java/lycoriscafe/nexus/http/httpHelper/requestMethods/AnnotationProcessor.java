@@ -16,6 +16,15 @@
 
 package lycoriscafe.nexus.http.httpHelper.requestMethods;
 
+
+import java.lang.annotation.*;
+
 public class AnnotationProcessor {
+    @Documented
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.TYPE)
+    public @interface APIEndpoint {
+    }
+
 
 }

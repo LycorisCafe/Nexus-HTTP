@@ -26,25 +26,36 @@ import java.net.Socket;
 public class HTTPServer {
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
+    private final TempMemoryType TEMP_MEMORY_TYPE;
     private boolean operational;
 
     public enum ThreadType {
         PLATFORM, VIRTUAL
     }
 
-    public HTTPServer(int port, ThreadType threadType) throws IOException {
+    public enum TempMemoryType {
+        PRIMARY, SECONDARY
+    }
+
+    public HTTPServer(int port, ThreadType threadType, TempMemoryType memoryType)
+            throws IOException {
         SERVER_SOCKET = new ServerSocket(port);
         THREAD_TYPE = threadType;
+        TEMP_MEMORY_TYPE = memoryType;
     }
 
-    public HTTPServer(int port, int backlog, ThreadType threadType) throws IOException {
+    public HTTPServer(int port, int backlog, ThreadType threadType, TempMemoryType memoryType)
+            throws IOException {
         SERVER_SOCKET = new ServerSocket(port, backlog);
         THREAD_TYPE = threadType;
+        TEMP_MEMORY_TYPE = memoryType;
     }
 
-    public HTTPServer(int port, int backlog, InetAddress host, ThreadType threadType) throws IOException {
+    public HTTPServer(int port, int backlog, InetAddress host, ThreadType threadType, TempMemoryType memoryType)
+            throws IOException {
         SERVER_SOCKET = new ServerSocket(port, backlog, host);
         THREAD_TYPE = threadType;
+        TEMP_MEMORY_TYPE = memoryType;
     }
 
     public ServerSocket getSERVER_SOCKET() {
@@ -55,11 +66,16 @@ public class HTTPServer {
         return THREAD_TYPE;
     }
 
+    public TempMemoryType getTEMP_MEMORY_TYPE() {
+        return TEMP_MEMORY_TYPE;
+    }
+
     public boolean isOperational() {
         return operational;
     }
 
-    public void start() throws IOException {
+    public void start()
+            throws IOException {
         if (!operational) {
             operational = true;
             while (!SERVER_SOCKET.isClosed()) {
@@ -75,7 +91,8 @@ public class HTTPServer {
         }
     }
 
-    public void stop() throws IOException {
+    public void stop()
+            throws IOException {
         if (operational) {
             operational = false;
             SERVER_SOCKET.close();

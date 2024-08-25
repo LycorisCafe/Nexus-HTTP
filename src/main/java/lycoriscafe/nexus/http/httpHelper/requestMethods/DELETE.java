@@ -16,6 +16,11 @@
 
 package lycoriscafe.nexus.http.httpHelper.requestMethods;
 
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface DELETE {
     String value();
 }
