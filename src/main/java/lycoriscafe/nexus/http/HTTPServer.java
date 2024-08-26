@@ -24,15 +24,10 @@ import java.net.ServerSocket;
 import java.net.Socket;
 
 public class HTTPServer {
-    private final HTTPVersion HTTP_VERSION;
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
     private final TempMemoryType TEMP_MEMORY_TYPE;
     private boolean operational;
-
-    public enum HTTPVersion {
-        HTTP_1_1
-    }
 
     public enum ThreadType {
         PLATFORM, VIRTUAL
@@ -42,36 +37,29 @@ public class HTTPServer {
         PRIMARY, SECONDARY
     }
 
-    public HTTPServer(int port, HTTPVersion httpVersion, ThreadType threadType, TempMemoryType memoryType)
+    public HTTPServer(int port, ThreadType threadType, TempMemoryType memoryType)
             throws IOException {
         SERVER_SOCKET = new ServerSocket(port);
-        HTTP_VERSION = httpVersion;
         THREAD_TYPE = threadType;
         TEMP_MEMORY_TYPE = memoryType;
     }
 
-    public HTTPServer(int port, int backlog, HTTPVersion httpVersion, ThreadType threadType, TempMemoryType memoryType)
+    public HTTPServer(int port, int backlog, ThreadType threadType, TempMemoryType memoryType)
             throws IOException {
         SERVER_SOCKET = new ServerSocket(port, backlog);
-        HTTP_VERSION = httpVersion;
         THREAD_TYPE = threadType;
         TEMP_MEMORY_TYPE = memoryType;
     }
 
-    public HTTPServer(int port, int backlog, InetAddress host, HTTPVersion httpVersion, ThreadType threadType,
+    public HTTPServer(int port, int backlog, InetAddress host, ThreadType threadType,
                       TempMemoryType memoryType) throws IOException {
         SERVER_SOCKET = new ServerSocket(port, backlog, host);
-        HTTP_VERSION = httpVersion;
         THREAD_TYPE = threadType;
         TEMP_MEMORY_TYPE = memoryType;
     }
 
     public ServerSocket getSERVER_SOCKET() {
         return SERVER_SOCKET;
-    }
-
-    public HTTPVersion getHTTP_VERSION() {
-        return HTTP_VERSION;
     }
 
     public ThreadType getTHREAD_TYPE() {
