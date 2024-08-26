@@ -16,33 +16,67 @@
 
 package lycoriscafe.nexus.http.connHelper;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class WorkerThread implements Runnable {
     private final Socket SOCKET;
     private final InputStream READER;
     private final OutputStream WRITER;
+    private final ExecutorService EXECUTOR;
 
     public WorkerThread(final Socket socket) throws IOException {
-        this.SOCKET = socket;
+        SOCKET = socket;
         READER = SOCKET.getInputStream();
         WRITER = SOCKET.getOutputStream();
+        EXECUTOR = Executors.newSingleThreadExecutor();
     }
 
     @Override
     public void run() {
-        try {
-            int read = 0;
-            while (read != -1) {
-                read = READER.read();
-                System.out.println(READER.read());
+        final ArrayList<String> headers = new ArrayList<>();
+        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        byte[] b = new byte[1];
+
+        headersLoop:
+        while (true) {
+            try {
+                int character = READER.read(b);
+                switch (character) {
+                    case -1 -> {
+                        break headersLoop;
+                    }
+                    case '\r', '\n' -> {
+                        String line = buffer.toString(StandardCharsets.UTF_8);
+                        if (line.isEmpty()) {
+                            continue;
+                        }
+                        headers.add(line);
+                        buffer = new ByteArrayOutputStream();
+                    }
+                    default -> buffer.write(b);
+
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
             }
+        }
+        headers.add(buffer.toString());
+        System.out.println(headers);
+    }
+
+    public synchronized void send(final byte[] data) {
+        try {
+            WRITER.write(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
     }
 }
