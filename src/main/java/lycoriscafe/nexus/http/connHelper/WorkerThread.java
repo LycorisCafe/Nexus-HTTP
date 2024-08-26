@@ -43,32 +43,36 @@ public class WorkerThread implements Runnable {
     public void run() {
         final ArrayList<String> headers = new ArrayList<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        byte[] b = new byte[1];
+        int terminateCount = 0;
 
         headersLoop:
         while (true) {
             try {
-                int character = READER.read(b);
+                int character = READER.read();
                 switch (character) {
                     case -1 -> {
                         break headersLoop;
                     }
                     case '\r', '\n' -> {
+                        terminateCount++;
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
+                            if (terminateCount == 3) {
+                                break headersLoop;
+                            }
                             continue;
                         }
+                        terminateCount = 0;
                         headers.add(line);
                         buffer = new ByteArrayOutputStream();
                     }
-                    default -> buffer.write(b);
+                    default -> buffer.write(character);
 
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         }
-        headers.add(buffer.toString());
         System.out.println(headers);
     }
 
