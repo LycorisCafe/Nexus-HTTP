@@ -84,7 +84,7 @@ public final class HTTPServer {
                     try {
                         Thread.Builder worker = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
                         EXECUTOR_SERVICE.submit(worker.start(
-                                new WorkerThread(SERVER_SOCKET.accept(), MAX_THREADS_PER_CONN)));
+                                new WorkerThread(SERVER_SOCKET.accept(), THREAD_TYPE, MAX_THREADS_PER_CONN)));
                     } catch (IOException e) {
                         operational = false;
                     }

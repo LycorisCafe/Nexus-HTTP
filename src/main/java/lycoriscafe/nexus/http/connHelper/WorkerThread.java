@@ -16,6 +16,8 @@
 
 package lycoriscafe.nexus.http.connHelper;
 
+import lycoriscafe.nexus.http.configuration.ThreadType;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
@@ -24,13 +26,19 @@ import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import static lycoriscafe.nexus.http.configuration.ThreadType.PLATFORM;
+
 public final class WorkerThread implements Runnable {
     private final Socket SOCKET;
-    private final ExecutorService EXECUTOR;
+    private final ThreadType THREAD_TYPE;
+    private final ExecutorService EXECUTOR_SERVICE;
 
-    public WorkerThread(final Socket SOCKET, final int MAX_THREADS_PER_CONN) throws IOException {
+    public WorkerThread(final Socket SOCKET,
+                        final ThreadType THREAD_TYPE,
+                        final int MAX_THREADS_PER_CONN) throws IOException {
         this.SOCKET = SOCKET;
-        EXECUTOR = Executors.newFixedThreadPool(MAX_THREADS_PER_CONN);
+        this.THREAD_TYPE = THREAD_TYPE;
+        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_THREADS_PER_CONN);
     }
 
     @Override
@@ -52,7 +60,10 @@ public final class WorkerThread implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                // TODO handle headers
+                                Thread.Builder thread = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
+                                EXECUTOR_SERVICE.submit(thread.start(() -> {
+                                    // TODO handle headers
+                                }));
                             }
                             continue;
                         }
@@ -61,7 +72,6 @@ public final class WorkerThread implements Runnable {
                         buffer = new ByteArrayOutputStream();
                     }
                     default -> buffer.write(character);
-
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
