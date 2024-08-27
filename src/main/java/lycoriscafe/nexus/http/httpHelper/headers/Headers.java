@@ -16,45 +16,146 @@
 
 package lycoriscafe.nexus.http.httpHelper.headers;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Headers {
-    String[] accept() default "*/*";
-
-    String[] acceptCH() default "";
-
-    String acceptCharset() default "UTF-8";
-
-    String[] acceptEncoding() default "*";
-
-    String[] acceptLanguage() default "*";
-
-    String[] acceptPatch() default "*/*";
-
-    String[] acceptPost() default "*/*";
-
-    String acceptRanges() default "none";
-
-    boolean accessControlAllowCredentials() default false;
-
-    String[] accessControlAllowHeaders() default "Accept";
-
-    String[] accessControlAllowMethods() default "GET";
-
-    String accessControlAllowOrigin() default "*";
-
-    String[] accessControlExposeHeaders() default "*";
-
-    int accessControlMaxAge() default 5;
-
-    String[] accessControlRequestHeaders() default "";
-
-    String accessControlRequestMethod() default "GET";
-
-    int age() default 0;
-
-    String[] allow() default "GET";
+public enum Headers {
+    Accept,
+    Accept_CH,
+    Accept_Charset,
+    Accept_Encoding,
+    Accept_Language,
+    Accept_Patch,
+    Accept_Post,
+    Accept_Ranges,
+    Access_Control_Allow_Credentials,
+    Access_Control_Allow_Headers,
+    Access_Control_Allow_Methods,
+    Access_Control_Allow_Origin,
+    Access_Control_Expose_Headers,
+    Access_Control_Max_Age,
+    Access_Control_Request_Headers,
+    Access_Control_Request_Method,
+    Age,
+    Allow,
+    Alt_Svc,
+    Alt_Used,
+    Attribution_Reporting_Eligible,
+    Attribution_Reporting_Register_SourceExperimental,
+    Attribution_ReportingRegister_Trigger,
+    Authorization,
+    Cache_Control,
+    Clear_Site_Data,
+    Connection,
+    Content_DigestExperimental,
+    Content_Disposition,
+    Content_DPRNon_standardDeprecated,
+    Content_Encoding,
+    Content_Language,
+    Content_Length,
+    Content_Location,
+    Content_Range,
+    Content_Security_Policy,
+    Content_Security_Policy_Report_Only,
+    Content_Type,
+    Cookie,
+    Critical_CH,
+    Cross_Origin_Embedder_Policy,
+    Cross_Origin_Opener_Policy,
+    Cross_Origin_Resource_Policy,
+    Date,
+    Device_Memory,
+    DigestNon_standard,
+    DNT,
+    Downlink,
+    DPRNon_standard,
+    Early_Data,
+    ECT,
+    ETag,
+    Expect,
+    Expect_CT,
+    Expires,
+    Forwarded,
+    From,
+    Host,
+    If_Match,
+    If_Modified_Since,
+    If_None_Match,
+    If_Range,
+    If_Unmodified_Since,
+    Keep_Alive,
+    Last_Modified,
+    Link,
+    Location,
+    Max_Forwards,
+    NEL,
+    No_Vary_Search,
+    Observe_Browsing_Topics,
+    Origin,
+    Origin_Agent_Cluster,
+    Permissions_Policy,
+    Pragma,
+    Priority,
+    Proxy_Authenticate,
+    Proxy_Authorization,
+    Range,
+    Referer,
+    Referrer_Policy,
+    Report_To,
+    Reporting_Endpoints,
+    Repr_Digest,
+    Retry_After,
+    RTT,
+    Save_Data,
+    Sec_Browsing_Topics,
+    Sec_CH_Prefers_Color_Scheme,
+    Sec_CH_Prefers_Reduced_Motion,
+    Sec_CH_Prefers_Reduced_Transparency,
+    Sec_CH_UA,
+    Sec_CH_UA_Arch,
+    Sec_CH_UA_Bitness,
+    Sec_CH_UA_Full_Version,
+    Sec_CH_UA_Full_Version_List,
+    Sec_CH_UA_Mobile,
+    Sec_CH_UA_Model,
+    Sec_CH_UA_Platform,
+    Sec_CH_UA_Platform_Version,
+    Sec_Fetch_Dest,
+    Sec_Fetch_Mode,
+    Sec_Fetch_Site,
+    Sec_Fetch_User,
+    Sec_GPC,
+    Sec_Purpose,
+    Sec_WebSocket_Accept,
+    Sec_WebSocket_Key,
+    Server,
+    Server_Timing,
+    Service_Worker_Navigation_Preload,
+    Set_Cookie,
+    Set_Login,
+    SourceMap,
+    Speculation_Rules,
+    Strict_Transport_Security,
+    Supports_Loading_Mode,
+    TE,
+    Timing_Allow_Origin,
+    TkNon_standard,
+    Trailer,
+    Transfer_Encoding,
+    Upgrade,
+    Upgrade_Insecure_Requests,
+    User_Agent,
+    Vary,
+    Via,
+    Viewport_Width,
+    Want_Content_Digest,
+    Want_DigestNon_standard,
+    Want_Repr_Digest,
+    Warning,
+    WidthNon_standard,
+    WWW_Authenticate,
+    X_Content_Type_Options,
+    X_DNS_Prefetch_Control,
+    X_Forwarded_ForNon_standard,
+    X_Forwarded_HostNon_standard,
+    X_Forwarded_ProtoNon_standard,
+    X_Frame_Options,
+    X_XSS_Protection
 }
