@@ -18,24 +18,18 @@ package lycoriscafe.nexus.http.connHelper;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-public class WorkerThread implements Runnable {
+public final class WorkerThread implements Runnable {
     private final Socket SOCKET;
-    private final InputStream READER;
-    private final OutputStream WRITER;
     private final ExecutorService EXECUTOR;
 
-    public WorkerThread(final Socket socket) throws IOException {
-        SOCKET = socket;
-        READER = SOCKET.getInputStream();
-        WRITER = SOCKET.getOutputStream();
+    public WorkerThread(final Socket SOCKET, final int MAX_PARALLEL_THREADS) throws IOException {
+        this.SOCKET = SOCKET;
         EXECUTOR = Executors.newSingleThreadExecutor();
     }
 
@@ -48,7 +42,7 @@ public class WorkerThread implements Runnable {
         headersLoop:
         while (true) {
             try {
-                int character = READER.read();
+                int character = SOCKET.getInputStream().read();
                 switch (character) {
                     case -1 -> {
                         break headersLoop;
@@ -78,7 +72,7 @@ public class WorkerThread implements Runnable {
 
     public synchronized void send(final byte[] data) {
         try {
-            WRITER.write(data);
+            SOCKET.getOutputStream().write(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }

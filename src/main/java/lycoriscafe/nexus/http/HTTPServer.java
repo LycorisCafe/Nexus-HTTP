@@ -16,83 +16,87 @@
 
 package lycoriscafe.nexus.http;
 
+import lycoriscafe.nexus.http.configuration.MemoryType;
+import lycoriscafe.nexus.http.configuration.ThreadType;
 import lycoriscafe.nexus.http.connHelper.WorkerThread;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
-import java.net.Socket;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class HTTPServer {
+import static lycoriscafe.nexus.http.configuration.ThreadType.PLATFORM;
+
+public final class HTTPServer {
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
-    private final TempMemoryType TEMP_MEMORY_TYPE;
+    private final MemoryType MEMORY_TYPE;
+    final ExecutorService EXECUTOR_SERVICE;
+    final int MAX_THREADS_PER_CONN;
     private boolean operational;
 
-    public enum ThreadType {
-        PLATFORM, VIRTUAL
+    public HTTPServer(final int PORT,
+                      final ThreadType THREAD_TYPE,
+                      final MemoryType MEMORY_TYPE,
+                      final int MAX_CONNECTIONS,
+                      final int MAX_THREADS_PER_CONN) throws IOException {
+        SERVER_SOCKET = new ServerSocket(PORT);
+        this.THREAD_TYPE = THREAD_TYPE;
+        this.MEMORY_TYPE = MEMORY_TYPE;
+        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
-    public enum TempMemoryType {
-        PRIMARY, SECONDARY
+    public HTTPServer(final int PORT,
+                      final int BACKLOG,
+                      final ThreadType THREAD_TYPE,
+                      final MemoryType MEMORY_TYPE,
+                      final int MAX_CONNECTIONS,
+                      final int MAX_THREADS_PER_CONN) throws IOException {
+        SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
+        this.THREAD_TYPE = THREAD_TYPE;
+        this.MEMORY_TYPE = MEMORY_TYPE;
+        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
-    public HTTPServer(int port, ThreadType threadType, TempMemoryType memoryType)
-            throws IOException {
-        SERVER_SOCKET = new ServerSocket(port);
-        THREAD_TYPE = threadType;
-        TEMP_MEMORY_TYPE = memoryType;
+    public HTTPServer(final int PORT,
+                      final int BACKLOG,
+                      final InetAddress ADDRESS,
+                      final ThreadType THREAD_TYPE,
+                      final MemoryType MEMORY_TYPE,
+                      final int MAX_CONNECTIONS,
+                      final int MAX_THREADS_PER_CONN) throws IOException {
+        SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
+        this.THREAD_TYPE = THREAD_TYPE;
+        this.MEMORY_TYPE = MEMORY_TYPE;
+        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
-    public HTTPServer(int port, int backlog, ThreadType threadType, TempMemoryType memoryType)
-            throws IOException {
-        SERVER_SOCKET = new ServerSocket(port, backlog);
-        THREAD_TYPE = threadType;
-        TEMP_MEMORY_TYPE = memoryType;
-    }
-
-    public HTTPServer(int port, int backlog, InetAddress host, ThreadType threadType,
-                      TempMemoryType memoryType) throws IOException {
-        SERVER_SOCKET = new ServerSocket(port, backlog, host);
-        THREAD_TYPE = threadType;
-        TEMP_MEMORY_TYPE = memoryType;
-    }
-
-    public ServerSocket getSERVER_SOCKET() {
-        return SERVER_SOCKET;
-    }
-
-    public ThreadType getTHREAD_TYPE() {
-        return THREAD_TYPE;
-    }
-
-    public TempMemoryType getTEMP_MEMORY_TYPE() {
-        return TEMP_MEMORY_TYPE;
-    }
-
-    public boolean isOperational() {
-        return operational;
-    }
-
-    public void start()
-            throws IOException {
+    public void start() throws IllegalStateException {
         if (!operational) {
-            operational = true;
-            while (!SERVER_SOCKET.isClosed()) {
-                Socket socket = SERVER_SOCKET.accept();
-                if (THREAD_TYPE == ThreadType.PLATFORM) {
-                    Thread.ofPlatform().start(new WorkerThread(socket));
-                } else {
-                    Thread.ofVirtual().start(new WorkerThread(socket));
+            Thread.Builder engine = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
+            engine.start(() -> {
+                operational = true;
+                while (operational) {
+                    try {
+                        Thread.Builder worker = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
+                        EXECUTOR_SERVICE.submit(worker.start(
+                                new WorkerThread(SERVER_SOCKET.accept(), MAX_THREADS_PER_CONN)));
+                    } catch (IOException e) {
+                        operational = false;
+                        throw new RuntimeException(e);
+                    }
                 }
-            }
+            });
         } else {
             throw new IllegalStateException("Server is already running!");
         }
     }
 
-    public void stop()
-            throws IOException {
+    public void stop() throws IOException, IllegalStateException {
         if (operational) {
             operational = false;
             SERVER_SOCKET.close();
