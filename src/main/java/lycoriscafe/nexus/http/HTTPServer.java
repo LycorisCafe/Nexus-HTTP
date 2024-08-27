@@ -32,8 +32,8 @@ public final class HTTPServer {
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
     private final MemoryType MEMORY_TYPE;
-    final ExecutorService EXECUTOR_SERVICE;
-    final int MAX_THREADS_PER_CONN;
+    private final ExecutorService EXECUTOR_SERVICE;
+    private final int MAX_THREADS_PER_CONN;
     private boolean operational;
 
     public HTTPServer(final int PORT,
@@ -87,7 +87,6 @@ public final class HTTPServer {
                                 new WorkerThread(SERVER_SOCKET.accept(), MAX_THREADS_PER_CONN)));
                     } catch (IOException e) {
                         operational = false;
-                        throw new RuntimeException(e);
                     }
                 }
             });
@@ -100,6 +99,7 @@ public final class HTTPServer {
         if (operational) {
             operational = false;
             SERVER_SOCKET.close();
+            EXECUTOR_SERVICE.shutdownNow();
         } else {
             throw new IllegalStateException("Server is already stopped!");
         }

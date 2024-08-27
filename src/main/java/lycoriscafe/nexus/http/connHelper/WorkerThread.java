@@ -28,9 +28,9 @@ public final class WorkerThread implements Runnable {
     private final Socket SOCKET;
     private final ExecutorService EXECUTOR;
 
-    public WorkerThread(final Socket SOCKET, final int MAX_PARALLEL_THREADS) throws IOException {
+    public WorkerThread(final Socket SOCKET, final int MAX_THREADS_PER_CONN) throws IOException {
         this.SOCKET = SOCKET;
-        EXECUTOR = Executors.newSingleThreadExecutor();
+        EXECUTOR = Executors.newFixedThreadPool(MAX_THREADS_PER_CONN);
     }
 
     @Override
@@ -52,7 +52,7 @@ public final class WorkerThread implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                break headersLoop;
+                                // TODO handle headers
                             }
                             continue;
                         }
@@ -67,7 +67,6 @@ public final class WorkerThread implements Runnable {
                 throw new RuntimeException(e);
             }
         }
-        System.out.println(headers);
     }
 
     public synchronized void send(final byte[] data) {
