@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.processors;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface HTTPEndpoint {
+public class DELETEProcessor {
 }

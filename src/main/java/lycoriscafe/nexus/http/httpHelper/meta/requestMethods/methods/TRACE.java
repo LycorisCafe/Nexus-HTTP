@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.headers;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
 
-public class HeadersProcessor {
+public @interface TRACE {
 }

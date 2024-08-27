@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods.processors;
+package lycoriscafe.nexus.http.httpHelper.meta.headers;
 
-public class POSTProcessor {
+public class HeadersProcessor {
 }

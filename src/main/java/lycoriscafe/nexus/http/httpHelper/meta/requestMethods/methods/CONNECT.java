@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
 
-public @interface PATCH {
+public @interface CONNECT {
 }

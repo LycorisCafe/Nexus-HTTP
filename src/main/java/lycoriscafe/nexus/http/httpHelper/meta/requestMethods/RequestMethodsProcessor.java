@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface GET {
-    String value();
+public class RequestMethodsProcessor {
+//    public static void main(String[] args) {
+//        try {
+//            Class<?> c = Class.forName("lycoriscafe.nexus.http.HTTPServer");
+////            Object ins = c.getDeclaredConstructor()
+//            Method m = c.getMethod("isOperational");
+//            boolean is = (boolean) m.invoke(null);
+//        } catch (ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }

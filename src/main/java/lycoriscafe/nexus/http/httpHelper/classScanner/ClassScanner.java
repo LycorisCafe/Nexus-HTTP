@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods.processors;
+package lycoriscafe.nexus.http.httpHelper.classScanner;
 
-public class PUTProcessor {
+public class ClassScanner {
+
 }

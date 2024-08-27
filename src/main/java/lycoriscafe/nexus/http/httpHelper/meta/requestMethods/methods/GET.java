@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import lycoriscafe.nexus.http.HTTPServer;
-import lycoriscafe.nexus.http.configuration.MemoryType;
-import lycoriscafe.nexus.http.configuration.ThreadType;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
 
-import java.io.IOException;
+import java.lang.annotation.*;
 
-public class Main {
-    public static void main(String[] args) {
-        try {
-            HTTPServer httpServer1 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5, 5);
-            HTTPServer httpServer2 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5, 5);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface GET {
+    String value();
 }

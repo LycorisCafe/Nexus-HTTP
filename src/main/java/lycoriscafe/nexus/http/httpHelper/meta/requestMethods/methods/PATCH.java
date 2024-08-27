@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface POST {
-    String value();
+public @interface PATCH {
 }
