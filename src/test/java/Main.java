@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import lycoriscafe.nexus.http.HTTPServer;
-import lycoriscafe.nexus.http.configuration.MemoryType;
-import lycoriscafe.nexus.http.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.HTTPServer;
+import io.github.lycoriscafe.nexus.http.configuration.MemoryType;
+import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 
 import java.io.IOException;
 
