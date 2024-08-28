@@ -40,7 +40,9 @@ public final class HTTPServer {
     public HTTPServer(final int PORT,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS) throws IOException {
+                      final int MAX_CONNECTIONS)
+            throws IOException, IllegalArgumentException {
+        maxConnValidator(MAX_CONNECTIONS);
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
@@ -51,7 +53,9 @@ public final class HTTPServer {
                       final int BACKLOG,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS) throws IOException {
+                      final int MAX_CONNECTIONS)
+            throws IOException, IllegalArgumentException {
+        maxConnValidator(MAX_CONNECTIONS);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
@@ -63,11 +67,19 @@ public final class HTTPServer {
                       final InetAddress ADDRESS,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS) throws IOException {
+                      final int MAX_CONNECTIONS)
+            throws IOException, IllegalArgumentException {
+        maxConnValidator(MAX_CONNECTIONS);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
+    }
+
+    private void maxConnValidator(int maxConn) throws IllegalArgumentException {
+        if (maxConn < 1) {
+            throw new IllegalArgumentException("Max connections must be greater than 0");
+        }
     }
 
     public void start() throws IllegalStateException {
