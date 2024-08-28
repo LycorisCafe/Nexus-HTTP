@@ -18,7 +18,7 @@ package lycoriscafe.nexus.http;
 
 import lycoriscafe.nexus.http.configuration.MemoryType;
 import lycoriscafe.nexus.http.configuration.ThreadType;
-import lycoriscafe.nexus.http.connHelper.WorkerThread;
+import lycoriscafe.nexus.http.connHelper.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.InetAddress;
@@ -32,8 +32,10 @@ public final class HTTPServer {
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
     private final MemoryType MEMORY_TYPE;
-    private final ExecutorService EXECUTOR_SERVICE;
+    private final int MAX_CONNECTIONS;
     private final int MAX_THREADS_PER_CONN;
+
+    private ExecutorService executorService;
     private boolean operational;
 
     public HTTPServer(final int PORT,
@@ -44,7 +46,7 @@ public final class HTTPServer {
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
-        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_CONNECTIONS = MAX_CONNECTIONS;
         this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
@@ -57,7 +59,7 @@ public final class HTTPServer {
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
-        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_CONNECTIONS = MAX_CONNECTIONS;
         this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
@@ -71,22 +73,25 @@ public final class HTTPServer {
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
-        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_CONNECTIONS);
+        this.MAX_CONNECTIONS = MAX_CONNECTIONS;
         this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
     public void start() throws IllegalStateException {
+        System.out.println(operational);
         if (!operational) {
             Thread.Builder engine = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
             engine.start(() -> {
                 operational = true;
+                Thread.Builder worker = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
+                executorService = Executors.newFixedThreadPool(MAX_CONNECTIONS, worker.factory());
                 while (operational) {
                     try {
-                        Thread.Builder worker = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
-                        EXECUTOR_SERVICE.submit(worker.start(
-                                new WorkerThread(SERVER_SOCKET.accept(), THREAD_TYPE, MAX_THREADS_PER_CONN)));
+                        executorService.submit(
+                                new ConnectionHandler(SERVER_SOCKET.accept(), THREAD_TYPE, MAX_THREADS_PER_CONN));
                     } catch (IOException e) {
                         operational = false;
+                        executorService.shutdownNow();
                     }
                 }
             });
@@ -99,7 +104,6 @@ public final class HTTPServer {
         if (operational) {
             operational = false;
             SERVER_SOCKET.close();
-            EXECUTOR_SERVICE.shutdownNow();
         } else {
             throw new IllegalStateException("Server is already stopped!");
         }
