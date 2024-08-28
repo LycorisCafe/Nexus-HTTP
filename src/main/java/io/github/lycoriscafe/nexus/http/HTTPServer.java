@@ -16,13 +16,15 @@
 
 package io.github.lycoriscafe.nexus.http;
 
-import io.github.lycoriscafe.nexus.http.configuration.MemoryType;
+import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.connHelper.ConnectionHandler;
 
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,7 +33,7 @@ import static io.github.lycoriscafe.nexus.http.configuration.ThreadType.PLATFORM
 public final class HTTPServer {
     private final ServerSocket SERVER_SOCKET;
     private final ThreadType THREAD_TYPE;
-    private final MemoryType MEMORY_TYPE;
+    private final Connection DATABASE;
     private final int MAX_CONNECTIONS;
 
     private ExecutorService executorService;
@@ -39,26 +41,26 @@ public final class HTTPServer {
 
     public HTTPServer(final int PORT,
                       final ThreadType THREAD_TYPE,
-                      final MemoryType MEMORY_TYPE,
+                      final String DB_LOCATION,
                       final int MAX_CONNECTIONS)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
+        DATABASE = Database.getConnection(DB_LOCATION);
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
-        this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
     }
 
     public HTTPServer(final int PORT,
                       final int BACKLOG,
                       final ThreadType THREAD_TYPE,
-                      final MemoryType MEMORY_TYPE,
+                      final String DB_LOCATION,
                       final int MAX_CONNECTIONS)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
+        DATABASE = Database.getConnection(DB_LOCATION);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
-        this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
     }
 
@@ -66,13 +68,13 @@ public final class HTTPServer {
                       final int BACKLOG,
                       final InetAddress ADDRESS,
                       final ThreadType THREAD_TYPE,
-                      final MemoryType MEMORY_TYPE,
+                      final String DB_LOCATION,
                       final int MAX_CONNECTIONS)
-            throws IOException, IllegalArgumentException {
+            throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
+        DATABASE = Database.getConnection(DB_LOCATION);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
-        this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
     }
 
