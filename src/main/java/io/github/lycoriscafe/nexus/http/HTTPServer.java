@@ -45,7 +45,7 @@ public final class HTTPServer {
                       final int MAX_CONNECTIONS)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
-        DATABASE = Database.getConnection(DB_LOCATION);
+        DATABASE = Database.getConnection(DB_LOCATION, PORT);
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
@@ -58,7 +58,7 @@ public final class HTTPServer {
                       final int MAX_CONNECTIONS)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
-        DATABASE = Database.getConnection(DB_LOCATION);
+        DATABASE = Database.getConnection(DB_LOCATION, PORT);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
@@ -72,7 +72,7 @@ public final class HTTPServer {
                       final int MAX_CONNECTIONS)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
-        DATABASE = Database.getConnection(DB_LOCATION);
+        DATABASE = Database.getConnection(DB_LOCATION, PORT);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;

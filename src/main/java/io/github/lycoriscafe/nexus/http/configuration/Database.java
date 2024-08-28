@@ -16,15 +16,28 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
+import java.io.File;
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
 public class Database {
-    public static Connection getConnection(final String DB_LOCATION) throws SQLException {
-        Connection conn = DriverManager.getConnection("jdbc:sqlite:" +
-                (DB_LOCATION == null ? ":memory:" : DB_LOCATION));
+    public static Connection getConnection(final String DB_LOCATION, final int PORT)
+            throws SQLException, IOException {
+        Connection conn;
+        if (DB_LOCATION == null) {
+            conn = DriverManager.getConnection("jdbc:sqlite::memory:");
+        } else {
+            File file = new File(DB_LOCATION + "/" + PORT + ".db");
+            if (file.exists()) {
+                if (!file.delete()) {
+                    throw new IOException("Failed to delete file: " + file.getAbsolutePath());
+                }
+            }
+            conn = DriverManager.getConnection("jdbc:sqlite:" + (DB_LOCATION + "/" + PORT + ".db"));
+        }
         mapDatabase(conn);
         return conn;
     }
