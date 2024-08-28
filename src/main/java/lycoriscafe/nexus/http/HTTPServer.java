@@ -33,7 +33,6 @@ public final class HTTPServer {
     private final ThreadType THREAD_TYPE;
     private final MemoryType MEMORY_TYPE;
     private final int MAX_CONNECTIONS;
-    private final int MAX_THREADS_PER_CONN;
 
     private ExecutorService executorService;
     private boolean operational;
@@ -41,26 +40,22 @@ public final class HTTPServer {
     public HTTPServer(final int PORT,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS,
-                      final int MAX_THREADS_PER_CONN) throws IOException {
+                      final int MAX_CONNECTIONS) throws IOException {
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
-        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
     public HTTPServer(final int PORT,
                       final int BACKLOG,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS,
-                      final int MAX_THREADS_PER_CONN) throws IOException {
+                      final int MAX_CONNECTIONS) throws IOException {
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
-        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
     public HTTPServer(final int PORT,
@@ -68,13 +63,11 @@ public final class HTTPServer {
                       final InetAddress ADDRESS,
                       final ThreadType THREAD_TYPE,
                       final MemoryType MEMORY_TYPE,
-                      final int MAX_CONNECTIONS,
-                      final int MAX_THREADS_PER_CONN) throws IOException {
+                      final int MAX_CONNECTIONS) throws IOException {
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MEMORY_TYPE = MEMORY_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
-        this.MAX_THREADS_PER_CONN = MAX_THREADS_PER_CONN;
     }
 
     public void start() throws IllegalStateException {
@@ -87,8 +80,7 @@ public final class HTTPServer {
                 executorService = Executors.newFixedThreadPool(MAX_CONNECTIONS, worker.factory());
                 while (operational) {
                     try {
-                        executorService.submit(
-                                new ConnectionHandler(SERVER_SOCKET.accept(), THREAD_TYPE, MAX_THREADS_PER_CONN));
+                        executorService.submit(new ConnectionHandler(SERVER_SOCKET.accept()));
                     } catch (IOException e) {
                         operational = false;
                         executorService.shutdownNow();

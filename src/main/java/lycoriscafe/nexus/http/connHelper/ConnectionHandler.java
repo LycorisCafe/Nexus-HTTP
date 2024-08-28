@@ -16,29 +16,17 @@
 
 package lycoriscafe.nexus.http.connHelper;
 
-import lycoriscafe.nexus.http.configuration.ThreadType;
-
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
-import static lycoriscafe.nexus.http.configuration.ThreadType.PLATFORM;
-
-public final class WorkerThread implements Runnable {
+public final class ConnectionHandler implements Runnable {
     private final Socket SOCKET;
-    private final ThreadType THREAD_TYPE;
-    private final ExecutorService EXECUTOR_SERVICE;
 
-    public WorkerThread(final Socket SOCKET,
-                        final ThreadType THREAD_TYPE,
-                        final int MAX_THREADS_PER_CONN) throws IOException {
+    public ConnectionHandler(final Socket SOCKET) throws IOException {
         this.SOCKET = SOCKET;
-        this.THREAD_TYPE = THREAD_TYPE;
-        EXECUTOR_SERVICE = Executors.newFixedThreadPool(MAX_THREADS_PER_CONN);
     }
 
     @Override
@@ -60,10 +48,16 @@ public final class WorkerThread implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                Thread.Builder thread = THREAD_TYPE == PLATFORM ? Thread.ofPlatform() : Thread.ofVirtual();
-                                EXECUTOR_SERVICE.submit(thread.start(() -> {
-                                    // TODO handle headers
-                                }));
+                                // TODO correct dis
+                                System.out.println(headers);
+                                String x = """
+                                        HTTP/1.1 200 OK\r
+                                        Content-Type: text/html; charset=utf-8\r
+                                        Content-Length: 8\r
+                                        \r
+                                        Success!
+                                        """;
+                                send(x.getBytes(StandardCharsets.UTF_8));
                             }
                             continue;
                         }

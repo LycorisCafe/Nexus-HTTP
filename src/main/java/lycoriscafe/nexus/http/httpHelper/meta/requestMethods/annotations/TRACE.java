@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
 
-public @interface OPTIONS {
+public @interface TRACE {
 }

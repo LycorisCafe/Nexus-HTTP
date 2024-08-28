@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta.httpReqRes;
 
-import java.lang.annotation.*;
+import lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface PUT {
-    String value();
+public class HTTPRequest {
+    private String requestMethod;
+    private String requestEndpoint;
+    private HTTPVersion httpVersion;
 }

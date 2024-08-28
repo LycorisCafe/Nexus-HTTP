@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.meta.responceStatusCodes;
+package lycoriscafe.nexus.http.httpHelper.meta.statusCodes;
 
 public enum StatusCode {
     CONTINUE("100 Continue"),

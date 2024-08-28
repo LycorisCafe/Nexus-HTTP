@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
+package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
 
-public final class RequestMethodsProcessor {
-    public RequestMethodsProcessor() {
-
-    }
+public @interface OPTIONS {
 }

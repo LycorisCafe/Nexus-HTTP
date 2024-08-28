@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package lycoriscafe.nexus.http.httpHelper.meta.requestMethods.methods;
+package lycoriscafe.nexus.http.httpHelper.meta;
 
-public @interface TRACE {
+public enum HTTPVersion {
+    HTTP_1_0,
+    HTTP_1_1
 }
