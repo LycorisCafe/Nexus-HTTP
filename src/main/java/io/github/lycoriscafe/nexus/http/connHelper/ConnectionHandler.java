@@ -20,18 +20,23 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Locale;
 
 public final class ConnectionHandler implements Runnable {
     private final Socket SOCKET;
+    private final Connection DATABASE;
 
-    public ConnectionHandler(final Socket SOCKET) throws IOException {
+    public ConnectionHandler(final Socket SOCKET, final Connection DATABASE)
+            throws IOException {
         this.SOCKET = SOCKET;
+        this.DATABASE = DATABASE;
     }
 
     @Override
     public void run() {
-        final ArrayList<String> headers = new ArrayList<>();
+        final ArrayList<String> HEADERS = new ArrayList<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int terminateCount = 0;
 
@@ -48,12 +53,16 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
+                                switch (HEADERS.getFirst().split(" ")[0].toLowerCase(Locale.ROOT)) {
+                                    case "get" -> {
 
+                                    }
+                                }
                             }
                             continue;
                         }
                         terminateCount = 0;
-                        headers.add(line);
+                        HEADERS.add(line);
                         buffer = new ByteArrayOutputStream();
                     }
                     default -> buffer.write(character);
