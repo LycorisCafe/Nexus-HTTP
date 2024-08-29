@@ -16,5 +16,28 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-public class HTTPRequest {
+import java.util.ArrayList;
+import java.util.Map;
+
+public final class HTTPRequest {
+    private Map<String, ArrayList<String>> headers;
+    private Map<String, String> parameters;
+
+    public HTTPRequest setHeaders(Map<String, ArrayList<String>> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public HTTPRequest setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
+        return this;
+    }
+
+    public Map<String, ArrayList<String>> getHeaders() {
+        return headers;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
 }

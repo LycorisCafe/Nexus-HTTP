@@ -16,11 +16,5 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface HTTPEndpoint {
-    String value();
+public @interface CONNECT {
 }

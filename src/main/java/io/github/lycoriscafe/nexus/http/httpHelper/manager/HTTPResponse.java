@@ -16,6 +16,17 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-public class HTTPResponse {
+import java.util.Map;
 
+public final class HTTPResponse {
+    private Map<String, String> headers;
+
+    public HTTPResponse setHeaders(Map<String, String> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
 }

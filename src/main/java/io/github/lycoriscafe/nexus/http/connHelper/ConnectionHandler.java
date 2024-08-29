@@ -48,16 +48,7 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                // TODO correct dis
-                                System.out.println(headers);
-                                String x = """
-                                        HTTP/1.1 200 OK\r
-                                        Content-Type: text/html; charset=utf-8\r
-                                        Content-Length: 8\r
-                                        \r
-                                        Success!
-                                        """;
-                                send(x.getBytes(StandardCharsets.UTF_8));
+
                             }
                             continue;
                         }
@@ -73,7 +64,7 @@ public final class ConnectionHandler implements Runnable {
         }
     }
 
-    public synchronized void send(final byte[] data) {
+    public void send(final byte[] data) {
         try {
             SOCKET.getOutputStream().write(data);
         } catch (IOException e) {

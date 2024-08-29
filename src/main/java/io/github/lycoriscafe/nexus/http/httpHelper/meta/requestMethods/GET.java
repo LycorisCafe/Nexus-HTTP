@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.processors;
+package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
 
-public class POSTProcessor {
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface GET {
+    String value();
 }

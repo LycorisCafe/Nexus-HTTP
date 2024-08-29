@@ -16,8 +16,5 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
 
-public final class RequestMethodsProcessor {
-    public RequestMethodsProcessor() {
-
-    }
+public @interface PATCH {
 }
