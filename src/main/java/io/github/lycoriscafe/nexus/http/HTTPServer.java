@@ -41,6 +41,10 @@ public final class HTTPServer {
 
     public HTTPServer(final HTTPServerConfiguration httpServerConfiguration)
             throws IOException, IllegalArgumentException, SQLException {
+        if (httpServerConfiguration == null) {
+            throw new IllegalArgumentException("HTTP Server configuration cannot be null");
+        }
+
         CONFIGURATION = httpServerConfiguration;
         DATABASE = Database.getConnection(httpServerConfiguration.getDatabaseLocation(),
                 httpServerConfiguration.getPort());
