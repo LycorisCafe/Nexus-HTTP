@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.valueAnnotations;
+package io.github.lycoriscafe.nexus.http.httpHelper.parameterAnnotations;
 
 import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.PARAMETER)
-public @interface Param {
+public @interface Header {
 }

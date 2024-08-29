@@ -22,8 +22,8 @@ import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotatio
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.PUT;
-import io.github.lycoriscafe.nexus.http.httpHelper.valueAnnotations.Header;
-import io.github.lycoriscafe.nexus.http.httpHelper.valueAnnotations.Param;
+import io.github.lycoriscafe.nexus.http.httpHelper.parameterAnnotations.Header;
+import io.github.lycoriscafe.nexus.http.httpHelper.parameterAnnotations.Param;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;

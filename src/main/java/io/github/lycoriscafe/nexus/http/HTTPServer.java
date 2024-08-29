@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http;
 
+import io.github.lycoriscafe.nexus.http.configuration.AnnotationScanner;
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.connHelper.ConnectionHandler;
@@ -47,6 +48,7 @@ public final class HTTPServer {
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
+        AnnotationScanner.scan(DATABASE, BASE_PACKAGE);
         SERVER_SOCKET = new ServerSocket(PORT);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
@@ -61,6 +63,7 @@ public final class HTTPServer {
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
+        AnnotationScanner.scan(DATABASE, BASE_PACKAGE);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
@@ -76,6 +79,7 @@ public final class HTTPServer {
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
+        AnnotationScanner.scan(DATABASE, BASE_PACKAGE);
         SERVER_SOCKET = new ServerSocket(PORT, BACKLOG, ADDRESS);
         this.THREAD_TYPE = THREAD_TYPE;
         this.MAX_CONNECTIONS = MAX_CONNECTIONS;
