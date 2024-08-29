@@ -23,7 +23,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-public class Database {
+public final class Database {
     public static Connection getConnection(final String DB_LOCATION, final int PORT)
             throws SQLException, IOException {
         Connection conn;
