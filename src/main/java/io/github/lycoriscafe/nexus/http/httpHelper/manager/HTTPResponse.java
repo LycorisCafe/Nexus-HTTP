@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.httpReqRes;
+package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
+public class HTTPResponse {
 
-public class HTTPRequest {
-    private String requestMethod;
-    private String requestEndpoint;
-    private HTTPVersion httpVersion;
 }

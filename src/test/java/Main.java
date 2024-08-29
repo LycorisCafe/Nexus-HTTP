@@ -15,18 +15,18 @@
  */
 
 import io.github.lycoriscafe.nexus.http.HTTPServer;
-import io.github.lycoriscafe.nexus.http.configuration.MemoryType;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) {
         try {
-            HTTPServer httpServer1 = new HTTPServer(2004, ThreadType.PLATFORM, MemoryType.PRIMARY, 5);
+            HTTPServer httpServer1 = new HTTPServer(2004, ThreadType.PLATFORM, null, 5, "io");
             httpServer1.start();
             //            HTTPServer httpServer2 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
-        } catch (IOException e) {
+        } catch (IOException | SQLException e) {
             throw new RuntimeException(e);
         }
     }

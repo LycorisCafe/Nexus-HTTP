@@ -16,23 +16,17 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
-import com.google.gson.Gson;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPEndpoint;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.DELETE;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.PUT;
-import io.github.lycoriscafe.nexus.http.httpHelper.parameterAnnotations.Header;
-import io.github.lycoriscafe.nexus.http.httpHelper.parameterAnnotations.Param;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.lang.reflect.Parameter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Locale;
 import java.util.Set;
 
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -46,23 +40,14 @@ public class AnnotationScanner {
         for (Class<?> module : modules) {
             for (Method method : module.getMethods()) {
                 if (method.isAnnotationPresent(GET.class)) {
-                    ArrayList<String> headers = new ArrayList<>();
-                    ArrayList<String> params = new ArrayList<>();
-                    Parameter[] parameters = method.getParameters();
-                    for (Parameter parameter : parameters) {
-                        if (parameter.isAnnotationPresent(Header.class)) {
-                            headers.add(parameter.getName().toLowerCase(Locale.ROOT));
-                        }
-                        if (parameter.isAnnotationPresent(Param.class)) {
-                            params.add(parameter.getName().toLowerCase(Locale.ROOT));
-                        }
-                    }
-
-                    writeGetToDatabase(DATABASE, "ReqGET",
+                    writeToDatabase(
+                            DATABASE,
+                            "ReqGET",
                             module.getAnnotation(HTTPEndpoint.class).value()
                                     + method.getAnnotation(GET.class).value(),
                             module.getPackageName() + "." + module.getName(),
-                            headers, params);
+                            method.getName()
+                    );
                 }
                 if (method.isAnnotationPresent(POST.class)) {
 
@@ -77,24 +62,16 @@ public class AnnotationScanner {
         }
     }
 
-    private static void writeGetToDatabase(final Connection DATABASE,
-                                           final String ENDPOINT,
-                                           final String CLASS_NAME,
-                                           final String METHOD_NAME,
-                                           final ArrayList<String> REQ_HEADERS,
-                                           final ArrayList<String> REQ_VALUES) throws SQLException {
-        String query = "INSERT INTO ReqGET VALUES (?, ?, ?, ?, ?)";
+    private static void writeToDatabase(final Connection DATABASE,
+                                        final String TABLE,
+                                        final String ENDPOINT,
+                                        final String CLASS_NAME,
+                                        final String METHOD_NAME) throws SQLException {
+        String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?)";
         try (PreparedStatement ps = DATABASE.prepareStatement(query)) {
             ps.setString(1, ENDPOINT);
             ps.setString(2, CLASS_NAME);
             ps.setString(3, METHOD_NAME);
-
-            Gson gson = new Gson();
-            String headersJson = REQ_HEADERS.isEmpty() ? null : gson.toJson(REQ_HEADERS);
-            ps.setString(4, headersJson);
-
-            String reqValuesJson = REQ_VALUES.isEmpty() ? null : gson.toJson(REQ_VALUES);
-            ps.setString(5, reqValuesJson);
 
             ps.executeUpdate();
         }

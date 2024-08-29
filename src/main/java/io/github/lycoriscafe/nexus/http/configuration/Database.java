@@ -48,9 +48,7 @@ public class Database {
                 "CREATE TABLE ReqGET(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "reqHeaders TEXT," +
-                        "reqValues TEXT" +
+                        "methodName TEXT NOT NULL" +
                         ")",
                 // Handle POST
                 "CREATE TABLE ReqPOST(" +
