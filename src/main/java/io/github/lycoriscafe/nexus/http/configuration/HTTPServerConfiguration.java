@@ -29,18 +29,18 @@ public final class HTTPServerConfiguration {
     private int httpPipelineParallelCount = 5;
     private final String basePackage;
 
-    public HTTPServerConfiguration(final String BASE_PACKAGE)
-            throws IllegalArgumentException {
-        if (BASE_PACKAGE == null) {
-            throw new IllegalArgumentException("Base package cannot be null");
+    public HTTPServerConfiguration(final Class<?> BASE_CLASS)
+            throws IllegalArgumentException, ClassNotFoundException {
+        if (BASE_CLASS == null) {
+            throw new IllegalArgumentException("Base class cannot be null");
         }
 
-        Package pkg = ClassLoader.getSystemClassLoader().getDefinedPackage(BASE_PACKAGE);
-        if (pkg == null) {
-            throw new IllegalArgumentException("Base package " + BASE_PACKAGE + " not found");
+        String pkgName = BASE_CLASS.getPackageName();
+        if (pkgName.isEmpty()) {
+            throw new IllegalArgumentException("Could not determine package name");
         }
 
-        basePackage = BASE_PACKAGE;
+        this.basePackage = pkgName.contains(".") ? pkgName.split("\\.")[0] : pkgName;
     }
 
     public String getBasePackage() {

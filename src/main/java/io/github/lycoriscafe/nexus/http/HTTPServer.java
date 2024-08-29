@@ -56,11 +56,8 @@ public final class HTTPServer {
     }
 
     public void start() throws IllegalStateException {
-        System.out.println(operational);
         if (!operational) {
-            Thread.Builder engine = CONFIGURATION.getThreadType() == PLATFORM ?
-                    Thread.ofPlatform() : Thread.ofVirtual();
-            engine.start(() -> {
+            Thread.ofPlatform().start(() -> {
                 operational = true;
                 ThreadFactory worker = CONFIGURATION.getThreadType() == PLATFORM ?
                         Thread.ofPlatform().factory() : Thread.ofVirtual().factory();
