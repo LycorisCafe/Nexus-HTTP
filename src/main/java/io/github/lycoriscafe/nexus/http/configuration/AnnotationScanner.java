@@ -32,7 +32,7 @@ import java.util.Set;
 import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-public class AnnotationScanner {
+public final class AnnotationScanner {
     public static void scan(final Connection DATABASE,
                             final String BASE_PACKAGE) throws SQLException {
         Reflections reflections = new Reflections(BASE_PACKAGE);
