@@ -42,7 +42,8 @@ public final class HTTPServer {
     public HTTPServer(final int PORT,
                       final ThreadType THREAD_TYPE,
                       final String DB_LOCATION,
-                      final int MAX_CONNECTIONS)
+                      final int MAX_CONNECTIONS,
+                      final String BASE_PACKAGE)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
@@ -55,7 +56,8 @@ public final class HTTPServer {
                       final int BACKLOG,
                       final ThreadType THREAD_TYPE,
                       final String DB_LOCATION,
-                      final int MAX_CONNECTIONS)
+                      final int MAX_CONNECTIONS,
+                      final String BASE_PACKAGE)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
@@ -69,7 +71,8 @@ public final class HTTPServer {
                       final InetAddress ADDRESS,
                       final ThreadType THREAD_TYPE,
                       final String DB_LOCATION,
-                      final int MAX_CONNECTIONS)
+                      final int MAX_CONNECTIONS,
+                      final String BASE_PACKAGE)
             throws IOException, IllegalArgumentException, SQLException {
         maxConnValidator(MAX_CONNECTIONS);
         DATABASE = Database.getConnection(DB_LOCATION, PORT);
@@ -97,9 +100,9 @@ public final class HTTPServer {
                         executorService.submit(new ConnectionHandler(SERVER_SOCKET.accept()));
                     } catch (IOException e) {
                         operational = false;
-                        executorService.shutdownNow();
                     }
                 }
+                executorService.shutdownNow();
             });
         } else {
             throw new IllegalStateException("Server is already running!");

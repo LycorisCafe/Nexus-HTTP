@@ -48,7 +48,9 @@ public class Database {
                 "CREATE TABLE ReqGET(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL" +
+                        "methodName TEXT NOT NULL," +
+                        "reqHeaders TEXT," +
+                        "reqValues TEXT" +
                         ")",
                 // Handle POST
                 "CREATE TABLE ReqPOST(" +
@@ -69,6 +71,7 @@ public class Database {
                         "methodName TEXT NOT NULL" +
                         ")"
         };
+
         for (String query : queries) {
             try (Statement stmt = conn.createStatement()) {
                 stmt.execute(query);
