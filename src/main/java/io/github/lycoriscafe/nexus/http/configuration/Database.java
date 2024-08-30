@@ -30,13 +30,14 @@ public final class Database {
         if (DB_LOCATION == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
-            File file = new File(DB_LOCATION + "/" + PORT + ".db");
+            String database = DB_LOCATION.isEmpty() ? PORT + ".db" : DB_LOCATION + "/" + PORT + ".db";
+            File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) {
                     throw new IOException("Failed to delete file: " + file.getAbsolutePath());
                 }
             }
-            conn = DriverManager.getConnection("jdbc:sqlite:" + (DB_LOCATION + "/" + PORT + ".db"));
+            conn = DriverManager.getConnection("jdbc:sqlite:" + database);
         }
         mapDatabase(conn);
         return conn;
