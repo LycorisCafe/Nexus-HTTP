@@ -1,4 +1,5 @@
 target/
+/2004.db
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+package main.test;
+
 import io.github.lycoriscafe.nexus.http.HTTPServer;
+import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 
 import java.io.IOException;
@@ -23,10 +26,16 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) {
         try {
-            HTTPServer httpServer1 = new HTTPServer(2004, ThreadType.PLATFORM, null, 5, "io");
+            HTTPServerConfiguration httpServerConfiguration = new HTTPServerConfiguration(Main.class)
+                    .setPort(2004)
+                    .setThreadType(ThreadType.VIRTUAL)
+                    .setBacklog(5)
+                    .setDatabaseLocation("");
+            HTTPServer httpServer1 = new HTTPServer(httpServerConfiguration);
             httpServer1.start();
+            System.out.println(httpServerConfiguration.getBasePackage());
             //            HTTPServer httpServer2 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
-        } catch (IOException | SQLException e) {
+        } catch (IOException | SQLException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
