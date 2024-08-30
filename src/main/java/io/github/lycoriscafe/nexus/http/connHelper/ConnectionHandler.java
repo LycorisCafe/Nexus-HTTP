@@ -43,7 +43,6 @@ public final class ConnectionHandler implements Runnable {
     public void run() {
         final ArrayList<String> HEADERS = new ArrayList<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        boolean reqMethodLine = true;
         int terminateCount = 0;
 
         headersLoop:
@@ -51,22 +50,16 @@ public final class ConnectionHandler implements Runnable {
             try {
                 int character = SOCKET.getInputStream().read();
                 switch (character) {
-                    case ' ' -> {
-                        if (reqMethodLine) {
-                            buffer.write(character);
-                        }
-                    }
                     case -1 -> {
                         break headersLoop;
                     }
                     case '\r', '\n' -> {
-                        reqMethodLine = false;
                         terminateCount++;
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                new RequestProcessor(CONFIGURATION, SOCKET, HEADERS, DATABASE).process();
-                                reqMethodLine = true;
+                                System.out.println(HEADERS);
+//                                new RequestProcessor(CONFIGURATION, SOCKET, HEADERS, DATABASE).process();
                             }
                             continue;
                         }

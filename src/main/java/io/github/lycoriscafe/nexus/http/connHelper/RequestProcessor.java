@@ -46,7 +46,13 @@ public final class RequestProcessor {
 
     void process() {
         for (int i = 1; i < HEADERS.size(); i++) {
+            String[] h = HEADERS.get(i).split(":");
+            String values = HEADERS.get(i).replace(h[0], "");
+            ArrayList<String> valuesList = new ArrayList<>();
+            for (String value : values.split(",")) {
 
+            }
         }
+
     }
 }
