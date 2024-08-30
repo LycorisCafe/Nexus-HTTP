@@ -16,20 +16,25 @@
 
 package io.github.lycoriscafe.nexus.http.connHelper;
 
+import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Locale;
 
 public final class ConnectionHandler implements Runnable {
+    private final HTTPServerConfiguration CONFIGURATION;
     private final Socket SOCKET;
     private final Connection DATABASE;
 
-    public ConnectionHandler(final Socket SOCKET, final Connection DATABASE)
+    public ConnectionHandler(final HTTPServerConfiguration CONFIGURATION,
+                             final Socket SOCKET,
+                             final Connection DATABASE)
             throws IOException {
+        this.CONFIGURATION = CONFIGURATION;
         this.SOCKET = SOCKET;
         this.DATABASE = DATABASE;
     }
@@ -38,6 +43,7 @@ public final class ConnectionHandler implements Runnable {
     public void run() {
         final ArrayList<String> HEADERS = new ArrayList<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+        boolean reqMethodLine = true;
         int terminateCount = 0;
 
         headersLoop:
@@ -45,19 +51,22 @@ public final class ConnectionHandler implements Runnable {
             try {
                 int character = SOCKET.getInputStream().read();
                 switch (character) {
+                    case ' ' -> {
+                        if (reqMethodLine) {
+                            buffer.write(character);
+                        }
+                    }
                     case -1 -> {
                         break headersLoop;
                     }
                     case '\r', '\n' -> {
+                        reqMethodLine = false;
                         terminateCount++;
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                switch (HEADERS.getFirst().split(" ")[0].toLowerCase(Locale.ROOT)) {
-                                    case "get" -> {
-
-                                    }
-                                }
+                                new RequestProcessor(CONFIGURATION, SOCKET, HEADERS, DATABASE).process();
+                                reqMethodLine = true;
                             }
                             continue;
                         }

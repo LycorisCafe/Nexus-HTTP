@@ -50,7 +50,7 @@ public final class HTTPServerConfiguration {
     public HTTPServerConfiguration setPort(final int PORT)
             throws IllegalArgumentException {
         if (PORT < 0) {
-            throw new IllegalArgumentException("PORT must be a positive integer");
+            throw new IllegalArgumentException("PORT must be a positive integer or 0");
         }
         port = PORT;
         return this;
@@ -63,7 +63,7 @@ public final class HTTPServerConfiguration {
     public HTTPServerConfiguration setBacklog(final int BACKLOG)
             throws IllegalArgumentException {
         if (BACKLOG < 0) {
-            throw new IllegalArgumentException("backlog must be a positive integer");
+            throw new IllegalArgumentException("backlog must be a positive integer or 0");
         }
         backlog = BACKLOG;
         return this;

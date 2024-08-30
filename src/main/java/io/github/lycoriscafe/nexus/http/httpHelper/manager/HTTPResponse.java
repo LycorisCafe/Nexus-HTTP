@@ -19,7 +19,12 @@ package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 import java.util.Map;
 
 public final class HTTPResponse {
+    private final int RESPONSE_ID;
     private Map<String, String> headers;
+
+    public HTTPResponse(final int RESPONSE_ID) {
+        this.RESPONSE_ID = RESPONSE_ID;
+    }
 
     public HTTPResponse setHeaders(Map<String, String> headers) {
         this.headers = headers;

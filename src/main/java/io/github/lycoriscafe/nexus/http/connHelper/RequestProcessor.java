@@ -16,6 +16,37 @@
 
 package io.github.lycoriscafe.nexus.http.connHelper;
 
-public final class RequestProcessor {
+import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 
+import java.net.Socket;
+import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+public final class RequestProcessor {
+    private static final int reqId = 0;
+
+    private final HTTPServerConfiguration CONFIGURATION;
+    private final Socket SOCKET;
+    private final ArrayList<String> HEADERS;
+    private final Connection DATABASE;
+    private final Map<String, ArrayList<String>> HEADERS_MAP;
+
+    RequestProcessor(final HTTPServerConfiguration CONFIGURATION,
+                     final Socket SOCKET,
+                     final ArrayList<String> HEADERS,
+                     final Connection DATABASE) {
+        this.CONFIGURATION = CONFIGURATION;
+        this.SOCKET = SOCKET;
+        this.HEADERS = HEADERS;
+        this.DATABASE = DATABASE;
+        HEADERS_MAP = new HashMap<>();
+    }
+
+    void process() {
+        for (int i = 1; i < HEADERS.size(); i++) {
+
+        }
+    }
 }

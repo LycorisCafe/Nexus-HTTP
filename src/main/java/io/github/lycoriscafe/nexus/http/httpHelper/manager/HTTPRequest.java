@@ -20,8 +20,13 @@ import java.util.ArrayList;
 import java.util.Map;
 
 public final class HTTPRequest {
+    private final int REQUEST_ID;
     private Map<String, ArrayList<String>> headers;
     private Map<String, String> parameters;
+
+    public HTTPRequest(final int REQUEST_ID) {
+        this.REQUEST_ID = REQUEST_ID;
+    }
 
     public HTTPRequest setHeaders(Map<String, ArrayList<String>> headers) {
         this.headers = headers;
@@ -31,6 +36,10 @@ public final class HTTPRequest {
     public HTTPRequest setParameters(Map<String, String> parameters) {
         this.parameters = parameters;
         return this;
+    }
+
+    public int getRequestID() {
+        return REQUEST_ID;
     }
 
     public Map<String, ArrayList<String>> getHeaders() {
