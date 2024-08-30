@@ -43,9 +43,10 @@ public final class AnnotationScanner {
                     writeToDatabase(
                             DATABASE,
                             "ReqGET",
-                            module.getAnnotation(HTTPEndpoint.class).value()
+                            (module.getAnnotation(HTTPEndpoint.class).value().equals("/") ?
+                                    "" : module.getAnnotation(HTTPEndpoint.class).value())
                                     + method.getAnnotation(GET.class).value(),
-                            module.getPackageName() + "." + module.getName(),
+                            module.getName(),
                             method.getName()
                     );
                 }

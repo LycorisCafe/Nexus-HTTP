@@ -40,7 +40,7 @@ public final class HTTPServerConfiguration {
             throw new IllegalArgumentException("Could not determine package name");
         }
 
-        this.basePackage = pkgName.contains(".") ? pkgName.split("\\.")[0] : pkgName;
+        this.basePackage = pkgName;
     }
 
     public String getBasePackage() {
