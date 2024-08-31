@@ -18,38 +18,43 @@ package io.github.lycoriscafe.nexus.http.connHelper;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class ConnectionHandler implements Runnable {
-    int reqId = 0;
-    private final HTTPServerConfiguration CONFIGURATION;
-    private final Socket SOCKET;
-    private final Connection DATABASE;
+    private final BufferedInputStream INPUT_STREAM;
+    private final BufferedOutputStream OUTPUT_STREAM;
+    private final RequestProcessor PROCESSOR;
 
     public ConnectionHandler(final HTTPServerConfiguration CONFIGURATION,
                              final Socket SOCKET,
-                             final Connection DATABASE)
-            throws IOException {
-        this.CONFIGURATION = CONFIGURATION;
-        this.SOCKET = SOCKET;
-        this.DATABASE = DATABASE;
+                             final Connection DATABASE) throws IOException {
+        this.INPUT_STREAM = new BufferedInputStream(SOCKET.getInputStream());
+        this.OUTPUT_STREAM = new BufferedOutputStream(SOCKET.getOutputStream());
+        PROCESSOR = new RequestProcessor(CONFIGURATION, INPUT_STREAM, DATABASE);
     }
 
     @Override
     public void run() {
-        final ArrayList<String> HEADERS = new ArrayList<>();
+        String requestLine = null;
+        boolean isRequestLine = true;
+        Map<String, List<String>> headers = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int terminateCount = 0;
 
         headersLoop:
         while (true) {
             try {
-                int character = SOCKET.getInputStream().read();
+                int character = INPUT_STREAM.read();
                 switch (character) {
                     case -1 -> {
                         break headersLoop;
@@ -59,13 +64,26 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                System.out.println(HEADERS);
-//                                new RequestProcessor(CONFIGURATION, getReqId(), SOCKET, HEADERS, DATABASE).process();
+                                System.out.println(headers);
+                                PROCESSOR.process(requestLine, headers);
+                                headers = new HashMap<>();
                             }
                             continue;
                         }
                         terminateCount = 0;
-                        HEADERS.add(line);
+
+                        if (isRequestLine) {
+                            requestLine = line;
+                            isRequestLine = false;
+                        } else {
+                            String headerName = line.split(":")[0];
+                            ArrayList<String> values = new ArrayList<>();
+                            for (String value : line.replace(headerName + ":", "").split(",")) {
+                                values.add(value.charAt(0) == ' ' ? value.replaceFirst(" ", "") : value);
+                            }
+                            headers.put(headerName, values);
+                        }
+
                         buffer = new ByteArrayOutputStream();
                     }
                     default -> buffer.write(character);
@@ -78,13 +96,9 @@ public final class ConnectionHandler implements Runnable {
 
     public void send(final byte[] data) {
         try {
-            SOCKET.getOutputStream().write(data);
+            OUTPUT_STREAM.write(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    private int getReqId() {
-        return reqId++;
     }
 }

@@ -21,40 +21,28 @@ import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.headers.HeadersProcessor;
 
-import java.net.Socket;
+import java.io.BufferedInputStream;
 import java.sql.Connection;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public final class RequestProcessor {
+    private int requestId;
     private final HTTPServerConfiguration CONFIGURATION;
-    private final Socket SOCKET;
-    private final ArrayList<String> HEADERS;
+    private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
-    private final Map<String, ArrayList<String>> HEADERS_MAP;
 
     RequestProcessor(final HTTPServerConfiguration CONFIGURATION,
-                     final int REQ_ID,
-                     final Socket SOCKET,
-                     final ArrayList<String> HEADERS,
+                     final BufferedInputStream INPUT_STREAM,
                      final Connection DATABASE) {
         this.CONFIGURATION = CONFIGURATION;
-        this.SOCKET = SOCKET;
-        this.HEADERS = HEADERS;
+        this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
-        HEADERS_MAP = new HashMap<>();
     }
 
-    private void process() {
-        for (int i = 1; i < HEADERS.size(); i++) {
-            String[] h = HEADERS.get(i).split(":");
-            String values = HEADERS.get(i).replace(h[0], "");
-            ArrayList<String> valuesList = new ArrayList<>(Arrays.asList(values.split(",")));
-            HEADERS_MAP.put(h[0], valuesList);
-        }
-
+    void process(final String REQUEST,
+                 final Map<String, List<String>> HEADERS) {
 
     }
 
