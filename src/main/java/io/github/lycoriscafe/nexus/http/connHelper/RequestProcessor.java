@@ -26,15 +26,14 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class RequestProcessor {
-    private int requestId;
     private ExecutorService executorService;
-    private final ConnectionHandler HANDLER;
+    private final ConnectionHandler CONN_HANDLER;
     private final Connection DATABASE;
 
-    RequestProcessor(final ConnectionHandler HANDLER,
+    RequestProcessor(final ConnectionHandler CONN_HANDLER,
                      final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
-        this.HANDLER = HANDLER;
+        this.CONN_HANDLER = CONN_HANDLER;
         this.DATABASE = DATABASE;
 
         if (CONFIGURATION.isHttpPipelined()) {
@@ -48,9 +47,5 @@ public final class RequestProcessor {
                  final String[] REQUEST,
                  final Map<String, List<String>> HEADERS) {
 
-    }
-
-    private int getRequestId() {
-        return requestId++;
     }
 }
