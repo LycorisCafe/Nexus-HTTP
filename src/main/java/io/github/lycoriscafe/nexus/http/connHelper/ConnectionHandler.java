@@ -22,9 +22,11 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,8 +50,12 @@ public final class ConnectionHandler implements Runnable {
         PROCESSOR = new RequestProcessor(this, CONFIGURATION, DATABASE);
     }
 
-    void closeSocket(String errorMessage) throws IOException {
-        SOCKET.close();
+    void closeSocket(String errorMessage) {
+        try {
+            SOCKET.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private BufferedInputStream getInputStream() {
@@ -82,7 +88,7 @@ public final class ConnectionHandler implements Runnable {
                             if (terminateCount == 3) {
                                 System.out.println(requestLine);
                                 System.out.println(headers);
-//                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
+                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
                                 requestLine = null;
                                 headers = new HashMap<>();
                             }
@@ -105,8 +111,9 @@ public final class ConnectionHandler implements Runnable {
                     }
                     default -> buffer.write(character);
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException | SQLException | ClassNotFoundException | InvocationTargetException |
+                     NoSuchMethodException | IllegalAccessException e) {
+                closeSocket(e.getMessage());
             }
         }
     }

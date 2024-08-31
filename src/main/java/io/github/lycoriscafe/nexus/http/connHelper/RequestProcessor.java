@@ -22,7 +22,6 @@ import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.RequestMethod;
 
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -51,11 +50,12 @@ public final class RequestProcessor {
         }
     }
 
-    private void process(final int REQUEST_ID,
-                         final String[] REQUEST_LINE,
-                         final Map<String, List<String>> HEADERS)
-            throws IOException, SQLException, ClassNotFoundException, NoSuchMethodException,
+    void process(final int REQUEST_ID,
+                 final String[] REQUEST_LINE,
+                 final Map<String, List<String>> HEADERS)
+            throws SQLException, ClassNotFoundException, NoSuchMethodException,
             InvocationTargetException, IllegalAccessException {
+
         final HTTPRequest REQUEST = switch (REQUEST_LINE[0]) {
             case String req when req.toLowerCase(Locale.ROOT).equals("get") ->
                     new HTTPRequest(REQUEST_ID, RequestMethod.GET, HEADERS);
