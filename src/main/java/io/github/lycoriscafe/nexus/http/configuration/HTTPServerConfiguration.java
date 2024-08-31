@@ -126,7 +126,12 @@ public final class HTTPServerConfiguration {
         return httpPipeline;
     }
 
-    public HTTPServerConfiguration setHttpPipelineParallelCount(final int HTTP_PIPELINE_PARALLEL_COUNT) {
+    public HTTPServerConfiguration setHttpPipelineParallelCount(final int HTTP_PIPELINE_PARALLEL_COUNT)
+            throws IllegalArgumentException {
+        if (HTTP_PIPELINE_PARALLEL_COUNT < 1) {
+            throw new IllegalArgumentException("Pipelined threads count must be a positive integer");
+        }
+
         httpPipelineParallelCount = HTTP_PIPELINE_PARALLEL_COUNT;
         return this;
     }
