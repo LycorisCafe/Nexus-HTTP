@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
+package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
 
-import java.lang.annotation.*;
-
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface POST {
-    String value();
+public @interface OPTIONS {
 }

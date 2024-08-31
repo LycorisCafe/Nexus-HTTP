@@ -34,6 +34,7 @@ public final class ConnectionHandler implements Runnable {
     private int requestId = 0;
     private final int responseId = 0;
 
+    private final Socket SOCKET;
     private final BufferedInputStream INPUT_STREAM;
     private final BufferedOutputStream OUTPUT_STREAM;
     private final RequestProcessor PROCESSOR;
@@ -41,9 +42,14 @@ public final class ConnectionHandler implements Runnable {
     public ConnectionHandler(final HTTPServerConfiguration CONFIGURATION,
                              final Socket SOCKET,
                              final Connection DATABASE) throws IOException {
+        this.SOCKET = SOCKET;
         this.INPUT_STREAM = new BufferedInputStream(SOCKET.getInputStream());
         this.OUTPUT_STREAM = new BufferedOutputStream(SOCKET.getOutputStream());
         PROCESSOR = new RequestProcessor(this, CONFIGURATION, DATABASE);
+    }
+
+    void closeSocket(String errorMessage) throws IOException {
+        SOCKET.close();
     }
 
     private BufferedInputStream getInputStream() {
@@ -74,7 +80,9 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
+                                System.out.println(requestLine);
+                                System.out.println(headers);
+//                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
                                 requestLine = null;
                                 headers = new HashMap<>();
                             }

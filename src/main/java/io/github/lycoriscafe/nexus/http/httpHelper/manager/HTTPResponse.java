@@ -21,15 +21,13 @@ import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.StatusCode;
 import java.util.ArrayList;
 import java.util.Map;
 
-public final class HTTPResponse {
+public final class HTTPResponse<T> {
     private final int RESPONSE_ID;
-
-    private String pre_headers;
 
     private StatusCode statusCode;
     private Map<String, ArrayList<String>> headers;
     private int contentLength;
-    private byte[] body;
+    private T content;
 
     public HTTPResponse(final int RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;

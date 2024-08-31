@@ -16,5 +16,6 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
 
-public @interface HEAD {
+public enum RequestMethod {
+    GET, HEAD, POST, PUT, PATCH, DELETE, OPTIONS, TRACE
 }

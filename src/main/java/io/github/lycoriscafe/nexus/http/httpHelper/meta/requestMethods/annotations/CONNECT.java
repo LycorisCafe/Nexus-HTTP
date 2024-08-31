@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
+package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
 
-public @interface TRACE {
+public @interface CONNECT {
 }

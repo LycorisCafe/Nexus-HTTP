@@ -16,37 +16,33 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-import java.util.ArrayList;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.RequestMethod;
+
+import java.util.List;
 import java.util.Map;
 
 public final class HTTPRequest {
     private final int REQUEST_ID;
-    private Map<String, ArrayList<String>> headers;
-    private Map<String, String> parameters;
+    private final RequestMethod METHOD;
+    private final Map<String, List<String>> HEADERS;
 
-    public HTTPRequest(final int REQUEST_ID) {
+    public HTTPRequest(final int REQUEST_ID,
+                       final RequestMethod METHOD,
+                       final Map<String, List<String>> HEADERS) {
         this.REQUEST_ID = REQUEST_ID;
-    }
-
-    public HTTPRequest setHeaders(Map<String, ArrayList<String>> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    public HTTPRequest setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-        return this;
+        this.METHOD = METHOD;
+        this.HEADERS = HEADERS;
     }
 
     public int getRequestID() {
         return REQUEST_ID;
     }
 
-    public Map<String, ArrayList<String>> getHeaders() {
-        return headers;
+    public RequestMethod getMethod() {
+        return METHOD;
     }
 
-    public Map<String, String> getParameters() {
-        return parameters;
+    public Map<String, List<String>> getHeaders() {
+        return HEADERS;
     }
 }

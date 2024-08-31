@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package main.test.testA;
+package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPEndpoint;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.GET;
+import java.lang.annotation.*;
 
-@HTTPEndpoint("/")
-public class abcd {
-    @GET("/abcd")
-    public static void xyz() {
-
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface POST {
+    String value();
 }
