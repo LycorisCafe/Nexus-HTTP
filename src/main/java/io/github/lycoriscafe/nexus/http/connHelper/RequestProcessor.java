@@ -17,46 +17,37 @@
 package io.github.lycoriscafe.nexus.http.connHelper;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.headers.HeadersProcessor;
+import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 
-import java.io.BufferedInputStream;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public final class RequestProcessor {
     private int requestId;
-    private final HTTPServerConfiguration CONFIGURATION;
-    private final BufferedInputStream INPUT_STREAM;
+    private ExecutorService executorService;
+    private final ConnectionHandler HANDLER;
     private final Connection DATABASE;
 
-    RequestProcessor(final HTTPServerConfiguration CONFIGURATION,
-                     final BufferedInputStream INPUT_STREAM,
+    RequestProcessor(final ConnectionHandler HANDLER,
+                     final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
-        this.CONFIGURATION = CONFIGURATION;
-        this.INPUT_STREAM = INPUT_STREAM;
+        this.HANDLER = HANDLER;
         this.DATABASE = DATABASE;
+
+        if (CONFIGURATION.isHttpPipelined()) {
+            executorService = Executors.newFixedThreadPool(CONFIGURATION.getHttpPipelineParallelCount(),
+                    (CONFIGURATION.getThreadType() == ThreadType.PLATFORM ?
+                            Thread.ofPlatform().factory() : Thread.ofVirtual().factory()));
+        }
     }
 
-    void process(final String[] REQUEST,
+    void process(final int REQUEST_ID,
+                 final String[] REQUEST,
                  final Map<String, List<String>> HEADERS) {
 
-    }
-
-    private HTTPResponse process(final HTTPRequest REQUEST) {
-        HTTPResponse httpResponse = new HTTPResponse(REQUEST.getRequestID());
-
-        for (Map.Entry<String, ArrayList<String>> entry : REQUEST.getHeaders().entrySet()) {
-            httpResponse = switch (entry.getKey()) {
-                case "accept" -> HeadersProcessor.accept(httpResponse, entry.getValue());
-                default -> httpResponse;
-            };
-        }
-
-        return httpResponse;
     }
 
     private int getRequestId() {

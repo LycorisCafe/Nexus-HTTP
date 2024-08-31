@@ -31,6 +31,9 @@ import java.util.List;
 import java.util.Map;
 
 public final class ConnectionHandler implements Runnable {
+    private int requestId = 0;
+    private final int responseId = 0;
+
     private final BufferedInputStream INPUT_STREAM;
     private final BufferedOutputStream OUTPUT_STREAM;
     private final RequestProcessor PROCESSOR;
@@ -40,7 +43,15 @@ public final class ConnectionHandler implements Runnable {
                              final Connection DATABASE) throws IOException {
         this.INPUT_STREAM = new BufferedInputStream(SOCKET.getInputStream());
         this.OUTPUT_STREAM = new BufferedOutputStream(SOCKET.getOutputStream());
-        PROCESSOR = new RequestProcessor(CONFIGURATION, INPUT_STREAM, DATABASE);
+        PROCESSOR = new RequestProcessor(this, CONFIGURATION, DATABASE);
+    }
+
+    private BufferedInputStream getInputStream() {
+        return INPUT_STREAM;
+    }
+
+    private int getRequestId() {
+        return requestId++;
     }
 
     @Override
@@ -63,7 +74,7 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                PROCESSOR.process(requestLine.split(" "), headers);
+                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
                                 requestLine = null;
                                 headers = new HashMap<>();
                             }
@@ -92,7 +103,7 @@ public final class ConnectionHandler implements Runnable {
         }
     }
 
-    public void send(final byte[] data) {
+    private void send(final byte[] data) {
         try {
             OUTPUT_STREAM.write(data);
         } catch (IOException e) {
