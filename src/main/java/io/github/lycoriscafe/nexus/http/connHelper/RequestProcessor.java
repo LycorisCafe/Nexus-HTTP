@@ -41,7 +41,7 @@ public final class RequestProcessor {
         this.DATABASE = DATABASE;
     }
 
-    void process(final String REQUEST,
+    void process(final String[] REQUEST,
                  final Map<String, List<String>> HEADERS) {
 
     }
@@ -57,5 +57,9 @@ public final class RequestProcessor {
         }
 
         return httpResponse;
+    }
+
+    private int getRequestId() {
+        return requestId++;
     }
 }

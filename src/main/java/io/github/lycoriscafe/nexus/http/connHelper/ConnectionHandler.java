@@ -46,7 +46,6 @@ public final class ConnectionHandler implements Runnable {
     @Override
     public void run() {
         String requestLine = null;
-        boolean isRequestLine = true;
         Map<String, List<String>> headers = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int terminateCount = 0;
@@ -64,17 +63,16 @@ public final class ConnectionHandler implements Runnable {
                         String line = buffer.toString(StandardCharsets.UTF_8);
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
-                                System.out.println(headers);
-                                PROCESSOR.process(requestLine, headers);
+                                PROCESSOR.process(requestLine.split(" "), headers);
+                                requestLine = null;
                                 headers = new HashMap<>();
                             }
                             continue;
                         }
                         terminateCount = 0;
 
-                        if (isRequestLine) {
+                        if (requestLine == null) {
                             requestLine = line;
-                            isRequestLine = false;
                         } else {
                             String headerName = line.split(":")[0];
                             ArrayList<String> values = new ArrayList<>();
