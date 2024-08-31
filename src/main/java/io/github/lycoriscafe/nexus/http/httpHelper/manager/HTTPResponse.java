@@ -16,22 +16,31 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.StatusCode;
+
+import java.util.ArrayList;
 import java.util.Map;
 
 public final class HTTPResponse {
     private final int RESPONSE_ID;
-    private Map<String, String> headers;
+
+    private String pre_headers;
+
+    private StatusCode statusCode;
+    private Map<String, ArrayList<String>> headers;
+    private int contentLength;
+    private byte[] body;
 
     public HTTPResponse(final int RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;
     }
 
-    public HTTPResponse setHeaders(Map<String, String> headers) {
-        this.headers = headers;
+    public HTTPResponse setHeaders(final Map<String, ArrayList<String>> headers) {
+        this.headers.putAll(headers);
         return this;
     }
 
-    public Map<String, String> getHeaders() {
+    public Map<String, ArrayList<String>> getHeaders() {
         return headers;
     }
 }

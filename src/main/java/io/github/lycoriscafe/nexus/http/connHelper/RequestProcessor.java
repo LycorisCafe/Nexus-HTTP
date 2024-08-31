@@ -17,16 +17,18 @@
 package io.github.lycoriscafe.nexus.http.connHelper;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
+import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.headers.HeadersProcessor;
 
 import java.net.Socket;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 public final class RequestProcessor {
-    private static final int reqId = 0;
-
     private final HTTPServerConfiguration CONFIGURATION;
     private final Socket SOCKET;
     private final ArrayList<String> HEADERS;
@@ -34,6 +36,7 @@ public final class RequestProcessor {
     private final Map<String, ArrayList<String>> HEADERS_MAP;
 
     RequestProcessor(final HTTPServerConfiguration CONFIGURATION,
+                     final int REQ_ID,
                      final Socket SOCKET,
                      final ArrayList<String> HEADERS,
                      final Connection DATABASE) {
@@ -44,15 +47,27 @@ public final class RequestProcessor {
         HEADERS_MAP = new HashMap<>();
     }
 
-    void process() {
+    private void process() {
         for (int i = 1; i < HEADERS.size(); i++) {
             String[] h = HEADERS.get(i).split(":");
             String values = HEADERS.get(i).replace(h[0], "");
-            ArrayList<String> valuesList = new ArrayList<>();
-            for (String value : values.split(",")) {
-
-            }
+            ArrayList<String> valuesList = new ArrayList<>(Arrays.asList(values.split(",")));
+            HEADERS_MAP.put(h[0], valuesList);
         }
 
+
+    }
+
+    private HTTPResponse process(final HTTPRequest REQUEST) {
+        HTTPResponse httpResponse = new HTTPResponse(REQUEST.getRequestID());
+
+        for (Map.Entry<String, ArrayList<String>> entry : REQUEST.getHeaders().entrySet()) {
+            httpResponse = switch (entry.getKey()) {
+                case "accept" -> HeadersProcessor.accept(httpResponse, entry.getValue());
+                default -> httpResponse;
+            };
+        }
+
+        return httpResponse;
     }
 }

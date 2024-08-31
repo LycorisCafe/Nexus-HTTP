@@ -26,6 +26,7 @@ import java.sql.Connection;
 import java.util.ArrayList;
 
 public final class ConnectionHandler implements Runnable {
+    int reqId = 0;
     private final HTTPServerConfiguration CONFIGURATION;
     private final Socket SOCKET;
     private final Connection DATABASE;
@@ -59,7 +60,7 @@ public final class ConnectionHandler implements Runnable {
                         if (line.isEmpty()) {
                             if (terminateCount == 3) {
                                 System.out.println(HEADERS);
-//                                new RequestProcessor(CONFIGURATION, SOCKET, HEADERS, DATABASE).process();
+//                                new RequestProcessor(CONFIGURATION, getReqId(), SOCKET, HEADERS, DATABASE).process();
                             }
                             continue;
                         }
@@ -81,5 +82,9 @@ public final class ConnectionHandler implements Runnable {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    private int getReqId() {
+        return reqId++;
     }
 }

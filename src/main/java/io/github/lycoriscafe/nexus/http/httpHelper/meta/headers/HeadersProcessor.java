@@ -16,5 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.meta.headers;
 
-public class HeadersProcessor {
+import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
+
+import java.util.ArrayList;
+
+public final class HeadersProcessor {
+    public static HTTPResponse accept(HTTPResponse response, ArrayList<String> values) {
+        return null;
+    }
+
+    
 }
