@@ -64,7 +64,7 @@ public final class HTTPServer {
                 executorService = Executors.newFixedThreadPool(CONFIGURATION.getMaxConnections(), worker);
                 while (operational) {
                     try {
-                        executorService.submit(new ConnectionHandler(CONFIGURATION, SERVER_SOCKET.accept(), DATABASE));
+                        executorService.execute(new ConnectionHandler(CONFIGURATION, SERVER_SOCKET.accept(), DATABASE));
                     } catch (IOException e) {
                         operational = false;
                     }

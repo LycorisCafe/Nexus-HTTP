@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
+import java.io.File;
 import java.net.InetAddress;
 
 public final class HTTPServerConfiguration {
@@ -25,9 +26,10 @@ public final class HTTPServerConfiguration {
     private ThreadType threadType = ThreadType.PLATFORM;
     private String databaseLocation = null;
     private int maxConnections = 100;
-    private boolean httpPipeline = false;
     private int httpPipelineParallelCount = 5;
     private final String basePackage;
+    private File tempDirectory = new File("Temp");
+    private int maxContentSize = 5120;
 
     public HTTPServerConfiguration(final Class<?> BASE_CLASS)
             throws IllegalArgumentException, ClassNotFoundException {
@@ -117,19 +119,10 @@ public final class HTTPServerConfiguration {
         return maxConnections;
     }
 
-    public HTTPServerConfiguration setHttpPipeline(final boolean HTTP_PIPELINE) {
-        httpPipeline = HTTP_PIPELINE;
-        return this;
-    }
-
-    public boolean isHttpPipelined() {
-        return httpPipeline;
-    }
-
     public HTTPServerConfiguration setHttpPipelineParallelCount(final int HTTP_PIPELINE_PARALLEL_COUNT)
             throws IllegalArgumentException {
-        if (HTTP_PIPELINE_PARALLEL_COUNT < 1) {
-            throw new IllegalArgumentException("Pipelined threads count must be a positive integer");
+        if (HTTP_PIPELINE_PARALLEL_COUNT < 0) {
+            throw new IllegalArgumentException("Pipelined threads count must be 0 or a positive integer");
         }
 
         httpPipelineParallelCount = HTTP_PIPELINE_PARALLEL_COUNT;
@@ -138,5 +131,43 @@ public final class HTTPServerConfiguration {
 
     public int getHttpPipelineParallelCount() {
         return httpPipelineParallelCount;
+    }
+
+    public HTTPServerConfiguration setTempDirectory(final File TEMP_DIRECTORY) {
+        if (TEMP_DIRECTORY == null) {
+            throw new IllegalArgumentException("Temp directory cannot be null");
+        }
+        if (!TEMP_DIRECTORY.exists()) {
+            boolean status = TEMP_DIRECTORY.mkdirs();
+            if (!status) {
+                throw new IllegalArgumentException("Temp directory could not be created");
+            }
+        }
+        if (!TEMP_DIRECTORY.isDirectory()) {
+            throw new IllegalArgumentException("Temp directory must be a directory");
+        }
+        if (!TEMP_DIRECTORY.canWrite()) {
+            throw new IllegalArgumentException("Temp directory can be written to");
+        }
+
+        tempDirectory = TEMP_DIRECTORY;
+        return this;
+    }
+
+    public File getTempDirectory() {
+        return tempDirectory;
+    }
+
+    public HTTPServerConfiguration setMaxContentLength(final int MAX_CONTENT_LENGTH)
+            throws IllegalArgumentException {
+        if (MAX_CONTENT_LENGTH < 0) {
+            throw new IllegalArgumentException("maxContentSize must be 0 or a positive integer");
+        }
+        this.maxContentSize = MAX_CONTENT_LENGTH;
+        return this;
+    }
+
+    public int getMaxContentLength() {
+        return maxContentSize;
     }
 }

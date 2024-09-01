@@ -27,10 +27,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class ConnectionHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
@@ -106,7 +103,7 @@ public final class ConnectionHandler implements Runnable {
                             for (String value : line.replace(headerName + ":", "").split(",")) {
                                 values.add(value.charAt(0) == ' ' ? value.replaceFirst(" ", "") : value);
                             }
-                            headers.put(headerName, values);
+                            headers.put(headerName.toUpperCase(Locale.ROOT), values);
                         }
 
                         buffer = new ByteArrayOutputStream();

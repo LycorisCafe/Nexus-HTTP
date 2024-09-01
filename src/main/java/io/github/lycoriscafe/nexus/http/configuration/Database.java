@@ -76,12 +76,13 @@ public final class Database {
     }
 
     public static String[] findEndpointLocation(final Connection DATABASE,
-                                                 final String TABLE,
-                                                 final String ENDPOINT) throws SQLException {
+                                                final String TABLE,
+                                                final String ENDPOINT) throws SQLException {
         String statement = "SELECT className, methodName FROM " + TABLE + " WHERE endpoint  = ?";
         PreparedStatement ps = DATABASE.prepareStatement(statement);
         ps.setString(1, ENDPOINT);
         ResultSet rs = ps.executeQuery();
-        return new String[]{rs.getString(1), rs.getString(2)};
+        return rs.getString(1) == null ? null :
+                new String[]{rs.getString(1), rs.getString(2)};
     }
 }
