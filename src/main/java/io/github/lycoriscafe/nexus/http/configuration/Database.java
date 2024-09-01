@@ -18,10 +18,7 @@ package io.github.lycoriscafe.nexus.http.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public final class Database {
     public static Connection getConnection(final String DB_LOCATION, final int PORT)
@@ -76,5 +73,15 @@ public final class Database {
                 stmt.execute(query);
             }
         }
+    }
+
+    private static String[] findEndpointLocation(final Connection DATABASE,
+                                                 final String TABLE,
+                                                 final String ENDPOINT) throws SQLException {
+        String statement = "SELECT className, methodName FROM " + TABLE + " WHERE endpoint  = ?";
+        PreparedStatement ps = DATABASE.prepareStatement(statement);
+        ps.setString(1, ENDPOINT);
+        ResultSet rs = ps.executeQuery();
+        return new String[]{rs.getString(1), rs.getString(2)};
     }
 }
