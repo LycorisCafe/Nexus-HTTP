@@ -19,13 +19,10 @@ package io.github.lycoriscafe.nexus.http.connHelper;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.RequestMethod;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
 
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -52,38 +49,26 @@ public final class RequestProcessor {
 
     void process(final int REQUEST_ID,
                  final String[] REQUEST_LINE,
-                 final Map<String, List<String>> HEADERS)
-            throws SQLException, ClassNotFoundException, NoSuchMethodException,
-            InvocationTargetException, IllegalAccessException {
-
-        final HTTPRequest REQUEST = switch (REQUEST_LINE[0]) {
-            case String req when req.toLowerCase(Locale.ROOT).equals("get") ->
-                    new HTTPRequest(REQUEST_ID, RequestMethod.GET, HEADERS);
-            case String req when req.toLowerCase(Locale.ROOT).equals("post") ->
-                    new HTTPRequest(REQUEST_ID, RequestMethod.POST, HEADERS);
-            // TODO implement other http methods
-            default -> {
-                if (executorService != null) {
-                    executorService.shutdownNow();
-                }
-                CONN_HANDLER.closeSocket("Unexpected HTTP Header! Closing connection.");
-                yield null;
-            }
+                 final Map<String, List<String>> HEADERS) {
+        HTTPRequest httpRequest;
+        HTTPRequestMethod httpRequestMethod = switch (REQUEST_LINE[0]) {
+            case String method when method.toUpperCase(Locale.ROOT).equals("CONNECT") -> HTTPRequestMethod.CONNECT;
+            case String method when method.toUpperCase(Locale.ROOT).equals("DELETE") -> HTTPRequestMethod.DELETE;
+            case String method when method.toUpperCase(Locale.ROOT).equals("GET") -> HTTPRequestMethod.GET;
+            case String method when method.toUpperCase(Locale.ROOT).equals("HEAD") -> HTTPRequestMethod.HEAD;
+            case String method when method.toUpperCase(Locale.ROOT).equals("OPTIONS") -> HTTPRequestMethod.OPTIONS;
+            case String method when method.toUpperCase(Locale.ROOT).equals("PATCH") -> HTTPRequestMethod.PATCH;
+            case String method when method.toUpperCase(Locale.ROOT).equals("POST") -> HTTPRequestMethod.POST;
+            case String method when method.toUpperCase(Locale.ROOT).equals("PUT") -> HTTPRequestMethod.PUT;
+            case String method when method.toUpperCase(Locale.ROOT).equals("TRACE") -> HTTPRequestMethod.TRACE;
+            default -> null;
         };
 
-        if (REQUEST == null) {
-            return;
-        }
+        HTTPVersion httpVersion = switch (REQUEST_LINE[2]) {
+            case String version when version.toUpperCase(Locale.ROOT).equals("HTTP/1.1") -> HTTPVersion.HTTP_1_1;
+            default -> null;
+        };
 
-        HTTPResponse<?> tempResponse = new HTTPResponse<>(REQUEST_ID);
-        String[] locations = ClassFinder.findGet(
-                DATABASE, "REQ" + REQUEST.getMethod().toString(), REQUEST_LINE[1]);
 
-        Class<?> endpointClass = Class.forName(locations[0]);
-        Method endpointMethod = endpointClass.getMethod(
-                locations[1], HTTPRequest.class, HTTPResponse.class);
-        HTTPResponse<?> RESPONSE = (HTTPResponse<?>) endpointMethod.invoke(null, REQUEST, tempResponse);
-
-// TODO complete the code
     }
 }

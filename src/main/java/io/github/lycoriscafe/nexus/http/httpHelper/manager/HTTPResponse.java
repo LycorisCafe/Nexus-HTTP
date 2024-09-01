@@ -16,16 +16,18 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.StatusCode;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.HTTPStatusCode;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public final class HTTPResponse<T> {
     private final int RESPONSE_ID;
 
-    private StatusCode statusCode;
-    private Map<String, ArrayList<String>> headers;
+    private HTTPStatusCode HTTPStatusCode;
+    private Map<String, List<String>> headers;
+    private Map<String, ArrayList<String>> customHeaders;
     private int contentLength;
     private T content;
 
@@ -33,12 +35,27 @@ public final class HTTPResponse<T> {
         this.RESPONSE_ID = RESPONSE_ID;
     }
 
-    public HTTPResponse setHeaders(final Map<String, ArrayList<String>> headers) {
-        this.headers.putAll(headers);
+    public HTTPResponse<?> setStatusCode(final HTTPStatusCode HTTPStatusCode) {
+        this.HTTPStatusCode = HTTPStatusCode;
         return this;
     }
 
-    public Map<String, ArrayList<String>> getHeaders() {
-        return headers;
+    public HTTPResponse<?> setHeaders(final Map<String, List<String>> headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public HTTPResponse<?> setCustomHeaders(final Map<String, ArrayList<String>> customHeaders) {
+        this.customHeaders.putAll(customHeaders);
+        return this;
+    }
+
+    public HTTPResponse<T> setContent(final T content) {
+        this.content = content;
+        return this;
+    }
+
+    public Map<String, ArrayList<String>> getCustomHeaders() {
+        return customHeaders;
     }
 }

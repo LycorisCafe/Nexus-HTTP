@@ -16,21 +16,28 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.manager;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.RequestMethod;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
 
 import java.util.List;
 import java.util.Map;
 
 public final class HTTPRequest {
     private final int REQUEST_ID;
-    private final RequestMethod METHOD;
+    private final HTTPRequestMethod METHOD;
+    private final Map<String, String> PARAMETERS;
+    private final HTTPVersion VERSION;
     private final Map<String, List<String>> HEADERS;
 
     public HTTPRequest(final int REQUEST_ID,
-                       final RequestMethod METHOD,
+                       final HTTPRequestMethod METHOD,
+                       final Map<String, String> PARAMETERS,
+                       final HTTPVersion VERSION,
                        final Map<String, List<String>> HEADERS) {
         this.REQUEST_ID = REQUEST_ID;
         this.METHOD = METHOD;
+        this.PARAMETERS = PARAMETERS;
+        this.VERSION = VERSION;
         this.HEADERS = HEADERS;
     }
 
@@ -38,8 +45,16 @@ public final class HTTPRequest {
         return REQUEST_ID;
     }
 
-    public RequestMethod getMethod() {
+    public HTTPRequestMethod getMethod() {
         return METHOD;
+    }
+
+    public Map<String, String> getParameters() {
+        return PARAMETERS;
+    }
+
+    public HTTPVersion getVersion() {
+        return VERSION;
     }
 
     public Map<String, List<String>> getHeaders() {
