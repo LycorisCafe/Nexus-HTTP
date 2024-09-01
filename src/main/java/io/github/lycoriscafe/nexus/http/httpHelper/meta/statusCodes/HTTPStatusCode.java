@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes;
 
-public enum StatusCode {
+public enum HTTPStatusCode {
     CONTINUE("100 Continue"),
     SWITCHING_PROTOCOLS("101 Switching Protocols"),
     PROCESSING("102 Processing"),
@@ -81,7 +81,7 @@ public enum StatusCode {
 
     private final String httpValue;
 
-    StatusCode(String httpValue) {
+    HTTPStatusCode(String httpValue) {
         this.httpValue = httpValue;
     }
 
