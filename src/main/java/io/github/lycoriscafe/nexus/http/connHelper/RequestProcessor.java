@@ -16,13 +16,15 @@
 
 package io.github.lycoriscafe.nexus.http.connHelper;
 
+import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
 
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -50,7 +52,11 @@ public final class RequestProcessor {
     void process(final int REQUEST_ID,
                  final String[] REQUEST_LINE,
                  final Map<String, List<String>> HEADERS) {
-        HTTPRequest httpRequest;
+        HTTPVersion httpVersion = switch (REQUEST_LINE[2]) {
+            case String version when version.toUpperCase(Locale.ROOT).equals("HTTP/1.1") -> HTTPVersion.HTTP_1_1;
+            default -> null;
+        };
+
         HTTPRequestMethod httpRequestMethod = switch (REQUEST_LINE[0]) {
             case String method when method.toUpperCase(Locale.ROOT).equals("CONNECT") -> HTTPRequestMethod.CONNECT;
             case String method when method.toUpperCase(Locale.ROOT).equals("DELETE") -> HTTPRequestMethod.DELETE;
@@ -64,11 +70,25 @@ public final class RequestProcessor {
             default -> null;
         };
 
-        HTTPVersion httpVersion = switch (REQUEST_LINE[2]) {
-            case String version when version.toUpperCase(Locale.ROOT).equals("HTTP/1.1") -> HTTPVersion.HTTP_1_1;
-            default -> null;
-        };
+        String reqLocation = REQUEST_LINE[1];
+        Map<String, String> parameters;
+        if (REQUEST_LINE[1].contains("?")) {
+            String[] tempArray = REQUEST_LINE[1].splitWithDelimiters("\\?", 2);
+            reqLocation = tempArray[0];
+            tempArray = tempArray[2].split("&");
 
+            parameters = new HashMap<>();
+            for (String temp : tempArray) {
+                String[] keyValue = temp.split("=");
+                parameters.put(keyValue[0], keyValue[1]);
+            }
+        }
 
+        String[] targets = null;
+        try {
+            targets = Database.findEndpointLocation(DATABASE, "Req" + httpRequestMethod, reqLocation);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

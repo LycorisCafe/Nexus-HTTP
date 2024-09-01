@@ -61,7 +61,7 @@ public final class Database {
                         "methodName TEXT NOT NULL" +
                         ")",
                 // Handle DELETE
-                "CREATE TABLE ReqDEL(" +
+                "CREATE TABLE ReqDELETE(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL" +
@@ -75,7 +75,7 @@ public final class Database {
         }
     }
 
-    private static String[] findEndpointLocation(final Connection DATABASE,
+    public static String[] findEndpointLocation(final Connection DATABASE,
                                                  final String TABLE,
                                                  final String ENDPOINT) throws SQLException {
         String statement = "SELECT className, methodName FROM " + TABLE + " WHERE endpoint  = ?";

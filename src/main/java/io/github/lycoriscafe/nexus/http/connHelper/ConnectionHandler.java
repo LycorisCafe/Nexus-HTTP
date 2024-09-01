@@ -17,22 +17,24 @@
 package io.github.lycoriscafe.nexus.http.connHelper;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 public final class ConnectionHandler implements Runnable {
+    Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
+
     private int requestId = 0;
     private final int responseId = 0;
 
@@ -111,8 +113,7 @@ public final class ConnectionHandler implements Runnable {
                     }
                     default -> buffer.write(character);
                 }
-            } catch (IOException | SQLException | ClassNotFoundException | InvocationTargetException |
-                     NoSuchMethodException | IllegalAccessException e) {
+            } catch (IOException e) {
                 closeSocket(e.getMessage());
             }
         }
