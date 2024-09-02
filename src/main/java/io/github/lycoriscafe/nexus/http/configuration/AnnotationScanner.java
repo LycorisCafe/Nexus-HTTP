@@ -16,11 +16,11 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPEndpoint;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.DELETE;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.GET;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.POST;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.PUT;
+import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;

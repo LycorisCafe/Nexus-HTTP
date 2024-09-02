@@ -14,16 +14,8 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods;
+package io.github.lycoriscafe.nexus.http.core;
 
-public enum HTTPRequestMethod {
-    CONNECT,
-    DELETE,
-    GET,
-    HEAD,
-    OPTIONS,
-    PATCH,
-    POST,
-    PUT,
-    TRACE
+public enum HTTPVersion {
+    HTTP_1_1
 }

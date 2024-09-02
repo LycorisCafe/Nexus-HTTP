@@ -16,8 +16,8 @@
 
 package main.test.testA;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPEndpoint;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 
 @HTTPEndpoint("/")
 public class abcd {

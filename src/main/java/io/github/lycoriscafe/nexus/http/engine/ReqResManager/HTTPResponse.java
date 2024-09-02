@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.manager;
+package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 
 import java.util.ArrayList;
 import java.util.List;

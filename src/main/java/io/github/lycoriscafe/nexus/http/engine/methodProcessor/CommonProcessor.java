@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.connHelper.methodProcessors;
+package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
-import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.IOException;
 import java.time.ZoneId;

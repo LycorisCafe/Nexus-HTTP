@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http;
 import io.github.lycoriscafe.nexus.http.configuration.AnnotationScanner;
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
+import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;

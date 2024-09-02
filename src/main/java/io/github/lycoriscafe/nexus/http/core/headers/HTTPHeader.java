@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.headers;
+package io.github.lycoriscafe.nexus.http.core.headers;
 
 public enum HTTPHeader {
     ACCEPT("Accept", "*/*"),

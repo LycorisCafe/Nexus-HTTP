@@ -14,7 +14,16 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.annotations;
+package io.github.lycoriscafe.nexus.http.core.requestMethods;
 
-public @interface PATCH {
+public enum HTTPRequestMethod {
+    CONNECT,
+    DELETE,
+    GET,
+    HEAD,
+    OPTIONS,
+    PATCH,
+    POST,
+    PUT,
+    TRACE
 }

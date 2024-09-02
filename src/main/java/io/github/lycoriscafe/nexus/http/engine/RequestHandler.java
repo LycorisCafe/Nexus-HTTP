@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.connHelper;
+package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.connHelper;
+package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
-import io.github.lycoriscafe.nexus.http.connHelper.methodProcessors.CommonProcessor;
-import io.github.lycoriscafe.nexus.http.connHelper.methodProcessors.GETProcessor;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.CommonProcessor;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.GETProcessor;
 
 import java.io.File;
 import java.sql.Connection;

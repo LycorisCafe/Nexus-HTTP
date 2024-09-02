@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.httpHelper.manager;
+package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
-import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 
 import java.util.List;
 import java.util.Map;
