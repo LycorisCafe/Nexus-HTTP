@@ -30,8 +30,8 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.util.*;
 
-public final class ConnectionHandler implements Runnable {
-    Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
+public final class RequestHandler implements Runnable {
+    Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     final List<HTTPResponse<?>> RESPONSES = new ArrayList<>();
 
     private long requestId = 0;
@@ -42,9 +42,9 @@ public final class ConnectionHandler implements Runnable {
     private final BufferedOutputStream OUTPUT_STREAM;
     private final RequestProcessor PROCESSOR;
 
-    public ConnectionHandler(final HTTPServerConfiguration CONFIGURATION,
-                             final Socket SOCKET,
-                             final Connection DATABASE) throws IOException {
+    public RequestHandler(final HTTPServerConfiguration CONFIGURATION,
+                          final Socket SOCKET,
+                          final Connection DATABASE) throws IOException {
         this.SOCKET = SOCKET;
         this.INPUT_STREAM = new BufferedInputStream(SOCKET.getInputStream());
         this.OUTPUT_STREAM = new BufferedOutputStream(SOCKET.getOutputStream());

@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.connHelper.methodProcessors;
 
-import io.github.lycoriscafe.nexus.http.connHelper.ConnectionHandler;
+import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 
 import java.io.IOException;
@@ -27,8 +27,8 @@ public final class CommonProcessor {
         return RESPONSE;
     }
 
-    public void skipContent(final ConnectionHandler CONN_HANDLER,
+    public void skipContent(final RequestHandler REQ_HANDLER,
                             long bytes) throws IOException {
-        CONN_HANDLER.getInputStream().skipNBytes(bytes);
+        REQ_HANDLER.getInputStream().skipNBytes(bytes);
     }
 }

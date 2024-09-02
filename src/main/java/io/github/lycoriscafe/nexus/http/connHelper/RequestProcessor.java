@@ -39,15 +39,15 @@ import java.util.concurrent.Executors;
 
 public final class RequestProcessor {
     private ExecutorService executorService;
-    private final ConnectionHandler CONN_HANDLER;
+    private final RequestHandler REQ_HANDLER;
     private final Connection DATABASE;
     private final int MAX_CONTENT_LENGTH;
     private final File TEMP_DIR;
 
-    RequestProcessor(final ConnectionHandler CONN_HANDLER,
+    RequestProcessor(final RequestHandler REQ_HANDLER,
                      final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
-        this.CONN_HANDLER = CONN_HANDLER;
+        this.REQ_HANDLER = REQ_HANDLER;
         this.DATABASE = DATABASE;
         MAX_CONTENT_LENGTH = CONFIGURATION.getMaxContentLength();
         TEMP_DIR = CONFIGURATION.getTempDirectory();
@@ -70,7 +70,7 @@ public final class RequestProcessor {
         };
         if (httpVersion == null) {
             RESPONSE.setStatusCode(HTTPStatusCode.HTTP_VERSION_NOT_SUPPORTED);
-            CONN_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
+            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
             return;
         }
 
@@ -123,7 +123,7 @@ public final class RequestProcessor {
         switch (httpRequestMethod) {
 //            case CONNECT -> {}
 //            case DELETE -> {}
-            case PUT -> new GETProcessor(executorService, CONN_HANDLER, MAX_CONTENT_LENGTH, TEMP_DIR,
+            case PUT -> new GETProcessor(executorService, REQ_HANDLER, MAX_CONTENT_LENGTH, TEMP_DIR,
                     targets, REQUEST, RESPONSE).process();
             // TODO handle other request methods
         }

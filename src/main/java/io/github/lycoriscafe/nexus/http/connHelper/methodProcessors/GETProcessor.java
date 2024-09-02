@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.connHelper.methodProcessors;
 
-import io.github.lycoriscafe.nexus.http.connHelper.ConnectionHandler;
+import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 
@@ -27,7 +27,7 @@ import java.util.concurrent.ExecutorService;
 
 public final class GETProcessor {
     private final ExecutorService EXECUTOR;
-    private final ConnectionHandler CONN_HANDLER;
+    private final RequestHandler REQ_HANDLER;
     private final int MAX_CONTENT_LENGTH;
     private final File TEMP_DIR;
     private final String[] APP_METHOD;
@@ -35,14 +35,14 @@ public final class GETProcessor {
     private HTTPResponse<?> response;
 
     public GETProcessor(final ExecutorService EXECUTOR,
-                        final ConnectionHandler CONN_HANDLER,
+                        final RequestHandler REQ_HANDLER,
                         final int MAX_CONTENT_LENGTH,
                         final File TEMP_DIR,
                         final String[] APP_METHOD,
                         final HTTPRequest REQUEST,
                         final HTTPResponse<?> RESPONSE) {
         this.EXECUTOR = EXECUTOR;
-        this.CONN_HANDLER = CONN_HANDLER;
+        this.REQ_HANDLER = REQ_HANDLER;
         this.MAX_CONTENT_LENGTH = MAX_CONTENT_LENGTH;
         this.TEMP_DIR = TEMP_DIR;
         this.APP_METHOD = APP_METHOD;
@@ -72,6 +72,6 @@ public final class GETProcessor {
             // TODO handle exceptions
         }
 
-        CONN_HANDLER.addToSendQue(response);
+        REQ_HANDLER.addToSendQue(response);
     }
 }

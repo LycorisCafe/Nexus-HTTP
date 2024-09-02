@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http;
 import io.github.lycoriscafe.nexus.http.configuration.AnnotationScanner;
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.connHelper.ConnectionHandler;
+import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -64,7 +64,7 @@ public final class HTTPServer {
                 executorService = Executors.newFixedThreadPool(CONFIGURATION.getMaxConnections(), worker);
                 while (operational) {
                     try {
-                        executorService.execute(new ConnectionHandler(CONFIGURATION, SERVER_SOCKET.accept(), DATABASE));
+                        executorService.execute(new RequestHandler(CONFIGURATION, SERVER_SOCKET.accept(), DATABASE));
                     } catch (IOException e) {
                         operational = false;
                     }
