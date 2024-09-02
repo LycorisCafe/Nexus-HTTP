@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.concurrent.ExecutorService;
 
-public class GETProcessor {
+public final class GETProcessor {
     private final ExecutorService EXECUTOR;
     private final ConnectionHandler CONN_HANDLER;
     private final int MAX_CONTENT_LENGTH;

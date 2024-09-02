@@ -34,8 +34,8 @@ public final class ConnectionHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
     final List<HTTPResponse<?>> RESPONSES = new ArrayList<>();
 
-    private int requestId = 0;
-    private int responseId = 0;
+    private long requestId = 0;
+    private long responseId = 0;
 
     private final Socket SOCKET;
     private final BufferedInputStream INPUT_STREAM;
@@ -59,11 +59,11 @@ public final class ConnectionHandler implements Runnable {
         }
     }
 
-    private BufferedInputStream getInputStream() {
+    public BufferedInputStream getInputStream() {
         return INPUT_STREAM;
     }
 
-    private int getRequestId() {
+    private long getRequestId() {
         return requestId++;
     }
 
@@ -78,11 +78,12 @@ public final class ConnectionHandler implements Runnable {
         Map<String, List<String>> headers = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int terminateCount = 0;
+        int character;
 
         headersLoop:
         while (true) {
             try {
-                int character = INPUT_STREAM.read();
+                character = INPUT_STREAM.read();
                 switch (character) {
                     case -1 -> {
                         break headersLoop;
@@ -124,11 +125,11 @@ public final class ConnectionHandler implements Runnable {
     }
 
     private synchronized void send() {
-//        try {
-//            OUTPUT_STREAM.write(data);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-        responseId++;
+        for (HTTPResponse<?> httpResponse : RESPONSES) {
+            if (httpResponse.getResponseId() == responseId) {
+                // TODO implement send
+                responseId++;
+            }
+        }
     }
 }

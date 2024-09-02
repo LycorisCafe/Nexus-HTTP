@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 public final class HTTPResponse<T> {
-    private final int RESPONSE_ID;
+    private final long RESPONSE_ID;
 
     private HTTPStatusCode HTTPStatusCode;
     private Map<String, List<String>> headers;
@@ -32,7 +32,7 @@ public final class HTTPResponse<T> {
     private int contentLength;
     private T content;
 
-    public HTTPResponse(final int RESPONSE_ID) {
+    public HTTPResponse(final long RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;
     }
 
@@ -59,6 +59,10 @@ public final class HTTPResponse<T> {
     public HTTPResponse<T> setContent(final T content) {
         this.content = content;
         return this;
+    }
+
+    public long getResponseId() {
+        return RESPONSE_ID;
     }
 
     public Map<String, ArrayList<String>> getCustomHeaders() {

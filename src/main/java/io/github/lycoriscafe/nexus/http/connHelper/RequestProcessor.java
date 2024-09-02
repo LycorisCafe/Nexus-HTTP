@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http.connHelper;
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.connHelper.methodProcessors.CommonProcessor;
 import io.github.lycoriscafe.nexus.http.connHelper.methodProcessors.GETProcessor;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
@@ -58,7 +59,7 @@ public final class RequestProcessor {
         }
     }
 
-    void process(final int REQUEST_ID,
+    void process(final long REQUEST_ID,
                  final String[] REQUEST_LINE,
                  final Map<String, List<String>> HEADERS) {
         final HTTPResponse<?> RESPONSE = new HTTPResponse<>(REQUEST_ID);
@@ -69,7 +70,7 @@ public final class RequestProcessor {
         };
         if (httpVersion == null) {
             RESPONSE.setStatusCode(HTTPStatusCode.HTTP_VERSION_NOT_SUPPORTED);
-            // TODO process req & res
+            CONN_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
             return;
         }
 
@@ -105,7 +106,7 @@ public final class RequestProcessor {
             }
         }
 
-        String[] targets = null;
+        String[] targets;
         try {
             targets = Database.findEndpointLocation(DATABASE, "Req" + httpRequestMethod, reqLocation);
         } catch (SQLException e) {

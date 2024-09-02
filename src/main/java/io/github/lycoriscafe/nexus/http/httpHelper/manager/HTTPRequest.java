@@ -23,13 +23,13 @@ import java.util.List;
 import java.util.Map;
 
 public final class HTTPRequest {
-    private final int REQUEST_ID;
+    private final long REQUEST_ID;
     private final HTTPRequestMethod METHOD;
     private final Map<String, String> PARAMETERS;
     private final HTTPVersion VERSION;
     private final Map<String, List<String>> HEADERS;
 
-    public HTTPRequest(final int REQUEST_ID,
+    public HTTPRequest(final long REQUEST_ID,
                        final HTTPRequestMethod METHOD,
                        final Map<String, String> PARAMETERS,
                        final HTTPVersion VERSION,
@@ -41,7 +41,7 @@ public final class HTTPRequest {
         this.HEADERS = HEADERS;
     }
 
-    public int getRequestID() {
+    public long getRequestID() {
         return REQUEST_ID;
     }
 
