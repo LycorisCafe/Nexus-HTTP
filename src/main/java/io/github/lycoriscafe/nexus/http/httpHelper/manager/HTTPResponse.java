@@ -28,6 +28,7 @@ public final class HTTPResponse<T> {
     private HTTPStatusCode HTTPStatusCode;
     private Map<String, List<String>> headers;
     private Map<String, ArrayList<String>> customHeaders;
+    private String contentType;
     private int contentLength;
     private T content;
 
@@ -47,6 +48,11 @@ public final class HTTPResponse<T> {
 
     public HTTPResponse<?> setCustomHeaders(final Map<String, ArrayList<String>> customHeaders) {
         this.customHeaders.putAll(customHeaders);
+        return this;
+    }
+
+    public HTTPResponse<?> setContentType(final String contentType) {
+        this.contentType = contentType;
         return this;
     }
 

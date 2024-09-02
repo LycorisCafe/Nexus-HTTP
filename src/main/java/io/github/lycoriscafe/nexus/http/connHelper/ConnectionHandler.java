@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.connHelper;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +32,10 @@ import java.util.*;
 
 public final class ConnectionHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(ConnectionHandler.class);
+    final List<HTTPResponse<?>> RESPONSES = new ArrayList<>();
 
     private int requestId = 0;
-    private final int responseId = 0;
+    private int responseId = 0;
 
     private final Socket SOCKET;
     private final BufferedInputStream INPUT_STREAM;
@@ -63,6 +65,11 @@ public final class ConnectionHandler implements Runnable {
 
     private int getRequestId() {
         return requestId++;
+    }
+
+    public void addToSendQue(final HTTPResponse<?> httpResponse) {
+        RESPONSES.add(httpResponse);
+        send();
     }
 
     @Override
@@ -116,11 +123,12 @@ public final class ConnectionHandler implements Runnable {
         }
     }
 
-    private void send(final byte[] data) {
-        try {
-            OUTPUT_STREAM.write(data);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+    private synchronized void send() {
+//        try {
+//            OUTPUT_STREAM.write(data);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+        responseId++;
     }
 }

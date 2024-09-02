@@ -56,7 +56,7 @@ public class GETProcessor {
         }
 
         if (EXECUTOR != null) {
-            EXECUTOR.execute(() -> processInPipe());
+            EXECUTOR.execute(this::processInPipe);
         } else {
             processInPipe();
         }
@@ -71,5 +71,7 @@ public class GETProcessor {
                  IllegalAccessException e) {
             // TODO handle exceptions
         }
+
+        CONN_HANDLER.addToSendQue(response);
     }
 }
