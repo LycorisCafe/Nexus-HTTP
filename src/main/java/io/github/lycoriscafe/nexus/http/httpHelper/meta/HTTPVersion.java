@@ -17,6 +17,5 @@
 package io.github.lycoriscafe.nexus.http.httpHelper.meta;
 
 public enum HTTPVersion {
-    HTTP_1_0,
     HTTP_1_1
 }
