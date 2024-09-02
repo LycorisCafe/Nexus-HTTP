@@ -24,6 +24,7 @@ import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.httpHelper.meta.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.httpHelper.meta.statusCodes.HTTPStatusCode;
 
 import java.io.File;
 import java.sql.Connection;
@@ -60,11 +61,17 @@ public final class RequestProcessor {
     void process(final int REQUEST_ID,
                  final String[] REQUEST_LINE,
                  final Map<String, List<String>> HEADERS) {
+        final HTTPResponse<?> RESPONSE = new HTTPResponse<>(REQUEST_ID);
+
         HTTPVersion httpVersion = switch (REQUEST_LINE[2]) {
             case String version when version.toUpperCase(Locale.ROOT).equals("HTTP/1.1") -> HTTPVersion.HTTP_1_1;
             default -> null;
         };
-        // TODO handle http version unsupported
+        if (httpVersion == null) {
+            RESPONSE.setStatusCode(HTTPStatusCode.HTTP_VERSION_NOT_SUPPORTED);
+            // TODO process req & res
+            return;
+        }
 
         HTTPRequestMethod httpRequestMethod = switch (REQUEST_LINE[0]) {
 //            case String method when method.toUpperCase(Locale.ROOT).equals("CONNECT") -> HTTPRequestMethod.CONNECT;
@@ -78,7 +85,11 @@ public final class RequestProcessor {
 //            case String method when method.toUpperCase(Locale.ROOT).equals("TRACE") -> HTTPRequestMethod.TRACE;
             default -> null;
         };
-        // TODO handle http request method unsupported
+        if (httpRequestMethod == null) {
+            RESPONSE.setStatusCode(HTTPStatusCode.NOT_EXTENDED);
+            // TODO process req & res
+            return;
+        }
 
         String reqLocation = REQUEST_LINE[1];
         Map<String, String> parameters = null;
@@ -100,10 +111,13 @@ public final class RequestProcessor {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
-        // TODO handle 404
+        if (targets == null) {
+            RESPONSE.setStatusCode(HTTPStatusCode.NOT_FOUND);
+            // TODO process req & res
+            return;
+        }
 
         final HTTPRequest REQUEST = new HTTPRequest(REQUEST_ID, httpRequestMethod, parameters, httpVersion, HEADERS);
-        final HTTPResponse<?> RESPONSE = new HTTPResponse<>(REQUEST_ID);
 
         switch (httpRequestMethod) {
 //            case CONNECT -> {}
