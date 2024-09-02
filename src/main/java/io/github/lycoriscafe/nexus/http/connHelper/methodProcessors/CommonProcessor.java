@@ -20,6 +20,10 @@ import io.github.lycoriscafe.nexus.http.connHelper.RequestHandler;
 import io.github.lycoriscafe.nexus.http.httpHelper.manager.HTTPResponse;
 
 import java.io.IOException;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 
 public final class CommonProcessor {
     public static HTTPResponse<?> processErrors(final HTTPResponse<?> RESPONSE) {
@@ -30,5 +34,10 @@ public final class CommonProcessor {
     public void skipContent(final RequestHandler REQ_HANDLER,
                             long bytes) throws IOException {
         REQ_HANDLER.getInputStream().skipNBytes(bytes);
+    }
+
+    public static String getServerTime() {
+        return DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+                .withZone(ZoneId.of("GMT")).format(ZonedDateTime.now());
     }
 }
