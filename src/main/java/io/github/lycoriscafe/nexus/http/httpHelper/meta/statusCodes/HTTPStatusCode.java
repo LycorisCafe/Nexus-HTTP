@@ -79,13 +79,13 @@ public enum HTTPStatusCode {
     NOT_EXTENDED("510 Not Extended"),
     NETWORK_AUTHENTICATION_REQUIRED("511 Network Authentication Required");
 
-    private final String httpValue;
+    private final String value;
 
-    HTTPStatusCode(String httpValue) {
-        this.httpValue = httpValue;
+    HTTPStatusCode(String value) {
+        this.value = value;
     }
 
-    public String getHttpValue() {
-        return httpValue;
+    public String getValue() {
+        return value;
     }
 }
