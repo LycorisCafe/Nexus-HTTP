@@ -16,5 +16,5 @@
 
 package io.github.lycoriscafe.nexus.http.core.mimeTypes;
 
-public enum MimeTypeHaptics {
+public enum HTTPMimeType {
 }
