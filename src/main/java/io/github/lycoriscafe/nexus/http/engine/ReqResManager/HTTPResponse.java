@@ -16,57 +16,56 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
-import io.github.lycoriscafe.nexus.http.core.headers.HTTPHeader;
+import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public final class HTTPResponse<T> {
     private final long RESPONSE_ID;
-
-    private HTTPStatusCode HTTPStatusCode;
-    private Map<HTTPHeader, List<String>> headers;
-    private Map<String, List<String>> customHeaders;
-    private String contentType;
-    private int contentLength;
+    private HTTPVersion version;
+    private HTTPStatusCode statusCode;
+    private Map<String, List<String>> headers;
     private T content;
 
     public HTTPResponse(final long RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;
     }
 
-    public HTTPResponse<?> setStatusCode(final HTTPStatusCode HTTPStatusCode) {
-        this.HTTPStatusCode = HTTPStatusCode;
-        return this;
-    }
-
-    public HTTPResponse<?> setHeaders(final Map<HTTPHeader, List<String>> headers) {
-        this.headers = headers;
-        return this;
-    }
-
-    public HTTPResponse<?> setCustomHeaders(final Map<String, ArrayList<String>> customHeaders) {
-        this.customHeaders.putAll(customHeaders);
-        return this;
-    }
-
-    public HTTPResponse<?> setContentType(final String contentType) {
-        this.contentType = contentType;
-        return this;
-    }
-
-    public HTTPResponse<T> setContent(final T content) {
-        this.content = content;
-        return this;
-    }
-
-    public long getResponseId() {
+    public long getRESPONSE_ID() {
         return RESPONSE_ID;
     }
 
-    public Map<String, List<String>> getCustomHeaders() {
-        return customHeaders;
+    public HTTPVersion getVersion() {
+        return version;
+    }
+
+    public void setVersion(HTTPVersion version) {
+        this.version = version;
+    }
+
+    public HTTPStatusCode getStatusCode() {
+        return statusCode;
+    }
+
+    public void setStatusCode(HTTPStatusCode statusCode) {
+        this.statusCode = statusCode;
+    }
+
+    public Map<String, List<String>> getHeaders() {
+        return headers;
+    }
+
+    public void setHeaders(Map<String, List<String>> headers) {
+        this.headers = headers;
+    }
+
+    public T getContent() {
+        return content;
+    }
+
+    public void setContent(T content) {
+        this.content = content;
     }
 }

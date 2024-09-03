@@ -22,42 +22,68 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import java.util.List;
 import java.util.Map;
 
-public final class HTTPRequest {
+public final class HTTPRequest<T> {
     private final long REQUEST_ID;
-    private final HTTPRequestMethod METHOD;
-    private final Map<String, String> PARAMETERS;
-    private final HTTPVersion VERSION;
-    private final Map<String, List<String>> HEADERS;
+    private HTTPRequestMethod requestMethod;
+    private String requestURL;
+    private Map<String, String> parameters;
+    private HTTPVersion version;
+    private Map<String, List<String>> headers;
+    private T content;
 
-    public HTTPRequest(final long REQUEST_ID,
-                       final HTTPRequestMethod METHOD,
-                       final Map<String, String> PARAMETERS,
-                       final HTTPVersion VERSION,
-                       final Map<String, List<String>> HEADERS) {
+    public HTTPRequest(final long REQUEST_ID) {
         this.REQUEST_ID = REQUEST_ID;
-        this.METHOD = METHOD;
-        this.PARAMETERS = PARAMETERS;
-        this.VERSION = VERSION;
-        this.HEADERS = HEADERS;
     }
 
-    public long getRequestID() {
+    public long getREQUEST_ID() {
         return REQUEST_ID;
     }
 
-    public HTTPRequestMethod getMethod() {
-        return METHOD;
+    public HTTPRequestMethod getRequestMethod() {
+        return requestMethod;
+    }
+
+    public void setRequestMethod(HTTPRequestMethod requestMethod) {
+        this.requestMethod = requestMethod;
+    }
+
+    public String getRequestURL() {
+        return requestURL;
+    }
+
+    public void setRequestURL(String requestURL) {
+        this.requestURL = requestURL;
     }
 
     public Map<String, String> getParameters() {
-        return PARAMETERS;
+        return parameters;
+    }
+
+    public void setParameters(Map<String, String> parameters) {
+        this.parameters = parameters;
     }
 
     public HTTPVersion getVersion() {
-        return VERSION;
+        return version;
+    }
+
+    public void setVersion(HTTPVersion version) {
+        this.version = version;
     }
 
     public Map<String, List<String>> getHeaders() {
-        return HEADERS;
+        return headers;
+    }
+
+    public void setHeaders(Map<String, List<String>> headers) {
+        this.headers = headers;
+    }
+
+    public T getContent() {
+        return content;
+    }
+
+    public void setContent(T content) {
+        this.content = content;
     }
 }
