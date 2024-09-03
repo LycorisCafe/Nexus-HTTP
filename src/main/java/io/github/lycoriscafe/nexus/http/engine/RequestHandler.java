@@ -17,6 +17,8 @@
 package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,7 +30,10 @@ import java.io.IOException;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public final class RequestHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -51,20 +56,50 @@ public final class RequestHandler implements Runnable {
         PROCESSOR = new RequestProcessor(this, CONFIGURATION, DATABASE);
     }
 
-    void closeSocket(String errorMessage) {
+    private void incrementRequestId() {
+        requestId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
+    }
+
+    private void incrementResponseId() {
+        responseId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
+    }
+
+    private ArrayList<Object> validateRequestLine(final String requestLine) {
         try {
-            SOCKET.close();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+            HTTPVersion httpVersion;
+            String[] parts = requestLine.split(" ");
+            if (parts.length != 3 ||
+                    !HTTPRequestMethod.validate(parts[0]) ||
+                    (httpVersion = HTTPVersion.validate(parts[2])) == null) {
+                return null;
+            }
+
+            ArrayList<Object> request = new ArrayList<>();
+            request.add(HTTPRequestMethod.valueOf(parts[0]));
+            request.add(parts[1]);
+            request.add(httpVersion);
+            return request;
+        } catch (Exception e) {
+            return null;
         }
     }
 
-    public Socket getSOCKET() {
-        return SOCKET;
-    }
-
-    public BufferedInputStream getInputStream() {
-        return INPUT_STREAM;
+    private Map<String, List<String>> processHeader(final String headerLine) {
+        Map<String, List<String>> header = new HashMap<>();
+        List<String> values = new ArrayList<>();
+        try {
+            String[] parts = headerLine.splitWithDelimiters(":", 2);
+            for (String value : parts[2].split(",")) {
+                if (value.charAt(0) == ' ') {
+                    value = value.replaceFirst(" ", "");
+                }
+                values.add(value);
+            }
+            header.put(parts[0], values);
+            return header;
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     public void addToSendQue(final HTTPResponse<?> httpResponse) {
@@ -74,10 +109,10 @@ public final class RequestHandler implements Runnable {
 
     @Override
     public void run() {
-        String requestLine = null;
+        ArrayList<Object> requestLine = null;
         Map<String, List<String>> headers = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int terminateCount = 0;
+        int terminator = 0;
         int character;
 
         headersLoop:
@@ -88,38 +123,48 @@ public final class RequestHandler implements Runnable {
                     case -1 -> {
                         break headersLoop;
                     }
-                    case '\r', '\n' -> {
-                        terminateCount++;
-                        String line = buffer.toString(StandardCharsets.UTF_8);
-                        if (line.isEmpty()) {
-                            if (terminateCount == 3) {
-                                System.out.println(requestLine);
-                                System.out.println(headers);
-                                PROCESSOR.process(requestId++, requestLine.split(" "), headers);
-                                requestLine = null;
-                                headers = new HashMap<>();
-                            }
+                    case '\r' -> {
+                        INPUT_STREAM.skipNBytes(1);
+
+                        terminator++;
+                        if (terminator == 2) {
+                            System.out.println(requestLine);
+                            System.out.println(headers);
+                            // TODO send to process
+                            requestLine = null;
+                            headers.clear();
+                            terminator = 0;
                             continue;
                         }
-                        terminateCount = 0;
 
                         if (requestLine == null) {
-                            requestLine = line;
-                        } else {
-                            String headerName = line.split(":")[0];
-                            ArrayList<String> values = new ArrayList<>();
-                            for (String value : line.replace(headerName + ":", "").split(",")) {
-                                values.add(value.charAt(0) == ' ' ? value.replaceFirst(" ", "") : value);
+                            requestLine = validateRequestLine(buffer.toString(StandardCharsets.UTF_8));
+                            if (requestLine == null) {
+                                System.out.println("400 - 1");
+                                // TODO send error message (400 BAD REQUEST)
+                                break headersLoop;
                             }
-                            headers.put(headerName.toUpperCase(Locale.ROOT), values);
+                            buffer.reset();
+                            continue;
                         }
 
-                        buffer = new ByteArrayOutputStream();
+                        String headerLine = buffer.toString(StandardCharsets.UTF_8);
+                        Map<String, List<String>> tempHeader = processHeader(headerLine);
+                        if (tempHeader == null) {
+                            System.out.println("400 - 2");
+                            // TODO send error message (400 BAD REQUEST)
+                            break headersLoop;
+                        }
+                        headers.putAll(tempHeader);
+                        buffer.reset();
                     }
-                    default -> buffer.write(character);
+                    default -> {
+                        buffer.write(character);
+                        terminator = 0;
+                    }
                 }
             } catch (IOException e) {
-                closeSocket(e.getMessage());
+                // TODO handle socket io exception
             }
         }
     }
@@ -128,7 +173,7 @@ public final class RequestHandler implements Runnable {
         for (HTTPResponse<?> httpResponse : RESPONSES) {
             if (httpResponse.getResponseId() == responseId) {
                 // TODO implement send
-                responseId++;
+                incrementResponseId();
             }
         }
     }

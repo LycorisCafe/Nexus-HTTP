@@ -25,5 +25,14 @@ public enum HTTPRequestMethod {
     PATCH,
     POST,
     PUT,
-    TRACE
+    TRACE;
+
+    public static boolean validate(String requestMethod) {
+        try {
+            HTTPRequestMethod.valueOf(requestMethod.toUpperCase());
+            return true;
+        } catch (IllegalArgumentException e) {
+            return false;
+        }
+    }
 }

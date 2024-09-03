@@ -17,9 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
-import java.io.IOException;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -31,10 +29,10 @@ public final class CommonProcessor {
         return RESPONSE;
     }
 
-    public void skipContent(final RequestHandler REQ_HANDLER,
-                            long bytes) throws IOException {
-        REQ_HANDLER.getInputStream().skipNBytes(bytes);
-    }
+//    public void skipContent(final RequestHandler REQ_HANDLER,
+//                            long bytes) throws IOException {
+//        REQ_HANDLER.getInputStream().skipNBytes(bytes);
+//    }
 
     public static String getServerTime() {
         return DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)

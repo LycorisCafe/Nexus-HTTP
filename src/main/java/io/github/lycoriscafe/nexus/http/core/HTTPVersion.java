@@ -17,5 +17,24 @@
 package io.github.lycoriscafe.nexus.http.core;
 
 public enum HTTPVersion {
-    HTTP_1_1
+    HTTP_1_1("HTTP/1.1");
+
+    private final String value;
+
+    HTTPVersion(final String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
+    public static HTTPVersion validate(String version) {
+        for (HTTPVersion v : HTTPVersion.values()) {
+            if (v.getValue().equals(version)) {
+                return v;
+            }
+        }
+        return null;
+    }
 }
