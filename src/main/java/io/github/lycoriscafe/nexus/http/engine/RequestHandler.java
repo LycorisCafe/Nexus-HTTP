@@ -64,28 +64,28 @@ public final class RequestHandler implements Runnable {
         responseId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
     }
 
-    private ArrayList<Object> validateRequestLine(final String requestLine) {
+    private ArrayList<Object> validateRequestLine(final ArrayList<Object> requestLine,
+                                                  final String request) {
         try {
             HTTPVersion httpVersion;
-            String[] parts = requestLine.split(" ");
+            String[] parts = request.split(" ");
             if (parts.length != 3 ||
                     !HTTPRequestMethod.validate(parts[0]) ||
                     (httpVersion = HTTPVersion.validate(parts[2])) == null) {
                 return null;
             }
 
-            ArrayList<Object> request = new ArrayList<>();
-            request.add(HTTPRequestMethod.valueOf(parts[0]));
-            request.add(parts[1]);
-            request.add(httpVersion);
-            return request;
+            requestLine.add(HTTPRequestMethod.valueOf(parts[0]));
+            requestLine.add(parts[1]);
+            requestLine.add(httpVersion);
+            return requestLine;
         } catch (Exception e) {
             return null;
         }
     }
 
-    private Map<String, List<String>> processHeader(final String headerLine) {
-        Map<String, List<String>> header = new HashMap<>();
+    private Map<String, List<String>> processHeader(final Map<String, List<String>> headers,
+                                                    final String headerLine) {
         List<String> values = new ArrayList<>();
         try {
             String[] parts = headerLine.splitWithDelimiters(":", 2);
@@ -95,8 +95,8 @@ public final class RequestHandler implements Runnable {
                 }
                 values.add(value);
             }
-            header.put(parts[0], values);
-            return header;
+            headers.put(parts[0], values);
+            return headers;
         } catch (Exception e) {
             return null;
         }
@@ -109,7 +109,7 @@ public final class RequestHandler implements Runnable {
 
     @Override
     public void run() {
-        ArrayList<Object> requestLine = null;
+        ArrayList<Object> requestLine = new ArrayList<>();
         Map<String, List<String>> headers = new HashMap<>();
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int terminator = 0;
@@ -131,14 +131,14 @@ public final class RequestHandler implements Runnable {
                             System.out.println(requestLine);
                             System.out.println(headers);
                             // TODO send to process
-                            requestLine = null;
+                            requestLine.clear();
                             headers.clear();
                             terminator = 0;
                             continue;
                         }
 
-                        if (requestLine == null) {
-                            requestLine = validateRequestLine(buffer.toString(StandardCharsets.UTF_8));
+                        if (requestLine.isEmpty()) {
+                            requestLine = validateRequestLine(requestLine, buffer.toString(StandardCharsets.UTF_8));
                             if (requestLine == null) {
                                 System.out.println("400 - 1");
                                 // TODO send error message (400 BAD REQUEST)
@@ -148,14 +148,12 @@ public final class RequestHandler implements Runnable {
                             continue;
                         }
 
-                        String headerLine = buffer.toString(StandardCharsets.UTF_8);
-                        Map<String, List<String>> tempHeader = processHeader(headerLine);
-                        if (tempHeader == null) {
+                        headers = processHeader(headers, buffer.toString(StandardCharsets.UTF_8));
+                        if (headers == null) {
                             System.out.println("400 - 2");
                             // TODO send error message (400 BAD REQUEST)
                             break headersLoop;
                         }
-                        headers.putAll(tempHeader);
                         buffer.reset();
                     }
                     default -> {
