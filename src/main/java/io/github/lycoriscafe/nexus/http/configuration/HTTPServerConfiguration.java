@@ -29,7 +29,7 @@ public final class HTTPServerConfiguration {
     private int httpPipelineParallelCount = 5;
     private final String basePackage;
     private File tempDirectory = new File("Temp");
-    private int maxContentSize = 5120;
+    private long maxContentLength = 5120L;
 
     public HTTPServerConfiguration(final Class<?> BASE_CLASS)
             throws IllegalArgumentException, ClassNotFoundException {
@@ -161,13 +161,13 @@ public final class HTTPServerConfiguration {
     public HTTPServerConfiguration setMaxContentLength(final int MAX_CONTENT_LENGTH)
             throws IllegalArgumentException {
         if (MAX_CONTENT_LENGTH < 0) {
-            throw new IllegalArgumentException("maxContentSize must be 0 or a positive integer");
+            throw new IllegalArgumentException("maxContentLength must be 0 or a positive integer");
         }
-        this.maxContentSize = MAX_CONTENT_LENGTH;
+        this.maxContentLength = MAX_CONTENT_LENGTH;
         return this;
     }
 
-    public int getMaxContentLength() {
-        return maxContentSize;
+    public long getMaxContentLength() {
+        return maxContentLength;
     }
 }
