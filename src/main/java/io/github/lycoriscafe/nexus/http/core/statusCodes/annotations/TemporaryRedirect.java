@@ -14,7 +14,13 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.mimeTypes;
+package io.github.lycoriscafe.nexus.http.core.statusCodes.annotations;
 
-public enum HTTPMimeType {
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface TemporaryRedirect {
+    String value();
 }
