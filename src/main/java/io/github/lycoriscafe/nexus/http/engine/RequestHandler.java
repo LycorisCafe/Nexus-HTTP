@@ -57,7 +57,7 @@ public final class RequestHandler implements Runnable {
     }
 
     private void incrementRequestId() {
-        requestId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
+        requestId = (requestId == Long.MAX_VALUE ? 0 : requestId + 1);
     }
 
     private void incrementResponseId() {
@@ -131,6 +131,7 @@ public final class RequestHandler implements Runnable {
                             System.out.println(requestLine);
                             System.out.println(headers);
                             // TODO send to process
+                            incrementRequestId();
                             requestLine.clear();
                             headers.clear();
                             terminator = 0;
