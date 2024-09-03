@@ -39,8 +39,8 @@ public final class RequestHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(RequestHandler.class);
     final List<HTTPResponse<?>> RESPONSES = new ArrayList<>();
 
-    private long requestId = 0;
-    private long responseId = 0;
+    private long requestId = 0L;
+    private long responseId = 0L;
 
     private final Socket SOCKET;
     private final BufferedInputStream INPUT_STREAM;
@@ -170,7 +170,7 @@ public final class RequestHandler implements Runnable {
 
     private synchronized void send() {
         for (HTTPResponse<?> httpResponse : RESPONSES) {
-            if (httpResponse.getResponseId() == responseId) {
+            if (httpResponse.getRESPONSE_ID() == responseId) {
                 // TODO implement send
                 incrementResponseId();
             }
