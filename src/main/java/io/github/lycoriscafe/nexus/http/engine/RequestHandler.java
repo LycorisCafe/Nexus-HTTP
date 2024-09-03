@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -128,7 +129,7 @@ public final class RequestHandler implements Runnable {
 
                         terminator++;
                         if (terminator == 2) {
-                            PROCESSOR.process(requestLine, headers);
+                            PROCESSOR.process(requestId, requestLine, headers);
                             incrementRequestId();
                             requestLine.clear();
                             headers.clear();
@@ -139,8 +140,7 @@ public final class RequestHandler implements Runnable {
                         if (requestLine.isEmpty()) {
                             requestLine = validateRequestLine(requestLine, buffer.toString(StandardCharsets.UTF_8));
                             if (requestLine == null) {
-                                System.out.println("400 - 1");
-                                // TODO send error message (400 BAD REQUEST)
+                                PROCESSOR.processError(HTTPStatusCode.BAD_REQUEST);
                                 break headersLoop;
                             }
                             buffer.reset();
@@ -149,8 +149,7 @@ public final class RequestHandler implements Runnable {
 
                         headers = processHeader(headers, buffer.toString(StandardCharsets.UTF_8));
                         if (headers == null) {
-                            System.out.println("400 - 2");
-                            // TODO send error message (400 BAD REQUEST)
+                            PROCESSOR.processError(HTTPStatusCode.BAD_REQUEST);
                             break headersLoop;
                         }
                         buffer.reset();

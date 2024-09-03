@@ -16,23 +16,15 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
-import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
-import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.CommonProcessor;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.GETProcessor;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -40,14 +32,17 @@ import java.util.concurrent.Executors;
 public final class RequestProcessor {
     private ExecutorService executorService;
     private final RequestHandler REQ_HANDLER;
+    private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
-    private final int MAX_CONTENT_LENGTH;
+    private final long MAX_CONTENT_LENGTH;
     private final File TEMP_DIR;
 
     RequestProcessor(final RequestHandler REQ_HANDLER,
+                     final BufferedInputStream INPUT_STREAM,
                      final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
+        this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
         MAX_CONTENT_LENGTH = CONFIGURATION.getMaxContentLength();
         TEMP_DIR = CONFIGURATION.getTempDirectory();
@@ -60,72 +55,12 @@ public final class RequestProcessor {
     }
 
     void process(final long REQUEST_ID,
-                 final String[] REQUEST_LINE,
+                 final ArrayList<Object> REQUEST_LINE,
                  final Map<String, List<String>> HEADERS) {
-        final HTTPResponse<?> RESPONSE = new HTTPResponse<>(REQUEST_ID);
 
-        HTTPVersion httpVersion = switch (REQUEST_LINE[2]) {
-            case String version when version.toUpperCase(Locale.ROOT).equals("HTTP/1.1") -> HTTPVersion.HTTP_1_1;
-            default -> null;
-        };
-        if (httpVersion == null) {
-            RESPONSE.setStatusCode(HTTPStatusCode.HTTP_VERSION_NOT_SUPPORTED);
-            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
-            return;
-        }
+    }
 
-        HTTPRequestMethod httpRequestMethod = switch (REQUEST_LINE[0]) {
-//            case String method when method.toUpperCase(Locale.ROOT).equals("CONNECT") -> HTTPRequestMethod.CONNECT;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("DELETE") -> HTTPRequestMethod.DELETE;
-            case String method when method.toUpperCase(Locale.ROOT).equals("GET") -> HTTPRequestMethod.GET;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("HEAD") -> HTTPRequestMethod.HEAD;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("OPTIONS") -> HTTPRequestMethod.OPTIONS;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("PATCH") -> HTTPRequestMethod.PATCH;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("POST") -> HTTPRequestMethod.POST;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("PUT") -> HTTPRequestMethod.PUT;
-//            case String method when method.toUpperCase(Locale.ROOT).equals("TRACE") -> HTTPRequestMethod.TRACE;
-            default -> null;
-        };
-        if (httpRequestMethod == null) {
-            RESPONSE.setStatusCode(HTTPStatusCode.NOT_EXTENDED);
-            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
-            return;
-        }
+    void processError(final HTTPStatusCode STATUS) {
 
-        String reqLocation = REQUEST_LINE[1];
-        Map<String, String> parameters = null;
-        if (REQUEST_LINE[1].contains("?")) {
-            String[] tempArray = REQUEST_LINE[1].splitWithDelimiters("\\?", 2);
-            reqLocation = tempArray[0];
-            tempArray = tempArray[2].split("&");
-
-            parameters = new HashMap<>();
-            for (String temp : tempArray) {
-                String[] keyValue = temp.split("=");
-                parameters.put(keyValue[0], keyValue[1]);
-            }
-        }
-
-        String[] targets;
-        try {
-            targets = Database.findEndpointLocation(DATABASE, "Req" + httpRequestMethod, reqLocation);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
-        if (targets == null) {
-            RESPONSE.setStatusCode(HTTPStatusCode.NOT_FOUND);
-            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
-            return;
-        }
-
-        final HTTPRequest REQUEST = new HTTPRequest(REQUEST_ID, httpRequestMethod, parameters, httpVersion, HEADERS);
-
-        switch (httpRequestMethod) {
-//            case CONNECT -> {}
-//            case DELETE -> {}
-            case PUT -> new GETProcessor(executorService, REQ_HANDLER, MAX_CONTENT_LENGTH, TEMP_DIR,
-                    targets, REQUEST, RESPONSE).process();
-            // TODO handle other request methods
-        }
     }
 }
