@@ -88,7 +88,7 @@ public final class RequestProcessor {
         };
         if (httpRequestMethod == null) {
             RESPONSE.setStatusCode(HTTPStatusCode.NOT_EXTENDED);
-            // TODO process req & res
+            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
             return;
         }
 
@@ -114,7 +114,7 @@ public final class RequestProcessor {
         }
         if (targets == null) {
             RESPONSE.setStatusCode(HTTPStatusCode.NOT_FOUND);
-            // TODO process req & res
+            REQ_HANDLER.addToSendQue(CommonProcessor.processErrors(RESPONSE));
             return;
         }
 

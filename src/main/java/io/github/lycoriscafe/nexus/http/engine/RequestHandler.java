@@ -59,12 +59,12 @@ public final class RequestHandler implements Runnable {
         }
     }
 
-    public BufferedInputStream getInputStream() {
-        return INPUT_STREAM;
+    public Socket getSOCKET() {
+        return SOCKET;
     }
 
-    private long getRequestId() {
-        return requestId++;
+    public BufferedInputStream getInputStream() {
+        return INPUT_STREAM;
     }
 
     public void addToSendQue(final HTTPResponse<?> httpResponse) {
@@ -95,7 +95,7 @@ public final class RequestHandler implements Runnable {
                             if (terminateCount == 3) {
                                 System.out.println(requestLine);
                                 System.out.println(headers);
-                                PROCESSOR.process(getRequestId(), requestLine.split(" "), headers);
+                                PROCESSOR.process(requestId++, requestLine.split(" "), headers);
                                 requestLine = null;
                                 headers = new HashMap<>();
                             }

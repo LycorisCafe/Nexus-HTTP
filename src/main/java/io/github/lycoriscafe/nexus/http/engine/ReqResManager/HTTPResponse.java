@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
+import io.github.lycoriscafe.nexus.http.core.headers.HTTPHeader;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 
 import java.util.ArrayList;
@@ -26,8 +27,8 @@ public final class HTTPResponse<T> {
     private final long RESPONSE_ID;
 
     private HTTPStatusCode HTTPStatusCode;
-    private Map<String, List<String>> headers;
-    private Map<String, ArrayList<String>> customHeaders;
+    private Map<HTTPHeader, List<String>> headers;
+    private Map<String, List<String>> customHeaders;
     private String contentType;
     private int contentLength;
     private T content;
@@ -41,7 +42,7 @@ public final class HTTPResponse<T> {
         return this;
     }
 
-    public HTTPResponse<?> setHeaders(final Map<String, List<String>> headers) {
+    public HTTPResponse<?> setHeaders(final Map<HTTPHeader, List<String>> headers) {
         this.headers = headers;
         return this;
     }
@@ -65,7 +66,7 @@ public final class HTTPResponse<T> {
         return RESPONSE_ID;
     }
 
-    public Map<String, ArrayList<String>> getCustomHeaders() {
+    public Map<String, List<String>> getCustomHeaders() {
         return customHeaders;
     }
 }
