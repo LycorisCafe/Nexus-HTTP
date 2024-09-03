@@ -53,7 +53,7 @@ public final class RequestHandler implements Runnable {
         this.SOCKET = SOCKET;
         this.INPUT_STREAM = new BufferedInputStream(SOCKET.getInputStream());
         this.OUTPUT_STREAM = new BufferedOutputStream(SOCKET.getOutputStream());
-        PROCESSOR = new RequestProcessor(this, CONFIGURATION, DATABASE);
+        PROCESSOR = new RequestProcessor(this, INPUT_STREAM, CONFIGURATION, DATABASE);
     }
 
     private void incrementRequestId() {
@@ -62,6 +62,11 @@ public final class RequestHandler implements Runnable {
 
     private void incrementResponseId() {
         responseId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
+    }
+
+    public void addToSendQue(final HTTPResponse<?> httpResponse) {
+        RESPONSES.add(httpResponse);
+        send();
     }
 
     private ArrayList<Object> validateRequestLine(final ArrayList<Object> requestLine,
@@ -102,11 +107,6 @@ public final class RequestHandler implements Runnable {
         }
     }
 
-    public void addToSendQue(final HTTPResponse<?> httpResponse) {
-        RESPONSES.add(httpResponse);
-        send();
-    }
-
     @Override
     public void run() {
         ArrayList<Object> requestLine = new ArrayList<>();
@@ -128,9 +128,7 @@ public final class RequestHandler implements Runnable {
 
                         terminator++;
                         if (terminator == 2) {
-                            System.out.println(requestLine);
-                            System.out.println(headers);
-                            // TODO send to process
+                            PROCESSOR.process(requestLine, headers);
                             incrementRequestId();
                             requestLine.clear();
                             headers.clear();
