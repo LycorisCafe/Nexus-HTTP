@@ -88,10 +88,10 @@ public final class HTTPResponse<T> {
         if (content != null) {
             protocolBody.append("Content-Length: ");
             if (content instanceof File file) {
-                protocolBody.append(file.getTotalSpace() + "\r\n");
+                protocolBody.append(file.getTotalSpace()).append("\r\n");
             }
             if (content instanceof String str) {
-                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length + "\r\n");
+                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
             }
         }
         protocolBody.append("\r\n");
