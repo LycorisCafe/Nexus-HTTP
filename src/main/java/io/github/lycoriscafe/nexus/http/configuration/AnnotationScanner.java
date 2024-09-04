@@ -65,7 +65,15 @@ public final class AnnotationScanner {
                     }
                     case Method m when m.isAnnotationPresent(PermanentRedirect.class) -> {
                         statusAnnotationValue = m.getAnnotation(PermanentRedirect.class).value();
-                        yield "";
+                        yield "PERMANENT_REDIRECT";
+                    }
+                    case Method m when m.isAnnotationPresent(TemporaryRedirect.class) -> {
+                        statusAnnotationValue = m.getAnnotation(TemporaryRedirect.class).value();
+                        yield "TEMPORARY_REDIRECT";
+                    }
+                    case Method m when m.isAnnotationPresent(UnavailableForLegalReasons.class) -> {
+                        statusAnnotationValue = m.getAnnotation(UnavailableForLegalReasons.class).value();
+                        yield "UNAVAILABLE_FOR_LEGAL_REASONS";
                     }
                     default -> null;
                 };
