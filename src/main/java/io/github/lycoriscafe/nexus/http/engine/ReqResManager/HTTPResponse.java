@@ -19,6 +19,8 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +60,7 @@ public final class HTTPResponse<T> {
     }
 
     public void setHeaders(Map<String, List<String>> headers) {
-        this.headers = headers;
+        this.headers.putAll(headers);
     }
 
     public T getContent() {
@@ -67,5 +69,33 @@ public final class HTTPResponse<T> {
 
     public void setContent(T content) {
         this.content = content;
+    }
+
+    public String getFormattedProtocol() {
+        StringBuilder protocolBody;
+        protocolBody = new StringBuilder(version.getValue() + " " + statusCode.getStatusCode() + "\r\n");
+        for (Map.Entry<String, List<String>> header : headers.entrySet()) {
+            protocolBody.append(header.getKey()).append(": ");
+            for (int i = 0; i < header.getValue().size(); ++i) {
+                protocolBody.append(header.getValue().get(i));
+                if (i != header.getValue().size()) {
+                    protocolBody.append(", ");
+                }
+            }
+            protocolBody.append("\r\n");
+        }
+
+        if (content != null) {
+            protocolBody.append("Content-Length: ");
+            if (content instanceof File file) {
+                protocolBody.append(file.getTotalSpace() + "\r\n");
+            }
+            if (content instanceof String str) {
+                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length + "\r\n");
+            }
+        }
+        protocolBody.append("\r\n");
+
+        return protocolBody.toString();
     }
 }

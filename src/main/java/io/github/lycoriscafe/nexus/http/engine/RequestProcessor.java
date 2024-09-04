@@ -18,14 +18,17 @@ package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,7 +63,24 @@ public final class RequestProcessor {
 
     }
 
-    void processError(final HTTPStatusCode STATUS) {
+    void processError(final long REQUEST_ID,
+                      final HTTPStatusCode STATUS) {
+        HTTPResponse<?> response = new HTTPResponse<>(REQUEST_ID);
+        response.setVersion(HTTPVersion.HTTP_1_1);
+        response.setStatusCode(STATUS);
+        addDefaultHeaders(response);
+        REQ_HANDLER.addToSendQue(response);
+    }
 
+    private static void addDefaultHeaders(final HTTPResponse<?> RESPONSE) {
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Server", List.of("LycorisCafe/NexusHTTP(v1.0.0)"));
+        headers.put("Date", List.of(getServerTime()));
+        RESPONSE.setHeaders(headers);
+    }
+
+    private static String getServerTime() {
+        return DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+                .withZone(ZoneId.of("GMT")).format(ZonedDateTime.now());
     }
 }

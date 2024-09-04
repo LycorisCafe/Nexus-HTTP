@@ -76,7 +76,7 @@ public final class HTTPRequest<T> {
     }
 
     public void setHeaders(Map<String, List<String>> headers) {
-        this.headers = headers;
+        this.headers.putAll(headers);
     }
 
     public T getContent() {
