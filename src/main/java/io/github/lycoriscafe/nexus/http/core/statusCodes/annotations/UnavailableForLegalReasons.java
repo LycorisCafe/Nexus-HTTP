@@ -22,5 +22,5 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface UnavailableForLegalReasons {
-    String[] value();
+    String value();
 }

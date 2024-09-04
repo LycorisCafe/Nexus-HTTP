@@ -21,6 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
@@ -36,43 +37,62 @@ public final class AnnotationScanner {
     public static void scan(final Connection DATABASE,
                             final String BASE_PACKAGE) throws SQLException {
         Reflections reflections = new Reflections(BASE_PACKAGE);
-        Set<Class<?>> modules = reflections.get(SubTypes.of(TypesAnnotated.with(HTTPEndpoint.class)).asClass());
-        for (Class<?> module : modules) {
-            for (Method method : module.getMethods()) {
-                if (method.isAnnotationPresent(GET.class)) {
-                    writeToDatabase(
-                            DATABASE,
-                            "ReqGET",
-                            (module.getAnnotation(HTTPEndpoint.class).value().equals("/") ?
-                                    "" : module.getAnnotation(HTTPEndpoint.class).value())
-                                    + method.getAnnotation(GET.class).value(),
-                            module.getName(),
-                            method.getName()
-                    );
-                }
-                if (method.isAnnotationPresent(POST.class)) {
+        Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HTTPEndpoint.class)).asClass());
+        for (Class<?> clazz : classes) {
+            for (Method method : clazz.getMethods()) {
+                String reqMethodTbl = switch (method) {
+                    case Method m when m.isAnnotationPresent(GET.class) -> "ReqGET";
+                    case Method m when m.isAnnotationPresent(POST.class) -> "ReqPOST";
+                    case Method m when m.isAnnotationPresent(PUT.class) -> "ReqPUT";
+                    case Method m when m.isAnnotationPresent(DELETE.class) -> "ReqDELETE";
+                    default -> null;
+                };
 
-                }
-                if (method.isAnnotationPresent(PUT.class)) {
+                String statusAnnotationValue = null;
+                String statusAnnotation = switch (method) {
+                    case Method m when m.isAnnotationPresent(Gone.class) -> "GONE";
+                    case Method m when m.isAnnotationPresent(MovedPermanently.class) -> {
+                        statusAnnotationValue = m.getAnnotation(MovedPermanently.class).value();
+                        yield "MOVED_PERMANENTLY";
+                    }
+                    case Method m when m.isAnnotationPresent(MovedTemporarily.class) -> {
+                        statusAnnotationValue = m.getAnnotation(MovedTemporarily.class).value();
+                        yield "FOUND";
+                    }
+                    case Method m when m.isAnnotationPresent(NotImplemented.class) -> {
+                        statusAnnotationValue = m.getAnnotation(NotImplemented.class).value();
+                        yield "NOT_IMPLEMENTED";
+                    }
+                    case Method m when m.isAnnotationPresent(PermanentRedirect.class) -> {
+                        statusAnnotationValue = m.getAnnotation(PermanentRedirect.class).value();
+                        yield "";
+                    }
+                    default -> null;
+                };
 
+                if (reqMethodTbl == null) {
+                    continue;
                 }
-                if (method.isAnnotationPresent(DELETE.class)) {
-
-                }
+                writeToDatabase(DATABASE, reqMethodTbl, clazz, method, statusAnnotation, statusAnnotationValue);
             }
         }
     }
 
     private static void writeToDatabase(final Connection DATABASE,
                                         final String TABLE,
-                                        final String ENDPOINT,
-                                        final String CLASS_NAME,
-                                        final String METHOD_NAME) throws SQLException {
-        String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?)";
+                                        final Class<?> CLAZZ,
+                                        final Method METHOD,
+                                        final String STATUS_ANNOTATION,
+                                        final String STATUS_ANNOTATION_VALUE) throws SQLException {
+        String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DATABASE.prepareStatement(query)) {
-            ps.setString(1, ENDPOINT);
-            ps.setString(2, CLASS_NAME);
-            ps.setString(3, METHOD_NAME);
+            ps.setString(1, (CLAZZ.getAnnotation(HTTPEndpoint.class).value().equals("/") ?
+                    "" : CLAZZ.getAnnotation(HTTPEndpoint.class).value())
+                    + CLAZZ.getAnnotation(GET.class).value());
+            ps.setString(2, CLAZZ.getName());
+            ps.setString(3, METHOD.getName());
+            ps.setString(4, STATUS_ANNOTATION);
+            ps.setString(5, STATUS_ANNOTATION_VALUE);
 
             ps.executeUpdate();
         }

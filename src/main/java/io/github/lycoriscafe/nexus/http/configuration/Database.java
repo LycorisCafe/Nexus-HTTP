@@ -46,25 +46,33 @@ public final class Database {
                 "CREATE TABLE ReqGET(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL" +
+                        "methodName TEXT NOT NULL," +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT" +
                         ")",
                 // Handle POST
                 "CREATE TABLE ReqPOST(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL" +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT" +
                         ")",
                 // Handle PUT
                 "CREATE TABLE ReqPUT(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL" +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT" +
                         ")",
                 // Handle DELETE
                 "CREATE TABLE ReqDELETE(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL" +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT" +
                         ")"
         };
 
