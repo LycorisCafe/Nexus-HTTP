@@ -16,9 +16,13 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public final class Database {
     public static Connection getConnection(final String DB_LOCATION, final int PORT)
@@ -83,14 +87,17 @@ public final class Database {
         }
     }
 
-    public static String[] findEndpointLocation(final Connection DATABASE,
-                                                final String TABLE,
-                                                final String ENDPOINT) throws SQLException {
-        String statement = "SELECT className, methodName FROM " + TABLE + " WHERE endpoint  = ?";
+    public static List<String> getEndpointDetails(final Connection DATABASE,
+                                                  final HTTPRequestMethod REQUEST_METHOD,
+                                                  final String ENDPOINT) throws SQLException {
+        List<String> details = new ArrayList<>();
+        String statement = "SELECT * FROM Req" + REQUEST_METHOD.toString() + " WHERE endpoint  = ?";
         PreparedStatement ps = DATABASE.prepareStatement(statement);
         ps.setString(1, ENDPOINT);
         ResultSet rs = ps.executeQuery();
-        return rs.getString(1) == null ? null :
-                new String[]{rs.getString(1), rs.getString(2)};
+        for (int i = 1; i <= 5; i++) {
+            details.add(rs.getString(i));
+        }
+        return details;
     }
 }
