@@ -69,6 +69,7 @@ public final class RequestProcessor {
         response.setVersion(HTTPVersion.HTTP_1_1);
         response.setStatusCode(STATUS);
         addDefaultHeaders(response);
+        response.formatProtocol();
         REQ_HANDLER.addToSendQue(response);
     }
 

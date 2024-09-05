@@ -30,6 +30,7 @@ public final class HTTPResponse<T> {
     private HTTPStatusCode statusCode;
     private Map<String, List<String>> headers;
     private T content;
+    StringBuilder protocolBody;
 
     public HTTPResponse(final long RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;
@@ -71,8 +72,7 @@ public final class HTTPResponse<T> {
         this.content = content;
     }
 
-    public String getFormattedProtocol() {
-        StringBuilder protocolBody;
+    public void formatProtocol() {
         protocolBody = new StringBuilder(version.getValue() + " " + statusCode.getStatusCode() + "\r\n");
         for (Map.Entry<String, List<String>> header : headers.entrySet()) {
             protocolBody.append(header.getKey()).append(": ");
@@ -87,15 +87,20 @@ public final class HTTPResponse<T> {
 
         if (content != null) {
             protocolBody.append("Content-Length: ");
-            if (content instanceof File file) {
-                protocolBody.append(file.getTotalSpace()).append("\r\n");
+            if (content instanceof byte[] b) {
+                protocolBody.append(b.length);
             }
             if (content instanceof String str) {
                 protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
             }
+            if (content instanceof File file) {
+                protocolBody.append(file.getTotalSpace()).append("\r\n");
+            }
         }
         protocolBody.append("\r\n");
+    }
 
-        return protocolBody.toString();
+    public byte[] getFormattedProtocol() {
+        return protocolBody.toString().getBytes(StandardCharsets.UTF_8);
     }
 }

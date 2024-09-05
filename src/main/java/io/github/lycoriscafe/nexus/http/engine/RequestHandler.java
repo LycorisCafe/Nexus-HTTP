@@ -24,10 +24,7 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
@@ -168,7 +165,25 @@ public final class RequestHandler implements Runnable {
     private synchronized void send() {
         for (HTTPResponse<?> httpResponse : RESPONSES) {
             if (httpResponse.getRESPONSE_ID() == responseId) {
-                // TODO implement send
+                try {
+                    OUTPUT_STREAM.write(httpResponse.getFormattedProtocol());
+                    if (httpResponse.getContent() instanceof byte[] b) {
+                        OUTPUT_STREAM.write(b);
+                    }
+                    if (httpResponse.getContent() instanceof String s) {
+                        OUTPUT_STREAM.write(s.getBytes(StandardCharsets.UTF_8));
+                    }
+                    if (httpResponse.getContent() instanceof File f) {
+                        byte[] buffer = new byte[1024];
+                        BufferedInputStream bIn = new BufferedInputStream(new FileInputStream(f));
+                        while ((bIn.read(buffer)) != -1) {
+                            OUTPUT_STREAM.write(buffer);
+                        }
+                    }
+                    OUTPUT_STREAM.flush();
+                } catch (IOException e) {
+                    // TODO handle exception
+                }
                 incrementResponseId();
             }
         }
