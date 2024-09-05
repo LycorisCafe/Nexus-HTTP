@@ -51,9 +51,9 @@ public final class GETProcessor {
     }
 
     public void process() {
-        if (!REQUEST.getHeaders().get("CONTENT-LENGTH").isEmpty()) {
-            // TODO handle content
-        }
+//        if (!REQUEST.getHeaders().get("CONTENT-LENGTH").isEmpty()) {
+//            // TODO handle content
+//        }
 
         if (EXECUTOR != null) {
             EXECUTOR.execute(this::processInPipe);

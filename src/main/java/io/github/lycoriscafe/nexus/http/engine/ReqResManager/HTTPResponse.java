@@ -69,6 +69,11 @@ public final class HTTPResponse<T> {
     }
 
     public void setContent(T content) {
+        if (!((content instanceof String) ||
+                (content instanceof byte[]) ||
+                (content instanceof File))) {
+            throw new IllegalArgumentException("Invalid content type");
+        }
         this.content = content;
     }
 
@@ -91,11 +96,12 @@ public final class HTTPResponse<T> {
                 protocolBody.append(b.length);
             }
             if (content instanceof String str) {
-                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
+                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length);
             }
             if (content instanceof File file) {
-                protocolBody.append(file.getTotalSpace()).append("\r\n");
+                protocolBody.append(file.getTotalSpace());
             }
+            protocolBody.append("\r\n");
         }
         protocolBody.append("\r\n");
     }
