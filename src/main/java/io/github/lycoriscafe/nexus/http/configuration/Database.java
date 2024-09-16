@@ -31,7 +31,7 @@ public final class Database {
         if (DB_LOCATION == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
-            String database = DB_LOCATION.isEmpty() ? PORT + ".db" : DB_LOCATION + "/" + PORT + ".db";
+            String database = DB_LOCATION.isEmpty() ? PORT + ".db" : DB_LOCATION + "/NexusHttp" + PORT + ".db";
             File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) {
