@@ -99,7 +99,7 @@ public final class HTTPResponse<T> {
                 protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length);
             }
             if (content instanceof File file) {
-                protocolBody.append(file.getTotalSpace());
+                protocolBody.append(file.length());
             }
             protocolBody.append("\r\n");
         }
