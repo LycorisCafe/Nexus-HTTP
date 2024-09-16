@@ -28,6 +28,7 @@ import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.Locale;
 import java.util.Set;
 
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -40,11 +41,24 @@ public final class AnnotationScanner {
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HTTPEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getMethods()) {
+                String endpointValue = null;
                 String reqMethodTbl = switch (method) {
-                    case Method m when m.isAnnotationPresent(GET.class) -> "ReqGET";
-                    case Method m when m.isAnnotationPresent(POST.class) -> "ReqPOST";
-                    case Method m when m.isAnnotationPresent(PUT.class) -> "ReqPUT";
-                    case Method m when m.isAnnotationPresent(DELETE.class) -> "ReqDELETE";
+                    case Method m when m.isAnnotationPresent(GET.class) -> {
+                        endpointValue = m.getAnnotation(GET.class).value();
+                        yield "ReqGET";
+                    }
+                    case Method m when m.isAnnotationPresent(POST.class) -> {
+                        endpointValue = m.getAnnotation(POST.class).value();
+                        yield "ReqPOST";
+                    }
+                    case Method m when m.isAnnotationPresent(PUT.class) -> {
+                        endpointValue = m.getAnnotation(PUT.class).value();
+                        yield "ReqPUT";
+                    }
+                    case Method m when m.isAnnotationPresent(DELETE.class) -> {
+                        endpointValue = m.getAnnotation(DELETE.class).value();
+                        yield "ReqDELETE";
+                    }
                     default -> null;
                 };
 
@@ -81,13 +95,14 @@ public final class AnnotationScanner {
                 if (reqMethodTbl == null) {
                     continue;
                 }
-                writeToDatabase(DATABASE, reqMethodTbl, clazz, method, statusAnnotation, statusAnnotationValue);
+                writeToDatabase(DATABASE, reqMethodTbl, endpointValue, clazz, method, statusAnnotation, statusAnnotationValue);
             }
         }
     }
 
     private static void writeToDatabase(final Connection DATABASE,
                                         final String TABLE,
+                                        final String ENDPOINT,
                                         final Class<?> CLAZZ,
                                         final Method METHOD,
                                         final String STATUS_ANNOTATION,
@@ -95,8 +110,8 @@ public final class AnnotationScanner {
         String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DATABASE.prepareStatement(query)) {
             ps.setString(1, (CLAZZ.getAnnotation(HTTPEndpoint.class).value().equals("/") ?
-                    "" : CLAZZ.getAnnotation(HTTPEndpoint.class).value())
-                    + CLAZZ.getAnnotation(GET.class).value());
+                    "" : CLAZZ.getAnnotation(HTTPEndpoint.class).value().toLowerCase(Locale.ROOT))
+                    + ENDPOINT.toLowerCase(Locale.ROOT));
             ps.setString(2, CLAZZ.getName());
             ps.setString(3, METHOD.getName());
             ps.setString(4, STATUS_ANNOTATION);
