@@ -126,7 +126,7 @@ public final class RequestHandler implements Runnable {
 
                         terminator++;
                         if (terminator == 2) {
-                            PROCESSOR.process(requestId, requestLine, headers);
+                            PROCESSOR.processRequest(requestId, requestLine, headers);
                             incrementRequestId();
                             requestLine.clear();
                             headers.clear();
@@ -137,7 +137,7 @@ public final class RequestHandler implements Runnable {
                         if (requestLine.isEmpty()) {
                             requestLine = validateRequestLine(requestLine, buffer.toString(StandardCharsets.UTF_8));
                             if (requestLine == null) {
-                                PROCESSOR.processError(requestId, HTTPStatusCode.BAD_REQUEST);
+                                PROCESSOR.processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
                                 break headersLoop;
                             }
                             buffer.reset();
@@ -146,7 +146,7 @@ public final class RequestHandler implements Runnable {
 
                         headers = processHeader(headers, buffer.toString(StandardCharsets.UTF_8));
                         if (headers == null) {
-                            PROCESSOR.processError(requestId, HTTPStatusCode.BAD_REQUEST);
+                            PROCESSOR.processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
                             break headersLoop;
                         }
                         buffer.reset();

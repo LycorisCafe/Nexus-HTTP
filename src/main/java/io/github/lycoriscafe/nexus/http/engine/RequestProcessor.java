@@ -57,14 +57,14 @@ public final class RequestProcessor {
         }
     }
 
-    void process(final long REQUEST_ID,
-                 final ArrayList<Object> REQUEST_LINE,
-                 final Map<String, List<String>> HEADERS) {
+    void processRequest(final long REQUEST_ID,
+                        final ArrayList<Object> REQUEST_LINE,
+                        final Map<String, List<String>> HEADERS) {
 
     }
 
-    void processError(final long REQUEST_ID,
-                      final HTTPStatusCode STATUS) {
+    void processBadRequest(final long REQUEST_ID,
+                           final HTTPStatusCode STATUS) {
         HTTPResponse<?> response = new HTTPResponse<>(REQUEST_ID);
         response.setVersion(HTTPVersion.HTTP_1_1);
         response.setStatusCode(STATUS);
