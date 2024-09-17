@@ -22,10 +22,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.GETProcessor;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.MethodProcessor;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.POSTProcessor;
-import io.github.lycoriscafe.nexus.http.engine.methodProcessor.PUTProcessor;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.*;
 
 import java.io.BufferedInputStream;
 import java.sql.Connection;
@@ -57,6 +54,7 @@ public final class RequestProcessor {
         methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, DATABASE));
         methodProcessors.put(HTTPRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HTTPRequestMethod.DELETE, new DELETEProcessor(REQ_HANDLER, DATABASE));
     }
 
     void processRequest(final long REQUEST_ID,
@@ -81,6 +79,7 @@ public final class RequestProcessor {
             case GET -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
             case POST -> methodProcessors.get(HTTPRequestMethod.POST).process(httpRequest);
             case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);
+            case DELETE -> methodProcessors.get(HTTPRequestMethod.DELETE).process(httpRequest);
             default -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
                 yield null;
