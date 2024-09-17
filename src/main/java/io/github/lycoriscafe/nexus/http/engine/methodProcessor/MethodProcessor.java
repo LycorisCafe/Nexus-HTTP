@@ -16,5 +16,9 @@
 
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+
 public interface MethodProcessor {
+    HTTPResponse<?> process(HTTPRequest<?> request);
 }

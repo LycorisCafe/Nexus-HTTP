@@ -18,6 +18,7 @@ package main.test.testA;
 
 import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
@@ -30,6 +31,19 @@ import java.util.Map;
 public class abcd {
     @GET("/abcd")
     public static HTTPResponse<?> xyz(HTTPRequest<?> request) {
+        System.out.println(request.getParameters());
+        HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        httpResponse.setStatusCode(HTTPStatusCode.OK);
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Content-Type", List.of("text/html"));
+        httpResponse.setHeaders(headers);
+        httpResponse.setContent("Hello World!");
+        return httpResponse;
+    }
+
+    @POST("/efgh")
+    public static HTTPResponse<?> abc(HTTPRequest<?> request) {
+        System.out.println(request.getParameters());
         HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();

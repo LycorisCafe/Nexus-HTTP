@@ -98,7 +98,7 @@ public final class RequestHandler implements Runnable {
                 }
                 values.add(value);
             }
-            headers.put(parts[0], values);
+            headers.put(parts[0].toLowerCase(Locale.ROOT), values);
             return headers;
         } catch (Exception e) {
             return null;
