@@ -17,7 +17,6 @@
 package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
@@ -33,36 +32,27 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public final class RequestProcessor {
     private ExecutorService executorService;
     private final Map<HTTPRequestMethod, MethodProcessor> methodProcessors;
     private final RequestHandler REQ_HANDLER;
-//    private final BufferedInputStream INPUT_STREAM;
-//    private final Connection DATABASE;
-//    private final long MAX_CONTENT_LENGTH;
-//    private final File TEMP_DIR;
 
     RequestProcessor(final RequestHandler REQ_HANDLER,
                      final BufferedInputStream INPUT_STREAM,
                      final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
-//        this.INPUT_STREAM = INPUT_STREAM;
-//        this.DATABASE = DATABASE;
-//        MAX_CONTENT_LENGTH = CONFIGURATION.getMaxContentLength();
-//        TEMP_DIR = CONFIGURATION.getTempDirectory();
 
-        if (CONFIGURATION.getHttpPipelineParallelCount() > 0) {
-            executorService = Executors.newFixedThreadPool(CONFIGURATION.getHttpPipelineParallelCount(),
-                    (CONFIGURATION.getThreadType() == ThreadType.PLATFORM ?
-                            Thread.ofPlatform().factory() : Thread.ofVirtual().factory()));
-        }
+        // TODO http pipelining
+//        if (CONFIGURATION.getHttpPipelineParallelCount() > 0) {
+//            executorService = Executors.newFixedThreadPool(CONFIGURATION.getHttpPipelineParallelCount(),
+//                    (CONFIGURATION.getThreadType() == ThreadType.PLATFORM ?
+//                            Thread.ofPlatform().factory() : Thread.ofVirtual().factory()));
+//        }
 
         methodProcessors = new HashMap<>();
-        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(executorService, REQ_HANDLER, INPUT_STREAM,
-                DATABASE, CONFIGURATION.getMaxContentLength(), CONFIGURATION.getTempDirectory()));
+        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE));
     }
 
     void processRequest(final long REQUEST_ID,
@@ -83,14 +73,18 @@ public final class RequestProcessor {
         httpRequest.setVersion((HTTPVersion) REQUEST_LINE.getLast());
         httpRequest.setHeaders(HEADERS);
 
-        HTTPResponse<?> httpResponse = null;
-        switch (httpRequest.getRequestMethod()) {
-            case HTTPRequestMethod.GET -> httpResponse = ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
+        HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
+            case HTTPRequestMethod.GET -> ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
                     .process(httpRequest);
-            default -> REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
-        }
+            default -> {
+                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
+                yield null;
+            }
+        };
 
-        RequestHandler.addDefaultHeaders(httpResponse);
-        REQ_HANDLER.addToSendQue(httpResponse);
+        if (httpResponse != null) {
+            RequestHandler.addDefaultHeaders(httpResponse);
+            REQ_HANDLER.addToSendQue(httpResponse);
+        }
     }
 }

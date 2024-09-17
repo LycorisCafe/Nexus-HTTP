@@ -16,38 +16,43 @@
 
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
+import io.github.lycoriscafe.nexus.http.configuration.Database;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.BufferedInputStream;
-import java.io.File;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.util.concurrent.ExecutorService;
+import java.sql.SQLException;
+import java.util.List;
 
 public final class GETProcessor implements MethodProcessor {
-    private final ExecutorService EXECUTOR_SERVICE;
     private final RequestHandler REQ_HANDLER;
     private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
-    private final long MAX_CONTENT_LENGTH;
-    private final File TEMP_DIR;
 
-    public GETProcessor(final ExecutorService EXECUTOR_SERVICE,
-                        final RequestHandler REQ_HANDLER,
+    public GETProcessor(final RequestHandler REQ_HANDLER,
                         final BufferedInputStream INPUT_STREAM,
-                        final Connection DATABASE,
-                        final long MAX_CONTENT_LENGTH,
-                        final File TEMP_DIR) {
-        this.EXECUTOR_SERVICE = EXECUTOR_SERVICE;
+                        final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
         this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
-        this.MAX_CONTENT_LENGTH = MAX_CONTENT_LENGTH;
-        this.TEMP_DIR = TEMP_DIR;
     }
 
     public HTTPResponse<?> process(final HTTPRequest<?> request) {
-        return null;
+        HTTPResponse<?> httpResponse = null;
+        try {
+            List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.GET, request.getRequestURL());
+            Class<?> clazz = details.get(1).getClass();
+            Method method = clazz.getMethod(details.get(2), HTTPRequest.class);
+            httpResponse = (HTTPResponse<?>) method.invoke(null, request);
+        } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
+        }
+        return httpResponse;
     }
 }
