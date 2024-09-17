@@ -32,7 +32,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class POSTProcessor implements MethodProcessor {
+public final class POSTProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
     private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;

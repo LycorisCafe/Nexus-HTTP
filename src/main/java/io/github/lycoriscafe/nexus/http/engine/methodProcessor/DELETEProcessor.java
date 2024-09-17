@@ -29,7 +29,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class DELETEProcessor implements MethodProcessor {
+public final class DELETEProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
     private final Connection DATABASE;
 
