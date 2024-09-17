@@ -52,7 +52,7 @@ public final class RequestProcessor {
 //        }
 
         methodProcessors = new HashMap<>();
-        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE));
+        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, DATABASE));
     }
 
     void processRequest(final long REQUEST_ID,
@@ -74,11 +74,8 @@ public final class RequestProcessor {
         httpRequest.setHeaders(HEADERS);
 
         HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
-            case HTTPRequestMethod.GET -> {
-                System.out.println("called!");
-                yield ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
-                        .process(httpRequest);
-            }
+            case HTTPRequestMethod.GET ->
+                    ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET)).process(httpRequest);
             default -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
                 yield null;
@@ -86,6 +83,8 @@ public final class RequestProcessor {
         };
 
         if (httpResponse != null) {
+            httpResponse.setVersion(HTTPVersion.HTTP_1_1);
+            httpResponse.formatProtocol();
             REQ_HANDLER.addToSendQue(httpResponse);
         }
     }

@@ -17,7 +17,6 @@
 package main.test.testA;
 
 import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
-import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
@@ -32,7 +31,6 @@ public class abcd {
     @GET("/abcd")
     public static HTTPResponse<?> xyz(HTTPRequest<?> request) {
         HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
-        httpResponse.setVersion(HTTPVersion.HTTP_1_1);
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));

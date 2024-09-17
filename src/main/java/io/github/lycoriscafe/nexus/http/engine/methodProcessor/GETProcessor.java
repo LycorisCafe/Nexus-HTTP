@@ -23,7 +23,6 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
-import java.io.BufferedInputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -32,14 +31,11 @@ import java.util.List;
 
 public final class GETProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
-    private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
 
     public GETProcessor(final RequestHandler REQ_HANDLER,
-                        final BufferedInputStream INPUT_STREAM,
                         final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
-        this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
     }
 
@@ -54,8 +50,6 @@ public final class GETProcessor implements MethodProcessor {
             Class<?> clazz = Class.forName(details.get(1));
             Method method = clazz.getMethod(details.get(2), HTTPRequest.class);
             httpResponse = (HTTPResponse<?>) method.invoke(null, request);
-            httpResponse.formatProtocol();
-            System.out.println(httpResponse.getRESPONSE_ID());
         } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                  ClassNotFoundException e) {
             REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
