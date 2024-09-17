@@ -47,10 +47,17 @@ public final class GETProcessor implements MethodProcessor {
         HTTPResponse<?> httpResponse = null;
         try {
             List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.GET, request.getRequestURL());
-            Class<?> clazz = details.get(1).getClass();
+            if (details.get(0) == null) {
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
+                return httpResponse;
+            }
+            Class<?> clazz = Class.forName(details.get(1));
             Method method = clazz.getMethod(details.get(2), HTTPRequest.class);
             httpResponse = (HTTPResponse<?>) method.invoke(null, request);
-        } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            httpResponse.formatProtocol();
+            System.out.println(httpResponse.getRESPONSE_ID());
+        } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
+                 ClassNotFoundException e) {
             REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
         }
         return httpResponse;

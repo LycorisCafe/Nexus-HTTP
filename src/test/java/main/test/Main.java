@@ -33,9 +33,11 @@ public class Main {
                     .setDatabaseLocation("");
             HTTPServer httpServer1 = new HTTPServer(httpServerConfiguration);
             httpServer1.start();
-            System.out.println(httpServerConfiguration.getBasePackage());
+//            System.out.println(httpServerConfiguration.getBasePackage());
             //            HTTPServer httpServer2 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
-        } catch (IOException | SQLException | ClassNotFoundException e) {
+        } catch (
+                IOException | SQLException |
+                ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }

@@ -111,6 +111,7 @@ public final class RequestHandler implements Runnable {
         response.setVersion(HTTPVersion.HTTP_1_1);
         response.setStatusCode(STATUS);
         addDefaultHeaders(response);
+        response.setHeaders(Map.of("Content-length", List.of("0")));
         response.formatProtocol();
         addToSendQue(response);
     }
@@ -187,8 +188,9 @@ public final class RequestHandler implements Runnable {
     private synchronized void send() {
         for (HTTPResponse<?> httpResponse : RESPONSES) {
             if (httpResponse.getRESPONSE_ID() == responseId) {
+                System.out.println(httpResponse.getFormattedProtocol());
                 try {
-                    OUTPUT_STREAM.write(httpResponse.getFormattedProtocol());
+                    OUTPUT_STREAM.write(httpResponse.getFormattedProtocol().getBytes(StandardCharsets.UTF_8));
                     if (httpResponse.getContent() instanceof byte[] b) {
                         OUTPUT_STREAM.write(b);
                     }

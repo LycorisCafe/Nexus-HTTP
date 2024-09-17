@@ -60,12 +60,12 @@ public final class RequestProcessor {
                         final Map<String, List<String>> HEADERS) {
         HTTPRequest<?> httpRequest = new HTTPRequest<>(REQUEST_ID);
         httpRequest.setRequestMethod((HTTPRequestMethod) REQUEST_LINE.getFirst());
-        httpRequest.setRequestURL(REQUEST_LINE.get(2).toString().contains("?") ?
-                REQUEST_LINE.get(2).toString().split("\\?")[0] :
-                REQUEST_LINE.get(2).toString());
-        if (REQUEST_LINE.get(2).toString().contains("?")) {
+        httpRequest.setRequestURL(REQUEST_LINE.get(1).toString().contains("?") ?
+                REQUEST_LINE.get(1).toString().split("\\?")[0] :
+                REQUEST_LINE.get(1).toString());
+        if (REQUEST_LINE.get(1).toString().contains("?")) {
             Map<String, String> params = new HashMap<>();
-            for (String param : REQUEST_LINE.get(2).toString().split("&")) {
+            for (String param : REQUEST_LINE.get(1).toString().split("&")) {
                 params.put(param.split("=")[0], param.split("=")[1]);
             }
             httpRequest.setParameters(params);
@@ -74,8 +74,11 @@ public final class RequestProcessor {
         httpRequest.setHeaders(HEADERS);
 
         HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
-            case HTTPRequestMethod.GET -> ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
-                    .process(httpRequest);
+            case HTTPRequestMethod.GET -> {
+                System.out.println("called!");
+                yield ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
+                        .process(httpRequest);
+            }
             default -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
                 yield null;
@@ -83,7 +86,6 @@ public final class RequestProcessor {
         };
 
         if (httpResponse != null) {
-            RequestHandler.addDefaultHeaders(httpResponse);
             REQ_HANDLER.addToSendQue(httpResponse);
         }
     }

@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,11 +29,12 @@ public final class HTTPRequest<T> {
     private String requestURL;
     private Map<String, String> parameters;
     private HTTPVersion version;
-    private Map<String, List<String>> headers;
+    private final Map<String, List<String>> headers;
     private T content;
 
     public HTTPRequest(final long REQUEST_ID) {
         this.REQUEST_ID = REQUEST_ID;
+        headers = new HashMap<>();
     }
 
     public long getREQUEST_ID() {

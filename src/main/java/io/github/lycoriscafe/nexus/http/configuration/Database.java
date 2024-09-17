@@ -31,7 +31,7 @@ public final class Database {
         if (DB_LOCATION == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
-            String database = DB_LOCATION.isEmpty() ? PORT + ".db" : DB_LOCATION + "/NexusHttp" + PORT + ".db";
+            String database = DB_LOCATION.isEmpty() ? "NexusHttp" + PORT + ".db" : DB_LOCATION + "/NexusHttp" + PORT + ".db";
             File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) {
@@ -58,7 +58,7 @@ public final class Database {
                 "CREATE TABLE ReqPOST(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL" +
+                        "methodName TEXT NOT NULL," +
                         "statusAnnotation TEXT," +
                         "statusAnnotationValue TEXT" +
                         ")",
@@ -66,7 +66,7 @@ public final class Database {
                 "CREATE TABLE ReqPUT(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL" +
+                        "methodName TEXT NOT NULL," +
                         "statusAnnotation TEXT," +
                         "statusAnnotationValue TEXT" +
                         ")",
@@ -74,7 +74,7 @@ public final class Database {
                 "CREATE TABLE ReqDELETE(" +
                         "endpoint TEXT NOT NULL," +
                         "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL" +
+                        "methodName TEXT NOT NULL," +
                         "statusAnnotation TEXT," +
                         "statusAnnotationValue TEXT" +
                         ")"
@@ -98,6 +98,7 @@ public final class Database {
         for (int i = 1; i <= 5; i++) {
             details.add(rs.getString(i));
         }
+        System.out.println(ps);
         return details;
     }
 }

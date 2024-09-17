@@ -18,9 +18,11 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.File;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -28,12 +30,14 @@ public final class HTTPResponse<T> {
     private final long RESPONSE_ID;
     private HTTPVersion version;
     private HTTPStatusCode statusCode;
-    private Map<String, List<String>> headers;
+    private final Map<String, List<String>> headers;
     private T content;
     StringBuilder protocolBody;
 
     public HTTPResponse(final long RESPONSE_ID) {
         this.RESPONSE_ID = RESPONSE_ID;
+        this.headers = new HashMap<>();
+        RequestHandler.addDefaultHeaders(this);
     }
 
     public long getRESPONSE_ID() {
@@ -83,7 +87,7 @@ public final class HTTPResponse<T> {
             protocolBody.append(header.getKey()).append(": ");
             for (int i = 0; i < header.getValue().size(); ++i) {
                 protocolBody.append(header.getValue().get(i));
-                if (i != header.getValue().size()) {
+                if (i != header.getValue().size() - 1) {
                     protocolBody.append(", ");
                 }
             }
@@ -106,7 +110,7 @@ public final class HTTPResponse<T> {
         protocolBody.append("\r\n");
     }
 
-    public byte[] getFormattedProtocol() {
-        return protocolBody.toString().getBytes(StandardCharsets.UTF_8);
+    public String getFormattedProtocol() {
+        return protocolBody.toString();
     }
 }
