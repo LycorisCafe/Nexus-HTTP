@@ -32,16 +32,16 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
 
-public class POSTProcessor implements MethodProcessor {
+public class PUTProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
     private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
     private final HTTPServerConfiguration CONFIG;
 
-    public POSTProcessor(final RequestHandler REQ_HANDLER,
-                         final BufferedInputStream INPUT_STREAM,
-                         final Connection DATABASE,
-                         final HTTPServerConfiguration CONFIG) {
+    public PUTProcessor(final RequestHandler REQ_HANDLER,
+                        final BufferedInputStream INPUT_STREAM,
+                        final Connection DATABASE,
+                        final HTTPServerConfiguration CONFIG) {
         this.REQ_HANDLER = REQ_HANDLER;
         this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
@@ -69,7 +69,7 @@ public class POSTProcessor implements MethodProcessor {
             httpReq.setContent(bytes);
         }
         try {
-            List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.POST, request.getRequestURL());
+            List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.PUT, request.getRequestURL());
             if (details.get(0) == null) {
                 REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
                 return httpResponse;

@@ -25,6 +25,7 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.GETProcessor;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.MethodProcessor;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.POSTProcessor;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.PUTProcessor;
 
 import java.io.BufferedInputStream;
 import java.sql.Connection;
@@ -55,6 +56,7 @@ public final class RequestProcessor {
         methodProcessors = new HashMap<>();
         methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, DATABASE));
         methodProcessors.put(HTTPRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HTTPRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
     }
 
     void processRequest(final long REQUEST_ID,
@@ -78,6 +80,7 @@ public final class RequestProcessor {
         HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
             case GET -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
             case POST -> methodProcessors.get(HTTPRequestMethod.POST).process(httpRequest);
+            case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);
             default -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
                 yield null;
