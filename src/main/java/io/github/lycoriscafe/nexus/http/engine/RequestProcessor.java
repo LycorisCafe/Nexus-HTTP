@@ -19,69 +19,78 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.GETProcessor;
+import io.github.lycoriscafe.nexus.http.engine.methodProcessor.MethodProcessor;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.sql.Connection;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public final class RequestProcessor {
     private ExecutorService executorService;
+    private final Map<HTTPRequestMethod, MethodProcessor> methodProcessors;
     private final RequestHandler REQ_HANDLER;
-    private final BufferedInputStream INPUT_STREAM;
-    private final Connection DATABASE;
-    private final long MAX_CONTENT_LENGTH;
-    private final File TEMP_DIR;
+//    private final BufferedInputStream INPUT_STREAM;
+//    private final Connection DATABASE;
+//    private final long MAX_CONTENT_LENGTH;
+//    private final File TEMP_DIR;
 
     RequestProcessor(final RequestHandler REQ_HANDLER,
                      final BufferedInputStream INPUT_STREAM,
                      final HTTPServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
-        this.INPUT_STREAM = INPUT_STREAM;
-        this.DATABASE = DATABASE;
-        MAX_CONTENT_LENGTH = CONFIGURATION.getMaxContentLength();
-        TEMP_DIR = CONFIGURATION.getTempDirectory();
+//        this.INPUT_STREAM = INPUT_STREAM;
+//        this.DATABASE = DATABASE;
+//        MAX_CONTENT_LENGTH = CONFIGURATION.getMaxContentLength();
+//        TEMP_DIR = CONFIGURATION.getTempDirectory();
 
         if (CONFIGURATION.getHttpPipelineParallelCount() > 0) {
             executorService = Executors.newFixedThreadPool(CONFIGURATION.getHttpPipelineParallelCount(),
                     (CONFIGURATION.getThreadType() == ThreadType.PLATFORM ?
                             Thread.ofPlatform().factory() : Thread.ofVirtual().factory()));
         }
+
+        methodProcessors = new HashMap<>();
+        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(executorService, REQ_HANDLER, INPUT_STREAM,
+                DATABASE, CONFIGURATION.getMaxContentLength(), CONFIGURATION.getTempDirectory()));
     }
 
     void processRequest(final long REQUEST_ID,
                         final ArrayList<Object> REQUEST_LINE,
                         final Map<String, List<String>> HEADERS) {
+        HTTPRequest<?> httpRequest = new HTTPRequest<>(REQUEST_ID);
+        httpRequest.setRequestMethod((HTTPRequestMethod) REQUEST_LINE.getFirst());
+        httpRequest.setRequestURL(REQUEST_LINE.get(2).toString().contains("?") ?
+                REQUEST_LINE.get(2).toString().split("\\?")[0] :
+                REQUEST_LINE.get(2).toString());
+        if (REQUEST_LINE.get(2).toString().contains("?")) {
+            Map<String, String> params = new HashMap<>();
+            for (String param : REQUEST_LINE.get(2).toString().split("&")) {
+                params.put(param.split("=")[0], param.split("=")[1]);
+            }
+            httpRequest.setParameters(params);
+        }
+        httpRequest.setVersion((HTTPVersion) REQUEST_LINE.getLast());
+        httpRequest.setHeaders(HEADERS);
 
-    }
+        HTTPResponse<?> httpResponse = null;
+        switch (httpRequest.getRequestMethod()) {
+            case HTTPRequestMethod.GET -> httpResponse = ((GETProcessor) methodProcessors.get(HTTPRequestMethod.GET))
+                    .process(httpRequest);
+            default -> REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
+        }
 
-    void processBadRequest(final long REQUEST_ID,
-                           final HTTPStatusCode STATUS) {
-        HTTPResponse<?> response = new HTTPResponse<>(REQUEST_ID);
-        response.setVersion(HTTPVersion.HTTP_1_1);
-        response.setStatusCode(STATUS);
-        addDefaultHeaders(response);
-        response.formatProtocol();
-        REQ_HANDLER.addToSendQue(response);
-    }
-
-    private static void addDefaultHeaders(final HTTPResponse<?> RESPONSE) {
-        Map<String, List<String>> headers = new HashMap<>();
-        headers.put("Server", List.of("LycorisCafe/NexusHTTP(v1.0.0)"));
-        headers.put("Date", List.of(getServerTime()));
-        RESPONSE.setHeaders(headers);
-    }
-
-    private static String getServerTime() {
-        return DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
-                .withZone(ZoneId.of("GMT")).format(ZonedDateTime.now());
+        RequestHandler.addDefaultHeaders(httpResponse);
+        REQ_HANDLER.addToSendQue(httpResponse);
     }
 }

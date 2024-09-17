@@ -28,10 +28,10 @@ import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
 public final class RequestHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(RequestHandler.class);
@@ -105,6 +105,28 @@ public final class RequestHandler implements Runnable {
         }
     }
 
+    public void processBadRequest(final long REQUEST_ID,
+                                  final HTTPStatusCode STATUS) {
+        HTTPResponse<String> response = new HTTPResponse<>(REQUEST_ID);
+        response.setVersion(HTTPVersion.HTTP_1_1);
+        response.setStatusCode(STATUS);
+        addDefaultHeaders(response);
+        response.formatProtocol();
+        addToSendQue(response);
+    }
+
+    public static void addDefaultHeaders(final HTTPResponse<?> RESPONSE) {
+        Map<String, List<String>> headers = new HashMap<>();
+        headers.put("Server", List.of("LycorisCafe/NexusHTTP(v1.0.0)"));
+        headers.put("Date", List.of(getServerTime()));
+        RESPONSE.setHeaders(headers);
+    }
+
+    private static String getServerTime() {
+        return DateTimeFormatter.ofPattern("EEE, dd MMM yyyy HH:mm:ss z", Locale.ENGLISH)
+                .withZone(ZoneId.of("GMT")).format(ZonedDateTime.now());
+    }
+
     @Override
     public void run() {
         ArrayList<Object> requestLine = new ArrayList<>();
@@ -137,7 +159,7 @@ public final class RequestHandler implements Runnable {
                         if (requestLine.isEmpty()) {
                             requestLine = validateRequestLine(requestLine, buffer.toString(StandardCharsets.UTF_8));
                             if (requestLine == null) {
-                                PROCESSOR.processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
+                                processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
                                 break headersLoop;
                             }
                             buffer.reset();
@@ -146,7 +168,7 @@ public final class RequestHandler implements Runnable {
 
                         headers = processHeader(headers, buffer.toString(StandardCharsets.UTF_8));
                         if (headers == null) {
-                            PROCESSOR.processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
+                            processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
                             break headersLoop;
                         }
                         buffer.reset();
