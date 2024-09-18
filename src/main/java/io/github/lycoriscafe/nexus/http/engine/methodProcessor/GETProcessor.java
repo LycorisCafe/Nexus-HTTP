@@ -17,12 +17,15 @@
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.configuration.Database;
+import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
@@ -31,17 +34,40 @@ import java.util.List;
 
 public final class GETProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
+    private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
+    private final HTTPServerConfiguration CONFIG;
 
     public GETProcessor(final RequestHandler REQ_HANDLER,
-                        final Connection DATABASE) {
+                        final BufferedInputStream INPUT_STREAM,
+                        final Connection DATABASE,
+                        final HTTPServerConfiguration CONFIG) {
         this.REQ_HANDLER = REQ_HANDLER;
+        this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;
+        this.CONFIG = CONFIG;
     }
 
     @Override
-    public HTTPResponse<?> process(final HTTPRequest<?> request) {
+    public HTTPResponse<?> process(HTTPRequest<?> request) {
         HTTPResponse<?> httpResponse = null;
+        if (request.getHeaders().containsKey("content-length")) {
+            int contentLen = Integer.parseInt(request.getHeaders().get("content-length").getFirst());
+            if (contentLen > CONFIG.getMaxContentLength()) {
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.BAD_REQUEST);
+                return null;
+            }
+
+            byte[] bytes = new byte[contentLen];
+            try {
+                INPUT_STREAM.read(bytes, 0, bytes.length);
+            } catch (IOException e) {
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
+                return null;
+            }
+            HTTPRequest<byte[]> httpReq = (HTTPRequest<byte[]>) request;
+            httpReq.setContent(bytes);
+        }
         try {
             List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.GET, request.getRequestURL());
             if (details.get(0) == null) {
@@ -51,8 +77,8 @@ public final class GETProcessor implements MethodProcessor {
             Class<?> clazz = Class.forName(details.get(1));
             Method method = clazz.getMethod(details.get(2), HTTPRequest.class);
             httpResponse = (HTTPResponse<?>) method.invoke(null, request);
-        } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
-                 ClassNotFoundException e) {
+        } catch (SQLException | ClassNotFoundException | InvocationTargetException |
+                 NoSuchMethodException | IllegalAccessException e) {
             REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
         }
         return httpResponse;

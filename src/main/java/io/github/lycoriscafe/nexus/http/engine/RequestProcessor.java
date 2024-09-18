@@ -51,7 +51,7 @@ public final class RequestProcessor {
 //        }
 
         methodProcessors = new HashMap<>();
-        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, DATABASE));
+        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.DELETE, new DELETEProcessor(REQ_HANDLER, DATABASE));
