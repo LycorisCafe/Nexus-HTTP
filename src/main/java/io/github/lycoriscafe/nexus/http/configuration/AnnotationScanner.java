@@ -17,10 +17,7 @@
 package io.github.lycoriscafe.nexus.http.configuration;
 
 import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import org.reflections.Reflections;
 
@@ -58,6 +55,10 @@ public final class AnnotationScanner {
                     case Method m when m.isAnnotationPresent(DELETE.class) -> {
                         endpointValue = m.getAnnotation(DELETE.class).value();
                         yield "ReqDELETE";
+                    }
+                    case Method m when m.isAnnotationPresent(PATCH.class) -> {
+                        endpointValue = m.getAnnotation(PATCH.class).value();
+                        yield "ReqPATCH";
                     }
                     default -> null;
                 };

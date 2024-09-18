@@ -81,6 +81,10 @@ public final class HTTPResponse<T> {
         this.content = content;
     }
 
+    public void emptyContent() {
+        this.content = null;
+    }
+
     public void formatProtocol() {
         protocolBody = new StringBuilder(version.getValue() + " " + statusCode.getStatusCode() + "\r\n");
         for (Map.Entry<String, List<String>> header : headers.entrySet()) {

@@ -55,6 +55,7 @@ public final class RequestProcessor {
         methodProcessors.put(HTTPRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
         methodProcessors.put(HTTPRequestMethod.DELETE, new DELETEProcessor(REQ_HANDLER, DATABASE));
+        methodProcessors.put(HTTPRequestMethod.PATCH, new PATCHProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
     }
 
     void processRequest(final long REQUEST_ID,
@@ -76,12 +77,13 @@ public final class RequestProcessor {
         httpRequest.setHeaders(HEADERS);
 
         HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
-            case GET -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
+            case GET, HEAD -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
             case POST -> methodProcessors.get(HTTPRequestMethod.POST).process(httpRequest);
             case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);
             case DELETE -> methodProcessors.get(HTTPRequestMethod.DELETE).process(httpRequest);
+            case PATCH -> methodProcessors.get(HTTPRequestMethod.PATCH).process(httpRequest);
             default -> {
-                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.BAD_REQUEST);
+                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.NOT_IMPLEMENTED);
                 yield null;
             }
         };
@@ -89,6 +91,9 @@ public final class RequestProcessor {
         if (httpResponse != null) {
             httpResponse.setVersion(HTTPVersion.HTTP_1_1);
             httpResponse.formatProtocol();
+            if (httpRequest.getRequestMethod() == HTTPRequestMethod.HEAD) {
+                httpResponse.emptyContent();
+            }
             REQ_HANDLER.addToSendQue(httpResponse);
         }
     }

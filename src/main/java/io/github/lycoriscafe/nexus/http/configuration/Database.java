@@ -77,6 +77,14 @@ public final class Database {
                         "methodName TEXT NOT NULL," +
                         "statusAnnotation TEXT," +
                         "statusAnnotationValue TEXT" +
+                        ")",
+                // Handle PATCH
+                "CREATE TABLE ReqPATCH(" +
+                        "endpoint TEXT NOT NULL," +
+                        "className TEXT NOT NULL," +
+                        "methodName TEXT NOT NULL," +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT" +
                         ")"
         };
 

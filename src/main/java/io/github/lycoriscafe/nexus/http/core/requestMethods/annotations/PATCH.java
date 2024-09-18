@@ -16,5 +16,11 @@
 
 package io.github.lycoriscafe.nexus.http.core.requestMethods.annotations;
 
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface PATCH {
+    String value();
 }
