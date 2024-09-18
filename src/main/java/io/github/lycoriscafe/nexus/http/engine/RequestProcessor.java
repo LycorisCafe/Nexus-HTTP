@@ -82,6 +82,10 @@ public final class RequestProcessor {
             case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);
             case DELETE -> methodProcessors.get(HTTPRequestMethod.DELETE).process(httpRequest);
             case PATCH -> methodProcessors.get(HTTPRequestMethod.PATCH).process(httpRequest);
+            case TRACE -> {
+                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.METHOD_NOT_ALLOWED);
+                yield null;
+            }
             default -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.NOT_IMPLEMENTED);
                 yield null;
