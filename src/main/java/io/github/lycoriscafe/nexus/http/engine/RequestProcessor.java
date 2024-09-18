@@ -68,7 +68,7 @@ public final class RequestProcessor {
                 REQUEST_LINE.get(1).toString());
         if (REQUEST_LINE.get(1).toString().contains("?")) {
             Map<String, String> params = new HashMap<>();
-            for (String param : REQUEST_LINE.get(1).toString().split("&")) {
+            for (String param : REQUEST_LINE.get(1).toString().split("\\?")[1].split("&")) {
                 params.put(param.split("=")[0], param.split("=")[1]);
             }
             httpRequest.setParameters(params);
