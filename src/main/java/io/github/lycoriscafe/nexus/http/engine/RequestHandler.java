@@ -180,6 +180,7 @@ public final class RequestHandler implements Runnable {
                     }
                 }
             } catch (IOException e) {
+                break;
                 // TODO handle socket io exception
             }
         }
@@ -188,7 +189,6 @@ public final class RequestHandler implements Runnable {
     private synchronized void send() {
         for (HTTPResponse<?> httpResponse : RESPONSES) {
             if (httpResponse.getRESPONSE_ID() == responseId) {
-                System.out.println(httpResponse.getFormattedProtocol());
                 try {
                     OUTPUT_STREAM.write(httpResponse.getFormattedProtocol().getBytes(StandardCharsets.UTF_8));
                     if (httpResponse.getContent() instanceof byte[] b) {

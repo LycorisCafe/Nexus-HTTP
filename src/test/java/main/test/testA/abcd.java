@@ -25,6 +25,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -34,12 +35,12 @@ public class abcd {
     @GET("/abcd")
     public static HTTPResponse<?> xyz(HTTPRequest<?> request) {
         System.out.println(request.getParameters());
-        HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        HTTPResponse<File> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
-        headers.put("Content-Type", List.of("text/html"));
+        headers.put("Content-Type", List.of("image/jpg"));
         httpResponse.setHeaders(headers);
-        httpResponse.setContent("Hello World!");
+        httpResponse.setContent(new File("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg"));
         return httpResponse;
     }
 

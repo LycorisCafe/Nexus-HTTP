@@ -106,7 +106,6 @@ public final class Database {
         for (int i = 1; i <= 5; i++) {
             details.add(rs.getString(i));
         }
-        System.out.println(ps);
         return details;
     }
 }
