@@ -22,11 +22,11 @@
 
     <groupId>io.github.lycoriscafe</groupId>
     <artifactId>nexus-http</artifactId>
-    <version>1.0.0-DEV</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>nexus-http</name>
-    <description>Simple embedded http server!</description>
+    <description>Simple embedded http server for Java applications!</description>
     <url>https://github.com/LycorisCafe/nexus-http</url>
     <inceptionYear>2024</inceptionYear>
 

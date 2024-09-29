@@ -44,15 +44,28 @@ public class abcd {
         return httpResponse;
     }
 
-    @POST("/efgh")
+    static int x = 0;
+
+    @POST("/sensor-data")
     public static HTTPResponse<?> abc(HTTPRequest<?> request) {
-        System.out.println(request.getParameters());
+//        System.out.println(request.getParameters());
+//        System.out.println(request.getHeaders());
+        byte[] b = (byte[]) request.getContent();
+        for (byte x : b) {
+            System.out.print((char) x);
+        }
+        System.out.println();
         HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
-        httpResponse.setStatusCode(HTTPStatusCode.CREATED);
+        httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
         httpResponse.setHeaders(headers);
-        httpResponse.setContent("Hello World!");
+        if (x == 0) {
+            x = 1;
+        } else {
+            x = 0;
+        }
+        httpResponse.setContent(x == 1 ? "relay_on" : "relay_off");
         return httpResponse;
     }
 
