@@ -16,8 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
-public class Cookie {
-    private final CookieOperation operation;
+public final class Cookie {
     private final String name;
     private final String value;
     private final String expires;
@@ -26,11 +25,10 @@ public class Cookie {
     private final boolean httpOnly;
     private final String domain;
     private final String path;
-    private final SameSite sameSite;
+    private final CookieSameSite sameSite;
     private final CookiePrefix prefix;
 
     private Cookie(CookieBuilder builder) {
-        this.operation = builder.operation;
         this.name = builder.name;
         this.value = builder.value;
         this.expires = builder.expires;
@@ -41,10 +39,6 @@ public class Cookie {
         this.path = builder.path;
         this.sameSite = builder.sameSite;
         this.prefix = builder.prefix;
-    }
-
-    public CookieOperation getOperation() {
-        return operation;
     }
 
     public String getName() {
@@ -79,7 +73,7 @@ public class Cookie {
         return path;
     }
 
-    public SameSite getSameSite() {
+    public CookieSameSite getSameSite() {
         return sameSite;
     }
 
@@ -87,15 +81,13 @@ public class Cookie {
         return prefix;
     }
 
-    public static CookieBuilder builder(CookieOperation operation,
-                                        String cookieName,
+    public static CookieBuilder builder(String cookieName,
                                         String cookieValue) {
-        return new CookieBuilder(operation, cookieName, cookieValue);
+        return new CookieBuilder(cookieName, cookieValue);
     }
 
 
     public static class CookieBuilder {
-        private final CookieOperation operation;
         private final String name;
         private final String value;
         private String expires;
@@ -104,13 +96,11 @@ public class Cookie {
         private boolean httpOnly;
         private String domain;
         private String path;
-        private SameSite sameSite;
+        private CookieSameSite sameSite;
         private CookiePrefix prefix;
 
-        public CookieBuilder(CookieOperation operation,
-                             String cookieName,
+        public CookieBuilder(String cookieName,
                              String cookieValue) {
-            this.operation = operation;
             this.name = cookieName;
             this.value = cookieValue;
         }
@@ -145,7 +135,7 @@ public class Cookie {
             return this;
         }
 
-        public CookieBuilder sameSite(SameSite sameSite) throws CookieException {
+        public CookieBuilder sameSite(CookieSameSite sameSite) throws CookieException {
             if (this.sameSite == null) {
                 throw new CookieException("Same Site cannot be null");
             }

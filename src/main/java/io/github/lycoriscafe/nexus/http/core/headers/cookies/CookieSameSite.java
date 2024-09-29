@@ -16,14 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
-public enum SameSite {
+public enum CookieSameSite {
     STRICT("Strict"),
     LAX("Lax"),
     NONE("None");
 
     private final String value;
 
-    SameSite(String value) {
+    CookieSameSite(String value) {
         this.value = value;
     }
 
