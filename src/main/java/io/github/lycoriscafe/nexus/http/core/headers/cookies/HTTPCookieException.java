@@ -16,8 +16,8 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
-public class CookieException extends Exception {
-    public CookieException(String message) {
+public class HTTPCookieException extends Exception {
+    public HTTPCookieException(String message) {
         super(message);
     }
 }
