@@ -51,7 +51,7 @@ public sealed class ContentSecurityPolicy
     public static sealed class ContentSecurityPolicyBuilder
             permits ContentSecurityPolicyReportOnly.ContentSecurityPolicyReportOnlyBuilder {
         final CSPDirective directive;
-        private final List<CSPValue> values;
+        private List<CSPValue> values;
         final List<Object> hosts;
 
         public ContentSecurityPolicyBuilder(CSPDirective directive)
@@ -60,7 +60,6 @@ public sealed class ContentSecurityPolicy
                 throw new ContentSecurityPolicyException("directive cannot be null");
             }
             this.directive = directive;
-            values = new ArrayList<>();
             hosts = new ArrayList<>();
         }
 
@@ -68,6 +67,9 @@ public sealed class ContentSecurityPolicy
                 throws ContentSecurityPolicyException {
             if (directive == CSPDirective.REPORT_TO || directive == CSPDirective.REPORT_URI) {
                 throw new ContentSecurityPolicyException("report-to & report-uri cannot be contain any value");
+            }
+            if (values == null) {
+                values = new ArrayList<>();
             }
             this.values.add(value);
             return this;

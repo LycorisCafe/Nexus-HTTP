@@ -91,19 +91,15 @@ public final class HttpResponse {
 
         private final long RESPONSE_ID;
         private HTTPStatusCode status;
-        private final Map<String, List<String>> headers;
-        private final List<Cookie> cookies;
-        private final List<ContentSecurityPolicy> contentSecurityPolicies;
-        private final List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
+        private Map<String, List<String>> headers;
+        private List<Cookie> cookies;
+        private List<ContentSecurityPolicy> contentSecurityPolicies;
+        private List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
         private StrictTransportSecurity strictTransportSecurity;
         private Object content;
 
         public HttpResponseBuilder(long RESPONSE_ID) {
             this.RESPONSE_ID = RESPONSE_ID;
-            headers = new HashMap<>();
-            cookies = new ArrayList<>();
-            contentSecurityPolicies = new ArrayList<>();
-            contentSecurityPolicyReportOnlys = new ArrayList<>();
         }
 
         public HttpResponseBuilder status(HTTPStatusCode status)
@@ -120,6 +116,9 @@ public final class HttpResponse {
             if (name == null || values == null) {
                 throw new HttpResponseException("parameters cannot be null");
             }
+            if (headers == null) {
+                headers = new HashMap<>();
+            }
             headers.put(name, values);
             return this;
         }
@@ -128,6 +127,9 @@ public final class HttpResponse {
                 throws HttpResponseException {
             if (cookie == null) {
                 throw new HttpResponseException("cookie cannot be null");
+            }
+            if (cookies == null) {
+                cookies = new ArrayList<>();
             }
             cookies.add(cookie);
             return this;
@@ -138,6 +140,9 @@ public final class HttpResponse {
             if (contentSecurityPolicy == null) {
                 throw new HttpResponseException("content-security-policy cannot be null");
             }
+            if (contentSecurityPolicies == null) {
+                contentSecurityPolicies = new ArrayList<>();
+            }
             contentSecurityPolicies.add(contentSecurityPolicy);
             return this;
         }
@@ -146,6 +151,9 @@ public final class HttpResponse {
                 throws HttpResponseException {
             if (contentSecurityPolicyReportOnly == null) {
                 throw new HttpResponseException("content-security-policy-report-only cannot be null");
+            }
+            if (contentSecurityPolicyReportOnlys == null) {
+                contentSecurityPolicyReportOnlys = new ArrayList<>();
             }
             contentSecurityPolicyReportOnlys.add(contentSecurityPolicyReportOnly);
             if (contentSecurityPolicyReportOnly.getDirective() == CSPDirective.REPORT_TO ||
