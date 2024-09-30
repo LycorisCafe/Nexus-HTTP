@@ -16,10 +16,10 @@
 
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 
 public sealed interface MethodProcessor
         permits GETProcessor, POSTProcessor, PUTProcessor, DELETEProcessor, PATCHProcessor {
-    HTTPResponse<?> process(HTTPRequest<?> request);
+    HttpResponse<?> process(HttpRequest<?> request);
 }

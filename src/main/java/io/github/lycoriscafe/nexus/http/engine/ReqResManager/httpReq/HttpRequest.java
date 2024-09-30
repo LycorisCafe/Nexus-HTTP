@@ -14,29 +14,26 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
+package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class HTTPRequest {
+public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final long REQUEST_ID;
     private final Map<String, String> parameters;
     private final Map<String, List<String>> headers;
     private final List<Cookie> cookies;
-    private final Object content;
 
-    private HTTPRequest(HTTPRequestBuilder builder) {
+    HttpRequest(HttpRequestBuilder builder) {
         this.REQUEST_ID = builder.REQUEST_ID;
         this.parameters = builder.parameters;
         this.headers = builder.headers;
         this.cookies = builder.cookies;
-        this.content = builder.content;
     }
 
     public long getRequestId() {
@@ -55,53 +52,35 @@ public final class HTTPRequest {
         return cookies;
     }
 
-    public Object getContent() {
-        return content;
+    public static HttpRequestBuilder builder(long RESPONSE_ID) {
+        return new HttpRequestBuilder(RESPONSE_ID);
     }
 
-    public static HTTPRequestBuilder builder(long RESPONSE_ID) {
-        return new HTTPRequestBuilder(RESPONSE_ID);
-    }
-
-    public static class HTTPRequestBuilder {
+    public static class HttpRequestBuilder {
         private final long REQUEST_ID;
         private Map<String, String> parameters;
         private final Map<String, List<String>> headers;
         private final List<Cookie> cookies;
-        private Object content;
 
-        public HTTPRequestBuilder(long REQUEST_ID) {
+        public HttpRequestBuilder(long REQUEST_ID) {
             this.REQUEST_ID = REQUEST_ID;
             headers = new HashMap<>();
             cookies = new ArrayList<>();
         }
 
-        public HTTPRequestBuilder status(String key, String value) {
+        public HttpRequestBuilder status(String key, String value) {
             this.parameters.put(key, value);
             return this;
         }
 
-        public HTTPRequestBuilder header(String name, List<String> values) {
+        public HttpRequestBuilder header(String name, List<String> values) {
             headers.put(name, values);
             return this;
         }
 
-        public HTTPRequestBuilder cookie(Cookie cookie) {
+        public HttpRequestBuilder cookie(Cookie cookie) {
             cookies.add(cookie);
             return this;
-        }
-
-        public HTTPRequestBuilder content(Object content) throws IllegalArgumentException {
-            if (!(content instanceof byte[] || content instanceof File)) {
-                throw new IllegalArgumentException("Content must be a byte array or a file. " +
-                        "If you need this to be null, just ignore this method.");
-            }
-            this.content = content;
-            return this;
-        }
-
-        public HTTPRequest build() {
-            return new HTTPRequest(this);
         }
     }
 }

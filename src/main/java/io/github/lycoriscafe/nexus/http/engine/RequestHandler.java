@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HttpResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,7 +34,7 @@ import java.util.*;
 
 public final class RequestHandler implements Runnable {
     Logger logger = LoggerFactory.getLogger(RequestHandler.class);
-    final List<HTTPResponse<?>> RESPONSES = new ArrayList<>();
+    final List<HttpResponse<?>> RESPONSES = new ArrayList<>();
 
     private long requestId = 0L;
     private long responseId = 0L;
@@ -61,7 +61,7 @@ public final class RequestHandler implements Runnable {
         responseId = (responseId == Long.MAX_VALUE ? 0 : responseId + 1);
     }
 
-    public void addToSendQue(final HTTPResponse<?> httpResponse) {
+    public void addToSendQue(final HttpResponse<?> httpResponse) {
         RESPONSES.add(httpResponse);
         send();
     }
@@ -106,7 +106,7 @@ public final class RequestHandler implements Runnable {
 
     public void processBadRequest(final long REQUEST_ID,
                                   final HTTPStatusCode STATUS) {
-        HTTPResponse<String> response = new HTTPResponse<>(REQUEST_ID);
+        HttpResponse<String> response = new HttpResponse<>(REQUEST_ID);
         response.setVersion(HTTPVersion.HTTP_1_1);
         response.setStatusCode(STATUS);
         addDefaultHeaders(response);
@@ -115,7 +115,7 @@ public final class RequestHandler implements Runnable {
         addToSendQue(response);
     }
 
-    public static void addDefaultHeaders(final HTTPResponse<?> RESPONSE) {
+    public static void addDefaultHeaders(final HttpResponse<?> RESPONSE) {
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Server", List.of("LycorisCafe/NexusHTTP(v1.0.0)"));
         headers.put("Date", List.of(getServerTime()));
@@ -186,7 +186,7 @@ public final class RequestHandler implements Runnable {
     }
 
     private synchronized void send() {
-        for (HTTPResponse<?> httpResponse : RESPONSES) {
+        for (HttpResponse<?> httpResponse : RESPONSES) {
             if (httpResponse.getRESPONSE_ID() == responseId) {
                 try {
                     OUTPUT_STREAM.write(httpResponse.getFormattedProtocol().getBytes(StandardCharsets.UTF_8));

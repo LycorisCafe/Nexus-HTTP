@@ -20,8 +20,8 @@ import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.BufferedInputStream;
@@ -49,8 +49,8 @@ public final class GETProcessor implements MethodProcessor {
     }
 
     @Override
-    public HTTPResponse<?> process(HTTPRequest<?> request) {
-        HTTPResponse<?> httpResponse = null;
+    public HttpResponse<?> process(HttpRequest<?> request) {
+        HttpResponse<?> httpResponse = null;
         if (request.getHeaders().containsKey("content-length")) {
             int contentLen = Integer.parseInt(request.getHeaders().get("content-length").getFirst());
             if (contentLen > CONFIG.getMaxContentLength()) {
@@ -65,7 +65,7 @@ public final class GETProcessor implements MethodProcessor {
                 REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
                 return null;
             }
-            HTTPRequest<byte[]> httpReq = (HTTPRequest<byte[]>) request;
+            HttpRequest<byte[]> httpReq = request;
             httpReq.setContent(bytes);
         }
         try {
@@ -75,8 +75,8 @@ public final class GETProcessor implements MethodProcessor {
                 return httpResponse;
             }
             Class<?> clazz = Class.forName(details.get(1));
-            Method method = clazz.getMethod(details.get(2), HTTPRequest.class);
-            httpResponse = (HTTPResponse<?>) method.invoke(null, request);
+            Method method = clazz.getMethod(details.get(2), HttpRequest.class);
+            httpResponse = (HttpResponse<?>) method.invoke(null, request);
         } catch (SQLException | ClassNotFoundException | InvocationTargetException |
                  NoSuchMethodException | IllegalAccessException e) {
             REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);

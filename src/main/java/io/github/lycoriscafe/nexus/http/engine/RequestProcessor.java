@@ -20,8 +20,8 @@ import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.*;
 
 import java.io.BufferedInputStream;
@@ -61,7 +61,7 @@ public final class RequestProcessor {
     void processRequest(final long REQUEST_ID,
                         final ArrayList<Object> REQUEST_LINE,
                         final Map<String, List<String>> HEADERS) {
-        HTTPRequest<?> httpRequest = new HTTPRequest<>(REQUEST_ID);
+        HttpRequest<?> httpRequest = new HttpRequest<>(REQUEST_ID);
         httpRequest.setRequestMethod((HTTPRequestMethod) REQUEST_LINE.getFirst());
         httpRequest.setRequestURL(REQUEST_LINE.get(1).toString().contains("?") ?
                 REQUEST_LINE.get(1).toString().split("\\?")[0] :
@@ -76,7 +76,7 @@ public final class RequestProcessor {
         httpRequest.setVersion((HTTPVersion) REQUEST_LINE.getLast());
         httpRequest.setHeaders(HEADERS);
 
-        HTTPResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
+        HttpResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
             case GET, HEAD -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
             case POST -> methodProcessors.get(HTTPRequestMethod.POST).process(httpRequest);
             case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);

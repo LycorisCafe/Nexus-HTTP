@@ -22,8 +22,8 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HTTPResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 
 import java.io.File;
 import java.util.HashMap;
@@ -33,9 +33,9 @@ import java.util.Map;
 @HTTPEndpoint("/")
 public class abcd {
     @GET("/abcd")
-    public static HTTPResponse<?> xyz(HTTPRequest<?> request) {
+    public static HttpResponse<?> xyz(HttpRequest<?> request) {
         System.out.println(request.getParameters());
-        HTTPResponse<File> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        HttpResponse<File> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("image/jpg"));
@@ -47,7 +47,7 @@ public class abcd {
     static int x = 0;
 
     @POST("/sensor-data")
-    public static HTTPResponse<?> abc(HTTPRequest<?> request) {
+    public static HttpResponse<?> abc(HttpRequest<?> request) {
 //        System.out.println(request.getParameters());
 //        System.out.println(request.getHeaders());
         byte[] b = (byte[]) request.getContent();
@@ -55,7 +55,7 @@ public class abcd {
             System.out.print((char) x);
         }
         System.out.println();
-        HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
@@ -70,9 +70,9 @@ public class abcd {
     }
 
     @PUT("/ijkl")
-    public static HTTPResponse<?> defg(HTTPRequest<?> request) {
+    public static HttpResponse<?> defg(HttpRequest<?> request) {
         System.out.println(request.getParameters());
-        HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.CREATED);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
@@ -82,9 +82,9 @@ public class abcd {
     }
 
     @DELETE("/mnop")
-    public static HTTPResponse<?> xyza(HTTPRequest<?> request) {
+    public static HttpResponse<?> xyza(HttpRequest<?> request) {
         System.out.println(request.getParameters());
-        HTTPResponse<String> httpResponse = new HTTPResponse<>(request.getREQUEST_ID());
+        HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
         httpResponse.setStatusCode(HTTPStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));

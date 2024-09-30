@@ -25,14 +25,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class HTTPResponse {
+public final class HttpResponse {
     private final long RESPONSE_ID;
     private final HTTPStatusCode status;
     private final Map<String, List<String>> headers;
     private final List<Cookie> cookies;
     private final Object content;
 
-    private HTTPResponse(HTTPResponseBuilder builder) {
+    private HttpResponse(HttpResponseBuilder builder) {
         this.RESPONSE_ID = builder.RESPONSE_ID;
         this.status = builder.status;
         this.headers = builder.headers;
@@ -60,39 +60,39 @@ public final class HTTPResponse {
         return content;
     }
 
-    public static HTTPResponseBuilder builder(long RESPONSE_ID) {
-        return new HTTPResponseBuilder(RESPONSE_ID);
+    public static HttpResponseBuilder builder(long RESPONSE_ID) {
+        return new HttpResponseBuilder(RESPONSE_ID);
     }
 
-    public static class HTTPResponseBuilder {
+    public static class HttpResponseBuilder {
         private final long RESPONSE_ID;
         private HTTPStatusCode status;
         private final Map<String, List<String>> headers;
         private final List<Cookie> cookies;
         private Object content;
 
-        public HTTPResponseBuilder(long RESPONSE_ID) {
+        public HttpResponseBuilder(long RESPONSE_ID) {
             this.RESPONSE_ID = RESPONSE_ID;
             headers = new HashMap<>();
             cookies = new ArrayList<>();
         }
 
-        public HTTPResponseBuilder status(HTTPStatusCode status) {
+        public HttpResponseBuilder status(HTTPStatusCode status) {
             this.status = status;
             return this;
         }
 
-        public HTTPResponseBuilder header(String name, List<String> values) {
+        public HttpResponseBuilder header(String name, List<String> values) {
             headers.put(name, values);
             return this;
         }
 
-        public HTTPResponseBuilder cookie(Cookie cookie) {
+        public HttpResponseBuilder cookie(Cookie cookie) {
             cookies.add(cookie);
             return this;
         }
 
-        public HTTPResponseBuilder content(Object content) throws IllegalArgumentException {
+        public HttpResponseBuilder content(Object content) throws IllegalArgumentException {
             if (!(content instanceof byte[] || content instanceof File)) {
                 throw new IllegalArgumentException("Content must be a byte array or a file. " +
                         "If you need this to be null, just ignore this method.");
@@ -101,8 +101,8 @@ public final class HTTPResponse {
             return this;
         }
 
-        public HTTPResponse build() {
-            return new HTTPResponse(this);
+        public HttpResponse build() {
+            return new HttpResponse(this);
         }
     }
 }
