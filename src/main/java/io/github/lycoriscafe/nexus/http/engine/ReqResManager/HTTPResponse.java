@@ -16,105 +16,93 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
-import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 
 import java.io.File;
-import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class HTTPResponse<T> {
+public final class HTTPResponse {
     private final long RESPONSE_ID;
-    private HTTPVersion version;
-    private HTTPStatusCode statusCode;
+    private final HTTPStatusCode status;
     private final Map<String, List<String>> headers;
-    private T content;
-    StringBuilder protocolBody;
+    private final List<Cookie> cookies;
+    private final Object content;
 
-    public HTTPResponse(final long RESPONSE_ID) {
-        this.RESPONSE_ID = RESPONSE_ID;
-        this.headers = new HashMap<>();
-        RequestHandler.addDefaultHeaders(this);
+    private HTTPResponse(HTTPResponseBuilder builder) {
+        this.RESPONSE_ID = builder.RESPONSE_ID;
+        this.status = builder.status;
+        this.headers = builder.headers;
+        this.cookies = builder.cookies;
+        this.content = builder.content;
     }
 
-    public long getRESPONSE_ID() {
+    public long getResponseId() {
         return RESPONSE_ID;
     }
 
-    public HTTPVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(HTTPVersion version) {
-        this.version = version;
-    }
-
-    public HTTPStatusCode getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(HTTPStatusCode statusCode) {
-        this.statusCode = statusCode;
+    public HTTPStatusCode getStatus() {
+        return status;
     }
 
     public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, List<String>> headers) {
-        this.headers.putAll(headers);
+    public List<Cookie> getCookies() {
+        return cookies;
     }
 
-    public T getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(T content) {
-        if (!((content instanceof String) ||
-                (content instanceof byte[]) ||
-                (content instanceof File))) {
-            throw new IllegalArgumentException("Invalid content type");
-        }
-        this.content = content;
+    public static HTTPResponseBuilder builder(long RESPONSE_ID) {
+        return new HTTPResponseBuilder(RESPONSE_ID);
     }
 
-    public void emptyContent() {
-        this.content = null;
-    }
+    public static class HTTPResponseBuilder {
+        private final long RESPONSE_ID;
+        private HTTPStatusCode status;
+        private final Map<String, List<String>> headers;
+        private final List<Cookie> cookies;
+        private Object content;
 
-    public void formatProtocol() {
-        protocolBody = new StringBuilder(version.getValue() + " " + statusCode.getStatusCode() + "\r\n");
-        for (Map.Entry<String, List<String>> header : headers.entrySet()) {
-            protocolBody.append(header.getKey()).append(": ");
-            for (int i = 0; i < header.getValue().size(); ++i) {
-                protocolBody.append(header.getValue().get(i));
-                if (i != header.getValue().size() - 1) {
-                    protocolBody.append(", ");
-                }
-            }
-            protocolBody.append("\r\n");
+        public HTTPResponseBuilder(long RESPONSE_ID) {
+            this.RESPONSE_ID = RESPONSE_ID;
+            headers = new HashMap<>();
+            cookies = new ArrayList<>();
         }
 
-        if (content != null) {
-            protocolBody.append("Content-Length: ");
-            if (content instanceof byte[] b) {
-                protocolBody.append(b.length);
-            }
-            if (content instanceof String str) {
-                protocolBody.append(str.getBytes(StandardCharsets.UTF_8).length);
-            }
-            if (content instanceof File file) {
-                protocolBody.append(file.length());
-            }
-            protocolBody.append("\r\n");
+        public HTTPResponseBuilder status(HTTPStatusCode status) {
+            this.status = status;
+            return this;
         }
-        protocolBody.append("\r\n");
-    }
 
-    public String getFormattedProtocol() {
-        return protocolBody.toString();
+        public HTTPResponseBuilder header(String name, List<String> values) {
+            headers.put(name, values);
+            return this;
+        }
+
+        public HTTPResponseBuilder cookie(Cookie cookie) {
+            cookies.add(cookie);
+            return this;
+        }
+
+        public HTTPResponseBuilder content(Object content) throws IllegalArgumentException {
+            if (!(content instanceof byte[] || content instanceof File)) {
+                throw new IllegalArgumentException("Content must be a byte array or a file. " +
+                        "If you need this to be null, just ignore this method.");
+            }
+            this.content = content;
+            return this;
+        }
+
+        public HTTPResponse build() {
+            return new HTTPResponse(this);
+        }
     }
 }

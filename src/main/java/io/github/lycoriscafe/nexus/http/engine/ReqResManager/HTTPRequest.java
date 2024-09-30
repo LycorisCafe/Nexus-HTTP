@@ -16,76 +16,92 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
 
-import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public final class HTTPRequest<T> {
+public final class HTTPRequest {
     private final long REQUEST_ID;
-    private HTTPRequestMethod requestMethod;
-    private String requestURL;
-    private Map<String, String> parameters;
-    private HTTPVersion version;
+    private final Map<String, String> parameters;
     private final Map<String, List<String>> headers;
-    private T content;
+    private final List<Cookie> cookies;
+    private final Object content;
 
-    public HTTPRequest(final long REQUEST_ID) {
-        this.REQUEST_ID = REQUEST_ID;
-        headers = new HashMap<>();
+    private HTTPRequest(HTTPRequestBuilder builder) {
+        this.REQUEST_ID = builder.REQUEST_ID;
+        this.parameters = builder.parameters;
+        this.headers = builder.headers;
+        this.cookies = builder.cookies;
+        this.content = builder.content;
     }
 
-    public long getREQUEST_ID() {
+    public long getRequestId() {
         return REQUEST_ID;
-    }
-
-    public HTTPRequestMethod getRequestMethod() {
-        return requestMethod;
-    }
-
-    public void setRequestMethod(HTTPRequestMethod requestMethod) {
-        this.requestMethod = requestMethod;
-    }
-
-    public String getRequestURL() {
-        return requestURL;
-    }
-
-    public void setRequestURL(String requestURL) {
-        this.requestURL = requestURL;
     }
 
     public Map<String, String> getParameters() {
         return parameters;
     }
 
-    public void setParameters(Map<String, String> parameters) {
-        this.parameters = parameters;
-    }
-
-    public HTTPVersion getVersion() {
-        return version;
-    }
-
-    public void setVersion(HTTPVersion version) {
-        this.version = version;
-    }
-
     public Map<String, List<String>> getHeaders() {
         return headers;
     }
 
-    public void setHeaders(Map<String, List<String>> headers) {
-        this.headers.putAll(headers);
+    public List<Cookie> getCookies() {
+        return cookies;
     }
 
-    public T getContent() {
+    public Object getContent() {
         return content;
     }
 
-    public void setContent(T content) {
-        this.content = content;
+    public static HTTPRequestBuilder builder(long RESPONSE_ID) {
+        return new HTTPRequestBuilder(RESPONSE_ID);
+    }
+
+    public static class HTTPRequestBuilder {
+        private final long REQUEST_ID;
+        private Map<String, String> parameters;
+        private final Map<String, List<String>> headers;
+        private final List<Cookie> cookies;
+        private Object content;
+
+        public HTTPRequestBuilder(long REQUEST_ID) {
+            this.REQUEST_ID = REQUEST_ID;
+            headers = new HashMap<>();
+            cookies = new ArrayList<>();
+        }
+
+        public HTTPRequestBuilder status(String key, String value) {
+            this.parameters.put(key, value);
+            return this;
+        }
+
+        public HTTPRequestBuilder header(String name, List<String> values) {
+            headers.put(name, values);
+            return this;
+        }
+
+        public HTTPRequestBuilder cookie(Cookie cookie) {
+            cookies.add(cookie);
+            return this;
+        }
+
+        public HTTPRequestBuilder content(Object content) throws IllegalArgumentException {
+            if (!(content instanceof byte[] || content instanceof File)) {
+                throw new IllegalArgumentException("Content must be a byte array or a file. " +
+                        "If you need this to be null, just ignore this method.");
+            }
+            this.content = content;
+            return this;
+        }
+
+        public HTTPRequest build() {
+            return new HTTPRequest(this);
+        }
     }
 }
