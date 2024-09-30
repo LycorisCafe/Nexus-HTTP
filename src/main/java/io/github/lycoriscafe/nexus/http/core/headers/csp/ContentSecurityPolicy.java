@@ -19,13 +19,13 @@ package io.github.lycoriscafe.nexus.http.core.headers.csp;
 import java.util.ArrayList;
 import java.util.List;
 
-public sealed class ContentSecurityPolicy<T>
+public sealed class ContentSecurityPolicy
         permits ContentSecurityPolicyReportOnly {
     private final CSPDirective directive;
     private final List<CSPValue> values;
-    private final List<T> hosts;
+    private final List<Object> hosts;
 
-    ContentSecurityPolicy(ContentSecurityPolicyBuilder<T> builder) {
+    ContentSecurityPolicy(ContentSecurityPolicyBuilder builder) {
         directive = builder.directive;
         values = builder.values;
         hosts = builder.hosts;
@@ -39,19 +39,19 @@ public sealed class ContentSecurityPolicy<T>
         return values;
     }
 
-    public List<T> getHosts() {
+    public List<Object> getHosts() {
         return hosts;
     }
 
-    public static <T> ContentSecurityPolicyBuilder<T> builder(CSPDirective directive) {
-        return new ContentSecurityPolicyBuilder<>(directive);
+    public static ContentSecurityPolicyBuilder builder(CSPDirective directive) {
+        return new ContentSecurityPolicyBuilder(directive);
     }
 
-    public static sealed class ContentSecurityPolicyBuilder<T>
+    public static sealed class ContentSecurityPolicyBuilder
             permits ContentSecurityPolicyReportOnly.ContentSecurityPolicyReportOnlyBuilder {
         final CSPDirective directive;
         private final List<CSPValue> values;
-        final List<T> hosts;
+        final List<Object> hosts;
 
         public ContentSecurityPolicyBuilder(CSPDirective directive) {
             this.directive = directive;
@@ -59,7 +59,7 @@ public sealed class ContentSecurityPolicy<T>
             hosts = new ArrayList<>();
         }
 
-        public ContentSecurityPolicyBuilder<T> value(CSPValue value) throws ContentSecurityPolicyException {
+        public ContentSecurityPolicyBuilder value(CSPValue value) throws ContentSecurityPolicyException {
             if (directive == CSPDirective.REPORT_TO || directive == CSPDirective.REPORT_URI) {
                 throw new ContentSecurityPolicyException("report-to & report-uri cannot be contain any value");
             }
@@ -67,19 +67,33 @@ public sealed class ContentSecurityPolicy<T>
             return this;
         }
 
-        public ContentSecurityPolicyBuilder<T> host(T host) throws ContentSecurityPolicyException {
-            if (!(host instanceof String || host instanceof ReportingEndpoint)) {
-                throw new ContentSecurityPolicyException("invalid host/endpoint");
+        public ContentSecurityPolicyBuilder host(String host) throws ContentSecurityPolicyException {
+            if (directive == CSPDirective.REPORT_TO) {
+                throw new ContentSecurityPolicyException("provided directive must have a ReportingEndpoint instance");
+            }
+            if (host == null) {
+                throw new ContentSecurityPolicyException("host cannot be null");
             }
             this.hosts.add(host);
             return this;
         }
 
-        public ContentSecurityPolicy<T> build() throws ContentSecurityPolicyException {
-            if (hosts.isEmpty()) {
-                throw new ContentSecurityPolicyException("no host provided");
+        public ContentSecurityPolicyBuilder host(ReportingEndpoint host) throws ContentSecurityPolicyException {
+            if (directive != CSPDirective.REPORT_TO) {
+                throw new ContentSecurityPolicyException("provided directive must have a String host/endpoint");
             }
-            return new ContentSecurityPolicy<>(this);
+            if (host == null) {
+                throw new ContentSecurityPolicyException("host cannot be null");
+            }
+            this.hosts.add(host);
+            return this;
+        }
+
+        public ContentSecurityPolicy build() throws ContentSecurityPolicyException {
+            if (hosts.isEmpty()) {
+                throw new ContentSecurityPolicyException("no host/endpoint provided");
+            }
+            return new ContentSecurityPolicy(this);
         }
     }
 }
