@@ -18,7 +18,9 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import java.io.File;
 
-public final class HttpGetRequest extends HttpRequest {
+public sealed class HttpGetRequest
+        extends HttpRequest
+        permits HttpDeleteRequest, HttpOptionsRequest, HttpPatchRequest, HttpPutRequest {
     private final Object content;
 
     public HttpGetRequest(HttpGetRequestBuilder builder) {
@@ -30,15 +32,17 @@ public final class HttpGetRequest extends HttpRequest {
         return content;
     }
 
-    public static HttpGetRequestBuilder builder(long RESPONSE_ID) {
-        return new HttpGetRequestBuilder(RESPONSE_ID);
+    public static HttpGetRequestBuilder builder(long REQUEST_ID) {
+        return new HttpGetRequestBuilder(REQUEST_ID);
     }
 
-    public static class HttpGetRequestBuilder extends HttpRequestBuilder {
+    public static sealed class HttpGetRequestBuilder
+            extends HttpRequestBuilder
+            permits HttpDeleteRequest.HttpDeleteRequestBuilder, HttpOptionsRequest.HttpOptionsRequestBuilder, HttpPatchRequest.HttpPatchRequestBuilder, HttpPutRequest.HttpPutRequestBuilder {
         private Object content;
 
-        public HttpGetRequestBuilder(final long RESPONSE_ID) {
-            super(RESPONSE_ID);
+        public HttpGetRequestBuilder(final long REQUEST_ID) {
+            super(REQUEST_ID);
         }
 
         public HttpRequestBuilder content(Object content) throws IllegalArgumentException {
@@ -50,6 +54,7 @@ public final class HttpGetRequest extends HttpRequest {
             return this;
         }
 
+        @Override
         public HttpGetRequest build() {
             return new HttpGetRequest(this);
         }

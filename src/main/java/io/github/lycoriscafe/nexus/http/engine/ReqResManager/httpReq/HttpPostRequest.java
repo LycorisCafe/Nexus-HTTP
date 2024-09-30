@@ -36,7 +36,7 @@ public final class HttpPostRequest extends HttpRequest {
         return new HttpPostRequestBuilder(RESPONSE_ID);
     }
 
-    public static class HttpPostRequestBuilder extends HttpRequestBuilder {
+    public static final class HttpPostRequestBuilder extends HttpRequestBuilder {
         private final List<HttpPostContent> httpPostContents;
 
         public HttpPostRequestBuilder(final long RESPONSE_ID) {
@@ -54,34 +54,12 @@ public final class HttpPostRequest extends HttpRequest {
             return this;
         }
 
+        @Override
         public HttpPostRequest build() {
             return new HttpPostRequest(this);
         }
     }
 
-    public static class HttpPostContent {
-        private final String name;
-        private final String fileName;
-        private final Object content;
-
-        public HttpPostContent(final String name,
-                               final String fileName,
-                               final Object content) {
-            this.name = name;
-            this.fileName = fileName;
-            this.content = content;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public Object getContent() {
-            return content;
-        }
+    public record HttpPostContent(String name, String fileName, Object content) {
     }
 }

@@ -23,7 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
+public sealed class HttpRequest
+        permits HttpGetRequest, HttpPostRequest, HttpHeadRequest {
     private final long REQUEST_ID;
     private final Map<String, String> parameters;
     private final Map<String, List<String>> headers;
@@ -52,11 +53,14 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return cookies;
     }
 
-    public static HttpRequestBuilder builder(long RESPONSE_ID) {
-        return new HttpRequestBuilder(RESPONSE_ID);
+    public static HttpRequestBuilder builder(long REQUEST_ID) {
+        return new HttpRequestBuilder(REQUEST_ID);
     }
 
-    public static class HttpRequestBuilder {
+    public static sealed class HttpRequestBuilder
+            permits HttpGetRequest.HttpGetRequestBuilder,
+            HttpPostRequest.HttpPostRequestBuilder,
+            HttpHeadRequest.HttpHeadRequestBuilder {
         private final long REQUEST_ID;
         private Map<String, String> parameters;
         private final Map<String, List<String>> headers;
@@ -81,6 +85,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         public HttpRequestBuilder cookie(Cookie cookie) {
             cookies.add(cookie);
             return this;
+        }
+
+        public HttpRequest build() {
+            return new HttpRequest(this);
         }
     }
 }
