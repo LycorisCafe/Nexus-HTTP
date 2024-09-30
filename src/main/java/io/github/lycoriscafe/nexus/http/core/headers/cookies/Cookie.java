@@ -87,7 +87,7 @@ public final class Cookie {
     }
 
 
-    public static class CookieBuilder {
+    public static final class CookieBuilder {
         private final String name;
         private final String value;
         private String expires;
