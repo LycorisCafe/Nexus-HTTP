@@ -43,7 +43,8 @@ public sealed class ContentSecurityPolicy
         return hosts;
     }
 
-    public static ContentSecurityPolicyBuilder builder(CSPDirective directive) {
+    public static ContentSecurityPolicyBuilder builder(CSPDirective directive)
+            throws ContentSecurityPolicyException {
         return new ContentSecurityPolicyBuilder(directive);
     }
 
@@ -53,13 +54,18 @@ public sealed class ContentSecurityPolicy
         private final List<CSPValue> values;
         final List<Object> hosts;
 
-        public ContentSecurityPolicyBuilder(CSPDirective directive) {
+        public ContentSecurityPolicyBuilder(CSPDirective directive)
+                throws ContentSecurityPolicyException {
+            if (directive == null) {
+                throw new ContentSecurityPolicyException("directive cannot be null");
+            }
             this.directive = directive;
             values = new ArrayList<>();
             hosts = new ArrayList<>();
         }
 
-        public ContentSecurityPolicyBuilder value(CSPValue value) throws ContentSecurityPolicyException {
+        public ContentSecurityPolicyBuilder value(CSPValue value)
+                throws ContentSecurityPolicyException {
             if (directive == CSPDirective.REPORT_TO || directive == CSPDirective.REPORT_URI) {
                 throw new ContentSecurityPolicyException("report-to & report-uri cannot be contain any value");
             }
@@ -67,7 +73,8 @@ public sealed class ContentSecurityPolicy
             return this;
         }
 
-        public ContentSecurityPolicyBuilder host(String host) throws ContentSecurityPolicyException {
+        public ContentSecurityPolicyBuilder host(String host)
+                throws ContentSecurityPolicyException {
             if (directive == CSPDirective.REPORT_TO) {
                 throw new ContentSecurityPolicyException("provided directive must have a ReportingEndpoint instance");
             }
@@ -78,7 +85,8 @@ public sealed class ContentSecurityPolicy
             return this;
         }
 
-        public ContentSecurityPolicyBuilder host(ReportingEndpoint host) throws ContentSecurityPolicyException {
+        public ContentSecurityPolicyBuilder host(ReportingEndpoint host)
+                throws ContentSecurityPolicyException {
             if (directive != CSPDirective.REPORT_TO) {
                 throw new ContentSecurityPolicyException("provided directive must have a String host/endpoint");
             }
@@ -89,7 +97,8 @@ public sealed class ContentSecurityPolicy
             return this;
         }
 
-        public ContentSecurityPolicy build() throws ContentSecurityPolicyException {
+        public ContentSecurityPolicy build()
+                throws ContentSecurityPolicyException {
             if (hosts.isEmpty()) {
                 throw new ContentSecurityPolicyException("no host/endpoint provided");
             }

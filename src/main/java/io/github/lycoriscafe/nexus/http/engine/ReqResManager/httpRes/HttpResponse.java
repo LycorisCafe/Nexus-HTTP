@@ -98,7 +98,8 @@ public final class HttpResponse {
             contentSecurityPolicyReportOnlys = new ArrayList<>();
         }
 
-        public HttpResponseBuilder status(HTTPStatusCode status) throws HttpResponseException {
+        public HttpResponseBuilder status(HTTPStatusCode status)
+                throws HttpResponseException {
             if (status == null) {
                 throw new HttpResponseException("http status code cannot be null");
             }
@@ -106,7 +107,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder header(String name, List<String> values) throws HttpResponseException {
+        public HttpResponseBuilder header(String name, List<String> values)
+                throws HttpResponseException {
             if (name == null || values == null) {
                 throw new HttpResponseException("parameters cannot be null");
             }
@@ -114,7 +116,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder cookie(Cookie cookie) throws HttpResponseException {
+        public HttpResponseBuilder cookie(Cookie cookie)
+                throws HttpResponseException {
             if (cookie == null) {
                 throw new HttpResponseException("cookie cannot be null");
             }
@@ -122,7 +125,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder contentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy) throws HttpResponseException {
+        public HttpResponseBuilder contentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy)
+                throws HttpResponseException {
             if (contentSecurityPolicy == null) {
                 throw new HttpResponseException("content-security-policy cannot be null");
             }
@@ -130,7 +134,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder contentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) throws HttpResponseException {
+        public HttpResponseBuilder contentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly)
+                throws HttpResponseException {
             if (contentSecurityPolicyReportOnly == null) {
                 throw new HttpResponseException("content-security-policy-report-only cannot be null");
             }
@@ -142,7 +147,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder content(Object content) throws IllegalArgumentException {
+        public HttpResponseBuilder content(Object content)
+                throws IllegalArgumentException {
             if (!(content instanceof byte[] || content instanceof File)) {
                 throw new IllegalArgumentException("Content must be a byte array or a file. " +
                         "If you need this to be null, just ignore this method.");

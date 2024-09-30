@@ -22,18 +22,21 @@ public final class ContentSecurityPolicyReportOnly
         super(builder);
     }
 
-    public static ContentSecurityPolicyReportOnlyBuilder builder(CSPDirective directive) {
+    public static ContentSecurityPolicyReportOnlyBuilder builder(CSPDirective directive)
+            throws ContentSecurityPolicyException {
         return new ContentSecurityPolicyReportOnlyBuilder(directive);
     }
 
     public static final class ContentSecurityPolicyReportOnlyBuilder
             extends ContentSecurityPolicyBuilder {
-        public ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive) {
+        public ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
+                throws ContentSecurityPolicyException {
             super(directive);
         }
 
         @Override
-        public ContentSecurityPolicyReportOnly build() throws ContentSecurityPolicyException {
+        public ContentSecurityPolicyReportOnly build()
+                throws ContentSecurityPolicyException {
             if (super.hosts.isEmpty()) {
                 throw new ContentSecurityPolicyException("no host/endpoint provided");
             }
