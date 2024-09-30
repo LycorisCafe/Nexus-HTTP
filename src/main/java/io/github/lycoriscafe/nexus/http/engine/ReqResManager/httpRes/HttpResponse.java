@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager;
+package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
