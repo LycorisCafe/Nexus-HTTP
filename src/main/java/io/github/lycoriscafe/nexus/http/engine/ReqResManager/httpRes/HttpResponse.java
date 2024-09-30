@@ -20,6 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.CSPDirective;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
+import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 
 import java.io.File;
@@ -35,6 +36,7 @@ public final class HttpResponse {
     private final List<Cookie> cookies;
     private final List<ContentSecurityPolicy> contentSecurityPolicies;
     private final List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
+    private final StrictTransportSecurity strictTransportSecurity;
     private final Object content;
 
     private HttpResponse(HttpResponseBuilder builder) {
@@ -44,6 +46,7 @@ public final class HttpResponse {
         this.cookies = builder.cookies;
         this.contentSecurityPolicies = builder.contentSecurityPolicies;
         this.contentSecurityPolicyReportOnlys = builder.contentSecurityPolicyReportOnlys;
+        this.strictTransportSecurity = builder.strictTransportSecurity;
         this.content = builder.content;
     }
 
@@ -71,6 +74,10 @@ public final class HttpResponse {
         return contentSecurityPolicyReportOnlys;
     }
 
+    public StrictTransportSecurity getStrictTransportSecurity() {
+        return strictTransportSecurity;
+    }
+
     public Object getContent() {
         return content;
     }
@@ -88,6 +95,7 @@ public final class HttpResponse {
         private final List<Cookie> cookies;
         private final List<ContentSecurityPolicy> contentSecurityPolicies;
         private final List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
+        private StrictTransportSecurity strictTransportSecurity;
         private Object content;
 
         public HttpResponseBuilder(long RESPONSE_ID) {
@@ -144,6 +152,15 @@ public final class HttpResponse {
                     contentSecurityPolicyReportOnly.getDirective() == CSPDirective.REPORT_URI) {
                 csproReport = true;
             }
+            return this;
+        }
+
+        public HttpResponseBuilder strictTransportSecurity(StrictTransportSecurity strictTransportSecurity)
+                throws HttpResponseException {
+            if (strictTransportSecurity == null) {
+                throw new HttpResponseException("strict-transport-security cannot be null");
+            }
+            this.strictTransportSecurity = strictTransportSecurity;
             return this;
         }
 
