@@ -53,11 +53,7 @@ public sealed class HttpRequest
         return cookies;
     }
 
-    public static HttpRequestBuilder builder(long REQUEST_ID) {
-        return new HttpRequestBuilder(REQUEST_ID);
-    }
-
-    public static sealed class HttpRequestBuilder
+    public static sealed abstract class HttpRequestBuilder
             permits HttpGetRequest.HttpGetRequestBuilder,
             HttpPostRequest.HttpPostRequestBuilder,
             HttpHeadRequest.HttpHeadRequestBuilder {
@@ -87,8 +83,6 @@ public sealed class HttpRequest
             return this;
         }
 
-        public HttpRequest build() {
-            return new HttpRequest(this);
-        }
+        public abstract HttpRequest build();
     }
 }
