@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
+import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.CSPDirective;
@@ -40,6 +41,7 @@ public final class HttpResponse {
     private final StrictTransportSecurity strictTransportSecurity;
     private final boolean xContentTypeOptionsNoSniff;
     private final CrossOriginResourceSharing crossOriginResourceSharing;
+    private final List<WWWAuthentication> wwwAuthentications;
     private final Object content;
 
     private HttpResponse(HttpResponseBuilder builder) {
@@ -52,6 +54,7 @@ public final class HttpResponse {
         this.strictTransportSecurity = builder.strictTransportSecurity;
         this.xContentTypeOptionsNoSniff = builder.xContentTypeOptionsNoSniff;
         this.crossOriginResourceSharing = builder.crossOriginResourceSharing;
+        this.wwwAuthentications = builder.wwwAuthentications;
         this.content = builder.content;
     }
 
@@ -91,6 +94,10 @@ public final class HttpResponse {
         return crossOriginResourceSharing;
     }
 
+    public List<WWWAuthentication> getWWWAuthentications() {
+        return wwwAuthentications;
+    }
+
     public Object getContent() {
         return content;
     }
@@ -111,6 +118,7 @@ public final class HttpResponse {
         private StrictTransportSecurity strictTransportSecurity;
         private boolean xContentTypeOptionsNoSniff;
         private CrossOriginResourceSharing crossOriginResourceSharing;
+        private List<WWWAuthentication> wwwAuthentications;
         private Object content;
 
         public HttpResponseBuilder(long RESPONSE_ID) {
@@ -198,6 +206,18 @@ public final class HttpResponse {
                 throw new HttpResponseException("cross origin resource sharing cannot be null");
             }
             this.crossOriginResourceSharing = crossOriginResourceSharing;
+            return this;
+        }
+
+        public HttpResponseBuilder wwwAuthentication(WWWAuthentication wwwAuthentication)
+                throws HttpResponseException {
+            if (wwwAuthentication == null) {
+                throw new HttpResponseException("www authentication cannot be null");
+            }
+            if (wwwAuthentications == null) {
+                wwwAuthentications = new ArrayList<>();
+            }
+            wwwAuthentications.add(wwwAuthentication);
             return this;
         }
 
