@@ -38,7 +38,7 @@ public enum CSPDirective {
     BASE_URI("base-uri"),
     SANDBOX("sandbox"),
     FORM_ACTION("form-action"),
-    FRAME_ANCESTOR("frame-ancestor"),
+    FRAME_ANCESTORS("frame-ancestors"),
     UPGRADE_INSECURE_REQUESTS("upgrade-insecure-requests"),
     REPORT_URI("report-uri"),
     REPORT_TO("report-to");

@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 public final class HttpHeadRequest extends HttpRequest {
-    HttpHeadRequest(HttpRequestBuilder builder) {
+    HttpHeadRequest(HttpHeadRequestBuilder builder) {
         super(builder);
     }
 

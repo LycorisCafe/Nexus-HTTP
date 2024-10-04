@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import org.slf4j.Logger;
@@ -72,12 +72,12 @@ public final class RequestHandler implements Runnable {
             HTTPVersion httpVersion;
             String[] parts = request.split(" ");
             if (parts.length != 3 ||
-                    !HTTPRequestMethod.validate(parts[0]) ||
+                    !HttpRequestMethod.validate(parts[0]) ||
                     (httpVersion = HTTPVersion.validate(parts[2])) == null) {
                 return null;
             }
 
-            requestLine.add(HTTPRequestMethod.valueOf(parts[0]));
+            requestLine.add(HttpRequestMethod.valueOf(parts[0]));
             requestLine.add(parts[1]);
             requestLine.add(httpVersion);
             return requestLine;

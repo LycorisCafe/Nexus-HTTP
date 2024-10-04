@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 public final class HttpDeleteRequest extends HttpGetRequest {
-    public HttpDeleteRequest(HttpGetRequestBuilder builder) {
+    public HttpDeleteRequest(HttpDeleteRequestBuilder builder) {
         super(builder);
     }
 

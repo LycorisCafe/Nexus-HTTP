@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.configuration.Database;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -42,7 +42,7 @@ public final class DELETEProcessor implements MethodProcessor {
     public HttpResponse<?> process(final HttpRequest<?> request) {
         HttpResponse<?> httpResponse = null;
         try {
-            List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.DELETE, request.getRequestURL());
+            List<String> details = Database.getEndpointDetails(DATABASE, HttpRequestMethod.DELETE, request.getRequestURL());
             if (details.get(0) == null) {
                 REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
                 return httpResponse;

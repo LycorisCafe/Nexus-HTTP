@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.configuration.Database;
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -69,7 +69,7 @@ public final class PATCHProcessor implements MethodProcessor {
             httpReq.setContent(bytes);
         }
         try {
-            List<String> details = Database.getEndpointDetails(DATABASE, HTTPRequestMethod.PATCH, request.getRequestURL());
+            List<String> details = Database.getEndpointDetails(DATABASE, HttpRequestMethod.PATCH, request.getRequestURL());
             if (details.get(0) == null) {
                 REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
                 return httpResponse;

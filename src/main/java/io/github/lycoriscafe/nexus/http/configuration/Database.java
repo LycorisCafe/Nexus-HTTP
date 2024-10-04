@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.configuration;
 
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 
 import java.io.File;
 import java.io.IOException;
@@ -96,7 +96,7 @@ public final class Database {
     }
 
     public static List<String> getEndpointDetails(final Connection DATABASE,
-                                                  final HTTPRequestMethod REQUEST_METHOD,
+                                                  final HttpRequestMethod REQUEST_METHOD,
                                                   final String ENDPOINT) throws SQLException {
         List<String> details = new ArrayList<>();
         String statement = "SELECT * FROM Req" + REQUEST_METHOD.toString() + " WHERE endpoint  = ?";

@@ -38,7 +38,10 @@ public sealed class HttpGetRequest
 
     public static sealed class HttpGetRequestBuilder
             extends HttpRequestBuilder
-            permits HttpDeleteRequest.HttpDeleteRequestBuilder, HttpOptionsRequest.HttpOptionsRequestBuilder, HttpPatchRequest.HttpPatchRequestBuilder, HttpPutRequest.HttpPutRequestBuilder {
+            permits HttpDeleteRequest.HttpDeleteRequestBuilder,
+            HttpOptionsRequest.HttpOptionsRequestBuilder,
+            HttpPatchRequest.HttpPatchRequestBuilder,
+            HttpPutRequest.HttpPutRequestBuilder {
         private Object content;
 
         public HttpGetRequestBuilder(final long REQUEST_ID) {

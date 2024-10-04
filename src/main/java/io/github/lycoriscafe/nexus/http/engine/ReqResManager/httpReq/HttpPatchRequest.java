@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 public final class HttpPatchRequest extends HttpGetRequest {
-    public HttpPatchRequest(HttpGetRequestBuilder builder) {
+    public HttpPatchRequest(HttpPatchRequestBuilder builder) {
         super(builder);
     }
 

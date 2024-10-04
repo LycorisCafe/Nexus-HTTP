@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HTTPRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -34,7 +34,7 @@ import java.util.concurrent.ExecutorService;
 
 public final class RequestProcessor {
     private ExecutorService executorService;
-    private final Map<HTTPRequestMethod, MethodProcessor> methodProcessors;
+    private final Map<HttpRequestMethod, MethodProcessor> methodProcessors;
     private final RequestHandler REQ_HANDLER;
 
     RequestProcessor(final RequestHandler REQ_HANDLER,
@@ -51,18 +51,18 @@ public final class RequestProcessor {
 //        }
 
         methodProcessors = new HashMap<>();
-        methodProcessors.put(HTTPRequestMethod.GET, new GETProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
-        methodProcessors.put(HTTPRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
-        methodProcessors.put(HTTPRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
-        methodProcessors.put(HTTPRequestMethod.DELETE, new DELETEProcessor(REQ_HANDLER, DATABASE));
-        methodProcessors.put(HTTPRequestMethod.PATCH, new PATCHProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HttpRequestMethod.GET, new GETProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HttpRequestMethod.POST, new POSTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HttpRequestMethod.PUT, new PUTProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
+        methodProcessors.put(HttpRequestMethod.DELETE, new DELETEProcessor(REQ_HANDLER, DATABASE));
+        methodProcessors.put(HttpRequestMethod.PATCH, new PATCHProcessor(REQ_HANDLER, INPUT_STREAM, DATABASE, CONFIGURATION));
     }
 
     void processRequest(final long REQUEST_ID,
                         final ArrayList<Object> REQUEST_LINE,
                         final Map<String, List<String>> HEADERS) {
         HttpRequest<?> httpRequest = new HttpRequest<>(REQUEST_ID);
-        httpRequest.setRequestMethod((HTTPRequestMethod) REQUEST_LINE.getFirst());
+        httpRequest.setRequestMethod((HttpRequestMethod) REQUEST_LINE.getFirst());
         httpRequest.setRequestURL(REQUEST_LINE.get(1).toString().contains("?") ?
                 REQUEST_LINE.get(1).toString().split("\\?")[0] :
                 REQUEST_LINE.get(1).toString());
@@ -77,11 +77,11 @@ public final class RequestProcessor {
         httpRequest.setHeaders(HEADERS);
 
         HttpResponse<?> httpResponse = switch (httpRequest.getRequestMethod()) {
-            case GET, HEAD -> methodProcessors.get(HTTPRequestMethod.GET).process(httpRequest);
-            case POST -> methodProcessors.get(HTTPRequestMethod.POST).process(httpRequest);
-            case PUT -> methodProcessors.get(HTTPRequestMethod.PUT).process(httpRequest);
-            case DELETE -> methodProcessors.get(HTTPRequestMethod.DELETE).process(httpRequest);
-            case PATCH -> methodProcessors.get(HTTPRequestMethod.PATCH).process(httpRequest);
+            case GET, HEAD -> methodProcessors.get(HttpRequestMethod.GET).process(httpRequest);
+            case POST -> methodProcessors.get(HttpRequestMethod.POST).process(httpRequest);
+            case PUT -> methodProcessors.get(HttpRequestMethod.PUT).process(httpRequest);
+            case DELETE -> methodProcessors.get(HttpRequestMethod.DELETE).process(httpRequest);
+            case PATCH -> methodProcessors.get(HttpRequestMethod.PATCH).process(httpRequest);
             case TRACE -> {
                 REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.METHOD_NOT_ALLOWED);
                 yield null;
@@ -95,7 +95,7 @@ public final class RequestProcessor {
         if (httpResponse != null) {
             httpResponse.setVersion(HTTPVersion.HTTP_1_1);
             httpResponse.formatProtocol();
-            if (httpRequest.getRequestMethod() == HTTPRequestMethod.HEAD) {
+            if (httpRequest.getRequestMethod() == HttpRequestMethod.HEAD) {
                 httpResponse.emptyContent();
             }
             REQ_HANDLER.addToSendQue(httpResponse);

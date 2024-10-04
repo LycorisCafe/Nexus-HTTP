@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.requestMethods;
 
-public enum HTTPRequestMethod {
+public enum HttpRequestMethod {
     CONNECT,
     DELETE,
     GET,
@@ -29,7 +29,7 @@ public enum HTTPRequestMethod {
 
     public static boolean validate(String requestMethod) {
         try {
-            HTTPRequestMethod.valueOf(requestMethod.toUpperCase());
+            HttpRequestMethod.valueOf(requestMethod.toUpperCase());
             return true;
         } catch (IllegalArgumentException e) {
             return false;
