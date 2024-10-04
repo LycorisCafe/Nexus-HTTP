@@ -16,9 +16,27 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public final class HttpOptionsRequest extends HttpGetRequest {
-    public HttpOptionsRequest(HttpGetRequestBuilder builder) {
+    private final HttpRequestMethod accessControlRequestMethod;
+    private final List<String> accessControlRequestHeaders;
+
+    public HttpOptionsRequest(HttpOptionsRequestBuilder builder) {
         super(builder);
+        this.accessControlRequestMethod = builder.accessControlRequestMethod;
+        this.accessControlRequestHeaders = builder.accessControlRequestHeaders;
+    }
+
+    public HttpRequestMethod getAccessControlRequestMethod() {
+        return accessControlRequestMethod;
+    }
+
+    public List<String> getAccessControlRequestHeaders() {
+        return accessControlRequestHeaders;
     }
 
     public static HttpOptionsRequestBuilder builder(long REQUEST_ID) {
@@ -26,8 +44,24 @@ public final class HttpOptionsRequest extends HttpGetRequest {
     }
 
     public static final class HttpOptionsRequestBuilder extends HttpGetRequestBuilder {
+        private HttpRequestMethod accessControlRequestMethod;
+        private List<String> accessControlRequestHeaders;
+
         public HttpOptionsRequestBuilder(long REQUEST_ID) {
             super(REQUEST_ID);
+        }
+
+        public HttpOptionsRequestBuilder setAccessControlRequestMethod(HttpRequestMethod accessControlRequestMethod) {
+            this.accessControlRequestMethod = accessControlRequestMethod;
+            return this;
+        }
+
+        public HttpOptionsRequestBuilder setAccessControlRequestHeader(String accessControlRequestHeader) {
+            if (accessControlRequestHeaders == null) {
+                accessControlRequestHeaders = new ArrayList<String>();
+            }
+            accessControlRequestHeaders.add(accessControlRequestHeader);
+            return this;
         }
 
         @Override

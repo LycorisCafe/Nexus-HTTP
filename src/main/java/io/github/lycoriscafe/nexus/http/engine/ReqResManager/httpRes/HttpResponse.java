@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.CSPDirective;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
@@ -37,6 +38,8 @@ public final class HttpResponse {
     private final List<ContentSecurityPolicy> contentSecurityPolicies;
     private final List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
     private final StrictTransportSecurity strictTransportSecurity;
+    private final boolean xContentTypeOptionsNoSniff;
+    private final CrossOriginResourceSharing crossOriginResourceSharing;
     private final Object content;
 
     private HttpResponse(HttpResponseBuilder builder) {
@@ -47,6 +50,8 @@ public final class HttpResponse {
         this.contentSecurityPolicies = builder.contentSecurityPolicies;
         this.contentSecurityPolicyReportOnlys = builder.contentSecurityPolicyReportOnlys;
         this.strictTransportSecurity = builder.strictTransportSecurity;
+        this.xContentTypeOptionsNoSniff = builder.xContentTypeOptionsNoSniff;
+        this.crossOriginResourceSharing = builder.crossOriginResourceSharing;
         this.content = builder.content;
     }
 
@@ -78,6 +83,14 @@ public final class HttpResponse {
         return strictTransportSecurity;
     }
 
+    public boolean isXContentTypeOptionsNoSniff() {
+        return xContentTypeOptionsNoSniff;
+    }
+
+    public CrossOriginResourceSharing getCrossOriginResourceSharing() {
+        return crossOriginResourceSharing;
+    }
+
     public Object getContent() {
         return content;
     }
@@ -96,6 +109,8 @@ public final class HttpResponse {
         private List<ContentSecurityPolicy> contentSecurityPolicies;
         private List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
         private StrictTransportSecurity strictTransportSecurity;
+        private boolean xContentTypeOptionsNoSniff;
+        private CrossOriginResourceSharing crossOriginResourceSharing;
         private Object content;
 
         public HttpResponseBuilder(long RESPONSE_ID) {
@@ -169,6 +184,20 @@ public final class HttpResponse {
                 throw new HttpResponseException("strict-transport-security cannot be null");
             }
             this.strictTransportSecurity = strictTransportSecurity;
+            return this;
+        }
+
+        public HttpResponseBuilder xContentTypeOptionsNoSniff(boolean xContentTypeOptionsNoSniff) {
+            this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
+            return this;
+        }
+
+        public HttpResponseBuilder crossOriginResourceSharing(CrossOriginResourceSharing crossOriginResourceSharing)
+                throws HttpResponseException {
+            if (crossOriginResourceSharing == null) {
+                throw new HttpResponseException("cross origin resource sharing cannot be null");
+            }
+            this.crossOriginResourceSharing = crossOriginResourceSharing;
             return this;
         }
 
