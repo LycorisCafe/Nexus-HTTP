@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CrossOriginResourceSharing {
+public final class CrossOriginResourceSharing {
     private final String accessControlAllowOrigin;
     private final List<String> accessControlExposeHeaders;
     private final long accessControlMaxAge;
