@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers.cookies;
+package io.github.lycoriscafe.nexus.http.helper.scanners;
 
-public class HTTPCookieException extends Exception {
-    public HTTPCookieException(String message) {
+public class ScannerException extends Exception {
+    public ScannerException(String message) {
         super(message);
     }
 }

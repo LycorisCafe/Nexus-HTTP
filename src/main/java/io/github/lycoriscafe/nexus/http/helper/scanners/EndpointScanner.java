@@ -36,7 +36,7 @@ import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public final class EndpointScanner {
     public static void scan(final Connection DATABASE,
-                            final String BASE_PACKAGE) throws SQLException {
+                            final String BASE_PACKAGE) throws SQLException, ScannerException {
         Reflections reflections = new Reflections(BASE_PACKAGE);
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
@@ -68,6 +68,12 @@ public final class EndpointScanner {
 
                 if (reqMethod == null) {
                     continue;
+                } else {
+                    if (endpointValue == null) {
+                        throw new ScannerException("null endpoint at : " +
+                                "class - " + clazz.getName() + " , " +
+                                "method - " + method.getName());
+                    }
                 }
 
                 String statusAnnotationValue = null;

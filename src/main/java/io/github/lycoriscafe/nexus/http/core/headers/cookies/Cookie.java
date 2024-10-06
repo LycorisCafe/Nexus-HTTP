@@ -135,18 +135,18 @@ public final class Cookie {
             return this;
         }
 
-        public CookieBuilder sameSite(CookieSameSite sameSite) throws HTTPCookieException {
+        public CookieBuilder sameSite(CookieSameSite sameSite) throws CookieException {
             if (this.sameSite == null) {
-                throw new HTTPCookieException("Same Site cannot be null. " +
+                throw new CookieException("Same Site cannot be null. " +
                         "If you need this to be null, just ignore this method.");
             }
             this.sameSite = sameSite;
             return this;
         }
 
-        public CookieBuilder prefix(CookiePrefix prefix) throws HTTPCookieException {
+        public CookieBuilder prefix(CookiePrefix prefix) throws CookieException {
             if (prefix == null) {
-                throw new HTTPCookieException("Cookie prefix cannot be null. " +
+                throw new CookieException("Cookie prefix cannot be null. " +
                         "If you need this to be null, just ignore this method.");
             }
             this.prefix = prefix;
