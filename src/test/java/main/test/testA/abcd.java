@@ -16,7 +16,7 @@
 
 package main.test.testA;
 
-import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
+import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
@@ -30,7 +30,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@HTTPEndpoint("/")
+@HttpEndpoint("/")
 public class abcd {
     @GET("/abcd")
     public static HttpResponse<?> xyz(HttpRequest<?> request) {

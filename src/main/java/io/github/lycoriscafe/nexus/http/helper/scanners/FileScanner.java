@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.helper;
+package io.github.lycoriscafe.nexus.http.helper.scanners;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;

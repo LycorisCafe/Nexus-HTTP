@@ -17,9 +17,9 @@
 package io.github.lycoriscafe.nexus.http;
 
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
-import io.github.lycoriscafe.nexus.http.helper.AnnotationScanner;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -48,7 +48,7 @@ public final class HTTPServer {
         CONFIGURATION = httpServerConfiguration;
         DATABASE = Database.getConnection(httpServerConfiguration.getDatabaseLocation(),
                 httpServerConfiguration.getPort());
-        AnnotationScanner.scan(DATABASE, httpServerConfiguration.getBasePackage());
+        EndpointScanner.scan(DATABASE, httpServerConfiguration.getBasePackage());
         SERVER_SOCKET = httpServerConfiguration.getAddress() == null ?
                 new ServerSocket(httpServerConfiguration.getPort(), httpServerConfiguration.getBacklog()) :
                 new ServerSocket(httpServerConfiguration.getPort(), httpServerConfiguration.getBacklog(),

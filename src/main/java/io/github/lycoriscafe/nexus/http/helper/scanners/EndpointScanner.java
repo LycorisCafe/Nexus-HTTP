@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.helper;
+package io.github.lycoriscafe.nexus.http.helper.scanners;
 
-import io.github.lycoriscafe.nexus.http.core.HTTPEndpoint;
+import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import org.reflections.Reflections;
@@ -31,11 +31,11 @@ import java.util.Set;
 import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
-public final class AnnotationScanner {
+public final class EndpointScanner {
     public static void scan(final Connection DATABASE,
                             final String BASE_PACKAGE) throws SQLException {
         Reflections reflections = new Reflections(BASE_PACKAGE);
-        Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HTTPEndpoint.class)).asClass());
+        Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getMethods()) {
                 String endpointValue = null;
@@ -110,8 +110,8 @@ public final class AnnotationScanner {
                                         final String STATUS_ANNOTATION_VALUE) throws SQLException {
         String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?, ?, ?)";
         try (PreparedStatement ps = DATABASE.prepareStatement(query)) {
-            ps.setString(1, (CLAZZ.getAnnotation(HTTPEndpoint.class).value().equals("/") ?
-                    "" : CLAZZ.getAnnotation(HTTPEndpoint.class).value().toLowerCase(Locale.ROOT))
+            ps.setString(1, (CLAZZ.getAnnotation(HttpEndpoint.class).value().equals("/") ?
+                    "" : CLAZZ.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.ROOT))
                     + ENDPOINT.toLowerCase(Locale.ROOT));
             ps.setString(2, CLAZZ.getName());
             ps.setString(3, METHOD.getName());

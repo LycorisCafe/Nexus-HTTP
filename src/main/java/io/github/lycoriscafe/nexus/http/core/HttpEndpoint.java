@@ -21,6 +21,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface HTTPEndpoint {
+public @interface HttpEndpoint {
     String value();
 }

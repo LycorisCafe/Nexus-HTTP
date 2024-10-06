@@ -41,11 +41,11 @@ public final class Database {
             }
             conn = DriverManager.getConnection("jdbc:sqlite:" + database);
         }
-        mapDatabase(conn);
+        buildDatabase(conn);
         return conn;
     }
 
-    private static void mapDatabase(final Connection conn) throws SQLException {
+    private static void buildDatabase(final Connection conn) throws SQLException {
         String[] queries = {
                 "PRAGMA foreign_keys = ON;",
                 // Mater table
@@ -89,14 +89,14 @@ public final class Database {
         masterQuery.executeUpdate();
 
         Statement stmt = DATABASE.createStatement();
-        ResultSet rs = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster");
+        int rowId = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster").getInt(1);
 
         switch (MODEL) {
             case ReqMaster m when m instanceof ReqEndpoint -> {
                 PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqEndpoint " +
                         "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue) " +
                         "VALUES (?, ?, ?, ?, ?)");
-                subQuery.setInt(1, rs.getInt(1));
+                subQuery.setInt(1, rowId);
                 subQuery.setString(2, ((ReqEndpoint) m).getClassName());
                 subQuery.setString(3, ((ReqEndpoint) m).getMethodName());
                 subQuery.setString(4, ((ReqEndpoint) m).getStatusAnnotation());
@@ -106,7 +106,7 @@ public final class Database {
             case ReqMaster m when m instanceof ReqFile -> {
                 PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqFile " +
                         "(ROWID, location, lastModified, eTag) VALUES (?, ?, ?, ?)");
-                subQuery.setInt(1, rs.getInt(1));
+                subQuery.setInt(1, rowId);
                 subQuery.setString(2, ((ReqFile) m).getLocation());
                 subQuery.setString(3, ((ReqFile) m).getLastModified());
                 subQuery.setString(4, ((ReqFile) m).getETag());
