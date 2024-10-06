@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.*;
-import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 
 import java.io.BufferedInputStream;
 import java.sql.Connection;
@@ -39,7 +39,7 @@ public final class RequestProcessor {
 
     RequestProcessor(final RequestHandler REQ_HANDLER,
                      final BufferedInputStream INPUT_STREAM,
-                     final HTTPServerConfiguration CONFIGURATION,
+                     final HttpServerConfiguration CONFIGURATION,
                      final Connection DATABASE) {
         this.REQ_HANDLER = REQ_HANDLER;
 

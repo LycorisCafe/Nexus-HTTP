@@ -17,8 +17,8 @@
 package main.test;
 
 import io.github.lycoriscafe.nexus.http.HTTPServer;
-import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.helper.ThreadType;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -26,7 +26,7 @@ import java.sql.SQLException;
 public class Main {
     public static void main(String[] args) {
         try {
-            HTTPServerConfiguration httpServerConfiguration = new HTTPServerConfiguration(Main.class)
+            HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration(Main.class)
                     .setPort(2004)
                     .setThreadType(ThreadType.VIRTUAL)
                     .setBacklog(5)

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.helper;
+package io.github.lycoriscafe.nexus.http.helper.configuration;
 
 public enum ThreadType {
     PLATFORM, VIRTUAL

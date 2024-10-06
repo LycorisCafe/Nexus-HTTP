@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http;
 
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 import io.github.lycoriscafe.nexus.http.helper.Database;
-import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 
 import java.io.IOException;
@@ -29,17 +29,17 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
-import static io.github.lycoriscafe.nexus.http.helper.ThreadType.PLATFORM;
+import static io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType.PLATFORM;
 
 public final class HTTPServer {
-    private final HTTPServerConfiguration CONFIGURATION;
+    private final HttpServerConfiguration CONFIGURATION;
     private final ServerSocket SERVER_SOCKET;
     private final Connection DATABASE;
 
     private ExecutorService executorService;
     private boolean operational;
 
-    public HTTPServer(final HTTPServerConfiguration httpServerConfiguration)
+    public HTTPServer(final HttpServerConfiguration httpServerConfiguration)
             throws IOException, IllegalArgumentException, SQLException {
         if (httpServerConfiguration == null) {
             throw new IllegalArgumentException("HTTP Server helper cannot be null");

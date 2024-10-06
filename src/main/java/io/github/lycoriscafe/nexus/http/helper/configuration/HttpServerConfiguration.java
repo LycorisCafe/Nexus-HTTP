@@ -33,6 +33,8 @@ public final class HttpServerConfiguration {
     private final int pipelineParallelProcesses;
     private final int maxContentLength;
 
+    private final boolean devLogging;
+
     public HttpServerConfiguration(HttpServerConfigurationBuilder builder) {
         port = builder.port;
         backlog = builder.backlog;
@@ -45,6 +47,7 @@ public final class HttpServerConfiguration {
         maxIncomingConnections = builder.maxIncomingConnections;
         pipelineParallelProcesses = builder.pipelineParallelProcesses;
         maxContentLength = builder.maxContentLength;
+        devLogging = builder.devLogging;
     }
 
     public int getPort() {
@@ -91,6 +94,14 @@ public final class HttpServerConfiguration {
         return maxContentLength;
     }
 
+    public boolean isDevLogging() {
+        return devLogging;
+    }
+
+    public static HttpServerConfigurationBuilder builder(String basePackage) {
+        return new HttpServerConfigurationBuilder(basePackage);
+    }
+
     public static final class HttpServerConfigurationBuilder {
         private int port = 0;
         private int backlog = 0;
@@ -105,6 +116,8 @@ public final class HttpServerConfiguration {
         private int maxIncomingConnections = 100;
         private int pipelineParallelProcesses = 0;
         private int maxContentLength = 5_242_880;
+
+        private boolean devLogging = true;
 
         public HttpServerConfigurationBuilder(String basePackage) {
             this.basePackage = basePackage;
@@ -157,6 +170,11 @@ public final class HttpServerConfiguration {
 
         public HttpServerConfigurationBuilder maxContentLength(int maxContentLength) {
             this.maxContentLength = maxContentLength;
+            return this;
+        }
+
+        public HttpServerConfigurationBuilder devLogging(boolean devLogging) {
+            this.devLogging = devLogging;
             return this;
         }
 

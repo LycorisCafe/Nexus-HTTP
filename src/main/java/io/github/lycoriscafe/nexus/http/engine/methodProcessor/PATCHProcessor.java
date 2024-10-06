@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
 import io.github.lycoriscafe.nexus.http.helper.Database;
-import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -36,12 +36,12 @@ public final class PATCHProcessor implements MethodProcessor {
     private final RequestHandler REQ_HANDLER;
     private final BufferedInputStream INPUT_STREAM;
     private final Connection DATABASE;
-    private final HTTPServerConfiguration CONFIG;
+    private final HttpServerConfiguration CONFIG;
 
     public PATCHProcessor(final RequestHandler REQ_HANDLER,
                           final BufferedInputStream INPUT_STREAM,
                           final Connection DATABASE,
-                          final HTTPServerConfiguration CONFIG) {
+                          final HttpServerConfiguration CONFIG) {
         this.REQ_HANDLER = REQ_HANDLER;
         this.INPUT_STREAM = INPUT_STREAM;
         this.DATABASE = DATABASE;

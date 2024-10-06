@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
-import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,7 +44,7 @@ public final class RequestHandler implements Runnable {
     private final BufferedOutputStream OUTPUT_STREAM;
     private final RequestProcessor PROCESSOR;
 
-    public RequestHandler(final HTTPServerConfiguration CONFIGURATION,
+    public RequestHandler(final HttpServerConfiguration CONFIGURATION,
                           final Socket SOCKET,
                           final Connection DATABASE) throws IOException {
         this.SOCKET = SOCKET;
