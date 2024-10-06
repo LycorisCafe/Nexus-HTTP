@@ -23,7 +23,7 @@ import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class MD5Calculator {
+public final class FileScanner {
     public static byte[] calculate(Path path) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("md5");
         BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));
