@@ -16,13 +16,13 @@
 
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
-import io.github.lycoriscafe.nexus.http.configuration.Database;
-import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
+import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;

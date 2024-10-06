@@ -16,10 +16,10 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
-import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

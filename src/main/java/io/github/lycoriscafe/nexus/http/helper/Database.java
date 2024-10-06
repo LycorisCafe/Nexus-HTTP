@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.configuration;
+package io.github.lycoriscafe.nexus.http.helper;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 

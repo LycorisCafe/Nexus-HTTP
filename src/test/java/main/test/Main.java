@@ -17,8 +17,8 @@
 package main.test;
 
 import io.github.lycoriscafe.nexus.http.HTTPServer;
-import io.github.lycoriscafe.nexus.http.configuration.HTTPServerConfiguration;
-import io.github.lycoriscafe.nexus.http.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.ThreadType;
 
 import java.io.IOException;
 import java.sql.SQLException;
