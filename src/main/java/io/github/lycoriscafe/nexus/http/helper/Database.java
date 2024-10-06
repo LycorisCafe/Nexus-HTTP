@@ -16,17 +16,17 @@
 
 package io.github.lycoriscafe.nexus.http.helper;
 
-import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.helper.models.FileReqModel;
-import io.github.lycoriscafe.nexus.http.helper.models.GeneralReqModel;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
 
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 
 public final class Database {
-    public static Connection getConnection(final String DB_LOCATION, final int PORT)
-            throws SQLException, IOException {
+    public static Connection getConnection(final String DB_LOCATION,
+                                           final int PORT) throws SQLException, IOException {
         Connection conn;
         if (DB_LOCATION == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
@@ -47,53 +47,30 @@ public final class Database {
 
     private static void mapDatabase(final Connection conn) throws SQLException {
         String[] queries = {
-                // Handle GET
-                "CREATE TABLE ReqGET(" +
+                "PRAGMA foreign_keys = ON;",
+                // Mater table
+                "CREATE TABLE ReqMaster(" +
+                        "ROWID INTEGER PRIMARY KEY," +
                         "endpoint TEXT NOT NULL," +
+                        "reqMethod TEXT NOT NULL" +
+                        ");",
+                // Handle GET, POST, PUT, PATCH, DELETE
+                "CREATE TABLE ReqEndpoint(" +
+                        "ROWID INTEGER," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL," +
                         "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT" +
-                        ")",
-                // Handle POST
-                "CREATE TABLE ReqPOST(" +
-                        "endpoint TEXT NOT NULL," +
-                        "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT" +
-                        ")",
-                // Handle PUT
-                "CREATE TABLE ReqPUT(" +
-                        "endpoint TEXT NOT NULL," +
-                        "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT" +
-                        ")",
-                // Handle DELETE
-                "CREATE TABLE ReqDELETE(" +
-                        "endpoint TEXT NOT NULL," +
-                        "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT" +
-                        ")",
-                // Handle PATCH
-                "CREATE TABLE ReqPATCH(" +
-                        "endpoint TEXT NOT NULL," +
-                        "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT" +
-                        ")",
-                // Handle files
-                "CREATE TABLE ReqFiles(" +
-                        "endpoint TEXT NOT NULL," +
+                        "statusAnnotationValue TEXT," +
+                        "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
+                        ");",
+                // Handle static files GET
+                "CREATE TABLE ReqFile(" +
+                        "ROWID INTEGER," +
                         "location TEXT NOT NULL," +
                         "lastModified TEXT NOT NULL," +
-                        "eTag TEXT NOT NULL" +
-                        ")"
+                        "eTag TEXT NOT NULL," +
+                        "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
+                        ");"
         };
 
         for (String query : queries) {
@@ -103,50 +80,39 @@ public final class Database {
         }
     }
 
-    public static void setEndpointDetails(final Connection DATABASE,
-                                          final HttpRequestMethod REQUEST_METHOD,
-                                          final GeneralReqModel REQ_MODEL) throws SQLException {
-        String statement = "INSERT INTO Req" + REQUEST_METHOD.toString() + " VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement ps = DATABASE.prepareStatement(statement);
-        ps.setString(1, REQ_MODEL.getEndpoint());
-        ps.setString(2, REQ_MODEL.getClassName());
-        ps.setString(3, REQ_MODEL.getMethodName());
-        ps.setString(4, REQ_MODEL.getStatusAnnotation());
-        ps.setString(5, REQ_MODEL.getStatusAnnotationValue());
-        ps.executeUpdate();
-    }
+    public static void addEndpointData(Connection DATABASE,
+                                       ReqMaster MODEL) throws SQLException {
+        PreparedStatement masterQuery
+                = DATABASE.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
+        masterQuery.setString(1, MODEL.getEndpoint());
+        masterQuery.setString(2, MODEL.getEndpoint());
+        masterQuery.executeUpdate();
 
-    public static GeneralReqModel getEndpointDetails(final Connection DATABASE,
-                                                     final HttpRequestMethod REQUEST_METHOD,
-                                                     final String ENDPOINT) throws SQLException {
-        String statement = "SELECT * FROM Req" + REQUEST_METHOD.toString() + " WHERE endpoint  = ?";
-        PreparedStatement ps = DATABASE.prepareStatement(statement);
-        ps.setString(1, ENDPOINT);
-        ResultSet rs = ps.executeQuery();
-        return rs.next() ?
-                new GeneralReqModel(rs.getString(1), rs.getString(2),
-                        rs.getString(3), rs.getString(4), rs.getString(5)) : null;
-    }
+        Statement stmt = DATABASE.createStatement();
+        ResultSet rs = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster");
 
-    public static void setFilePathDetails(final Connection DATABASE,
-                                          final FileReqModel REQ_MODEL) throws SQLException {
-        String statement = "INSERT INTO Req" + REQ_MODEL.toString() + " VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement ps = DATABASE.prepareStatement(statement);
-        ps.setString(1, REQ_MODEL.getEndpoint());
-        ps.setString(2, REQ_MODEL.getLocation());
-        ps.setString(3, REQ_MODEL.getLastModified());
-        ps.setString(4, REQ_MODEL.getETag());
-        ps.executeUpdate();
-    }
-
-    public static FileReqModel getFilePathDetails(final Connection DATABASE,
-                                                  final String ENDPOINT) throws SQLException {
-        String statement = "SELECT * FROM ReqFiles WHERE endpoint = ?";
-        PreparedStatement ps = DATABASE.prepareStatement(statement);
-        ps.setString(1, ENDPOINT);
-        ResultSet rs = ps.executeQuery();
-        return rs.next() ?
-                new FileReqModel(rs.getString(1), rs.getString(2), rs.getString(3),
-                        rs.getString(4)) : null;
+        switch (MODEL) {
+            case ReqMaster m when m instanceof ReqEndpoint -> {
+                PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqEndpoint " +
+                        "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue) " +
+                        "VALUES (?, ?, ?, ?, ?)");
+                subQuery.setInt(1, rs.getInt(1));
+                subQuery.setString(2, ((ReqEndpoint) m).getClassName());
+                subQuery.setString(3, ((ReqEndpoint) m).getMethodName());
+                subQuery.setString(4, ((ReqEndpoint) m).getStatusAnnotation());
+                subQuery.setString(5, ((ReqEndpoint) m).getStatusAnnotationValue());
+                subQuery.executeUpdate();
+            }
+            case ReqMaster m when m instanceof ReqFile -> {
+                PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqFile " +
+                        "(ROWID, location, lastModified, eTag) VALUES (?, ?, ?, ?)");
+                subQuery.setInt(1, rs.getInt(1));
+                subQuery.setString(2, ((ReqFile) m).getLocation());
+                subQuery.setString(3, ((ReqFile) m).getLastModified());
+                subQuery.setString(4, ((ReqFile) m).getETag());
+                subQuery.executeUpdate();
+            }
+            default -> throw new IllegalStateException("Unexpected value: " + MODEL);
+        }
     }
 }

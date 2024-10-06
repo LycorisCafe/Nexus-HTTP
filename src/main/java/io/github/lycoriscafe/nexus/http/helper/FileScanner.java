@@ -22,8 +22,14 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
 
 public final class FileScanner {
+    public static void scan(final Connection DATABASE,
+                            final String BASE_DIR) {
+
+    }
+
     public static byte[] calculate(Path path) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("md5");
         BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));

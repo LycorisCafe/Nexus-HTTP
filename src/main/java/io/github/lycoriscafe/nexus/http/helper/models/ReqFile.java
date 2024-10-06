@@ -16,24 +16,21 @@
 
 package io.github.lycoriscafe.nexus.http.helper.models;
 
-public final class FileReqModel {
-    private final String endpoint;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+
+public final class ReqFile extends ReqMaster {
     private final String location;
     private final String lastModified;
     private final String eTag;
 
-    public FileReqModel(String endpoint,
-                        String location,
-                        String lastModified,
-                        String eTag) {
-        this.endpoint = endpoint;
+    public ReqFile(String endpoint,
+                   String location,
+                   String lastModified,
+                   String eTag) {
+        super(endpoint, HttpRequestMethod.GET);
         this.location = location;
         this.lastModified = lastModified;
         this.eTag = eTag;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
     }
 
     public String getLocation() {

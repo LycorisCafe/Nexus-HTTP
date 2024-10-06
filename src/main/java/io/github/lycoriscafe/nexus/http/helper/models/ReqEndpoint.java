@@ -16,27 +16,25 @@
 
 package io.github.lycoriscafe.nexus.http.helper.models;
 
-public final class GeneralReqModel {
-    private final String endpoint;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+
+public final class ReqEndpoint extends ReqMaster {
     private final String className;
     private final String methodName;
     private final String statusAnnotation;
     private final String statusAnnotationValue;
 
-    public GeneralReqModel(String endpoint,
-                           String className,
-                           String methodName,
-                           String statusAnnotation,
-                           String statusAnnotationValue) {
-        this.endpoint = endpoint;
+    public ReqEndpoint(String endpoint,
+                       HttpRequestMethod reqMethod,
+                       String className,
+                       String methodName,
+                       String statusAnnotation,
+                       String statusAnnotationValue) {
+        super(endpoint, reqMethod);
         this.className = className;
         this.methodName = methodName;
         this.statusAnnotation = statusAnnotation;
         this.statusAnnotationValue = statusAnnotationValue;
-    }
-
-    public String getEndpoint() {
-        return endpoint;
     }
 
     public String getClassName() {
