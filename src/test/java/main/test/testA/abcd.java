@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 
@@ -36,7 +36,7 @@ public class abcd {
     public static HttpResponse<?> xyz(HttpRequest<?> request) {
         System.out.println(request.getParameters());
         HttpResponse<File> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
-        httpResponse.setStatusCode(HTTPStatusCode.OK);
+        httpResponse.setStatusCode(HttpStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("image/jpg"));
         httpResponse.setHeaders(headers);
@@ -56,7 +56,7 @@ public class abcd {
         }
         System.out.println();
         HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
-        httpResponse.setStatusCode(HTTPStatusCode.OK);
+        httpResponse.setStatusCode(HttpStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
         httpResponse.setHeaders(headers);
@@ -73,7 +73,7 @@ public class abcd {
     public static HttpResponse<?> defg(HttpRequest<?> request) {
         System.out.println(request.getParameters());
         HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
-        httpResponse.setStatusCode(HTTPStatusCode.CREATED);
+        httpResponse.setStatusCode(HttpStatusCode.CREATED);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
         httpResponse.setHeaders(headers);
@@ -85,7 +85,7 @@ public class abcd {
     public static HttpResponse<?> xyza(HttpRequest<?> request) {
         System.out.println(request.getParameters());
         HttpResponse<String> httpResponse = new HttpResponse<>(request.getREQUEST_ID());
-        httpResponse.setStatusCode(HTTPStatusCode.OK);
+        httpResponse.setStatusCode(HttpStatusCode.OK);
         Map<String, List<String>> headers = new HashMap<>();
         headers.put("Content-Type", List.of("text/html"));
         httpResponse.setHeaders(headers);

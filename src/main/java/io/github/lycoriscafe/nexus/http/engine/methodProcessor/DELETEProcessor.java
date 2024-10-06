@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
@@ -44,7 +44,7 @@ public final class DELETEProcessor implements MethodProcessor {
         try {
             List<String> details = Database.getEndpointDetails(DATABASE, HttpRequestMethod.DELETE, request.getRequestURL());
             if (details.get(0) == null) {
-                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.NOT_FOUND);
                 return httpResponse;
             }
             Class<?> clazz = Class.forName(details.get(1));
@@ -52,7 +52,7 @@ public final class DELETEProcessor implements MethodProcessor {
             httpResponse = (HttpResponse<?>) method.invoke(null, request);
         } catch (SQLException | NoSuchMethodException | InvocationTargetException | IllegalAccessException |
                  ClassNotFoundException e) {
-            REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
+            REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.INTERNAL_SERVER_ERROR);
         }
         return httpResponse;
     }

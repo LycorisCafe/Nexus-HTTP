@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.HTTPServerConfiguration;
 import org.slf4j.Logger;
@@ -105,7 +105,7 @@ public final class RequestHandler implements Runnable {
     }
 
     public void processBadRequest(final long REQUEST_ID,
-                                  final HTTPStatusCode STATUS) {
+                                  final HttpStatusCode STATUS) {
         HttpResponse<String> response = new HttpResponse<>(REQUEST_ID);
         response.setVersion(HTTPVersion.HTTP_1_1);
         response.setStatusCode(STATUS);
@@ -159,7 +159,7 @@ public final class RequestHandler implements Runnable {
                         if (requestLine.isEmpty()) {
                             requestLine = validateRequestLine(requestLine, buffer.toString(StandardCharsets.UTF_8));
                             if (requestLine == null) {
-                                processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
+                                processBadRequest(requestId, HttpStatusCode.BAD_REQUEST);
                                 break headersLoop;
                             }
                             buffer.reset();
@@ -168,7 +168,7 @@ public final class RequestHandler implements Runnable {
 
                         headers = processHeader(headers, buffer.toString(StandardCharsets.UTF_8));
                         if (headers == null) {
-                            processBadRequest(requestId, HTTPStatusCode.BAD_REQUEST);
+                            processBadRequest(requestId, HttpStatusCode.BAD_REQUEST);
                             break headersLoop;
                         }
                         buffer.reset();

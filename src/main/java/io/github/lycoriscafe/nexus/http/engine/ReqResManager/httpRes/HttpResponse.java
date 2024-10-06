@@ -23,7 +23,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.CSPDirective;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -33,7 +33,7 @@ import java.util.Map;
 
 public final class HttpResponse {
     private final long RESPONSE_ID;
-    private final HTTPStatusCode status;
+    private final HttpStatusCode status;
     private final Map<String, List<String>> headers;
     private final List<Cookie> cookies;
     private final List<ContentSecurityPolicy> contentSecurityPolicies;
@@ -62,7 +62,7 @@ public final class HttpResponse {
         return RESPONSE_ID;
     }
 
-    public HTTPStatusCode getStatus() {
+    public HttpStatusCode getStatus() {
         return status;
     }
 
@@ -110,7 +110,7 @@ public final class HttpResponse {
         private boolean csproReport = false;
 
         private final long RESPONSE_ID;
-        private HTTPStatusCode status;
+        private HttpStatusCode status;
         private Map<String, List<String>> headers;
         private List<Cookie> cookies;
         private List<ContentSecurityPolicy> contentSecurityPolicies;
@@ -125,7 +125,7 @@ public final class HttpResponse {
             this.RESPONSE_ID = RESPONSE_ID;
         }
 
-        public HttpResponseBuilder status(HTTPStatusCode status)
+        public HttpResponseBuilder status(HttpStatusCode status)
                 throws HttpResponseException {
             if (status == null) {
                 throw new HttpResponseException("http status code cannot be null");

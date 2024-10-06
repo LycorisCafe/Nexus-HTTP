@@ -17,20 +17,24 @@
 package io.github.lycoriscafe.nexus.http.helper.models;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+
+import java.lang.reflect.Method;
 
 public final class ReqEndpoint extends ReqMaster {
-    private final String className;
-    private final String methodName;
-    private final String statusAnnotation;
+    private final Class<?> className;
+    private final Method methodName;
+    private final HttpStatusCode statusAnnotation;
     private final String statusAnnotationValue;
 
-    public ReqEndpoint(String endpoint,
+    public ReqEndpoint(final String httpEndpoint,
+                       final String requestEndpoint,
                        HttpRequestMethod reqMethod,
-                       String className,
-                       String methodName,
-                       String statusAnnotation,
+                       Class<?> className,
+                       Method methodName,
+                       HttpStatusCode statusAnnotation,
                        String statusAnnotationValue) {
-        super(endpoint, reqMethod);
+        super(httpEndpoint, requestEndpoint, reqMethod);
         this.className = className;
         this.methodName = methodName;
         this.statusAnnotation = statusAnnotation;
@@ -38,15 +42,15 @@ public final class ReqEndpoint extends ReqMaster {
     }
 
     public String getClassName() {
-        return className;
+        return className.getName();
     }
 
     public String getMethodName() {
-        return methodName;
+        return methodName.getName();
     }
 
     public String getStatusAnnotation() {
-        return statusAnnotation;
+        return statusAnnotation.toString();
     }
 
     public String getStatusAnnotationValue() {

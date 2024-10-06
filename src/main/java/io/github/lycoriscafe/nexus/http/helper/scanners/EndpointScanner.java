@@ -17,13 +17,16 @@
 package io.github.lycoriscafe.nexus.http.helper.scanners;
 
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
+import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Set;
@@ -39,86 +42,69 @@ public final class EndpointScanner {
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getMethods()) {
                 String endpointValue = null;
-                String reqMethodTbl = switch (method) {
+                HttpRequestMethod reqMethod = switch (method) {
                     case Method m when m.isAnnotationPresent(GET.class) -> {
                         endpointValue = m.getAnnotation(GET.class).value();
-                        yield "ReqGET";
+                        yield HttpRequestMethod.GET;
                     }
                     case Method m when m.isAnnotationPresent(POST.class) -> {
                         endpointValue = m.getAnnotation(POST.class).value();
-                        yield "ReqPOST";
+                        yield HttpRequestMethod.POST;
                     }
                     case Method m when m.isAnnotationPresent(PUT.class) -> {
                         endpointValue = m.getAnnotation(PUT.class).value();
-                        yield "ReqPUT";
+                        yield HttpRequestMethod.PUT;
                     }
                     case Method m when m.isAnnotationPresent(DELETE.class) -> {
                         endpointValue = m.getAnnotation(DELETE.class).value();
-                        yield "ReqDELETE";
+                        yield HttpRequestMethod.DELETE;
                     }
                     case Method m when m.isAnnotationPresent(PATCH.class) -> {
                         endpointValue = m.getAnnotation(PATCH.class).value();
-                        yield "ReqPATCH";
+                        yield HttpRequestMethod.PATCH;
                     }
                     default -> null;
                 };
 
+                if (reqMethod == null) {
+                    continue;
+                }
+
                 String statusAnnotationValue = null;
-                String statusAnnotation = switch (method) {
-                    case Method m when m.isAnnotationPresent(Gone.class) -> "GONE";
+                HttpStatusCode statusAnnotation = switch (method) {
+                    case Method m when m.isAnnotationPresent(Gone.class) -> HttpStatusCode.GONE;
                     case Method m when m.isAnnotationPresent(MovedPermanently.class) -> {
                         statusAnnotationValue = m.getAnnotation(MovedPermanently.class).value();
-                        yield "MOVED_PERMANENTLY";
+                        yield HttpStatusCode.MOVED_PERMANENTLY;
                     }
                     case Method m when m.isAnnotationPresent(MovedTemporarily.class) -> {
                         statusAnnotationValue = m.getAnnotation(MovedTemporarily.class).value();
-                        yield "FOUND";
+                        yield HttpStatusCode.FOUND;
                     }
                     case Method m when m.isAnnotationPresent(NotImplemented.class) -> {
                         statusAnnotationValue = m.getAnnotation(NotImplemented.class).value();
-                        yield "NOT_IMPLEMENTED";
+                        yield HttpStatusCode.NOT_IMPLEMENTED;
                     }
                     case Method m when m.isAnnotationPresent(PermanentRedirect.class) -> {
                         statusAnnotationValue = m.getAnnotation(PermanentRedirect.class).value();
-                        yield "PERMANENT_REDIRECT";
+                        yield HttpStatusCode.PERMANENT_REDIRECT;
                     }
                     case Method m when m.isAnnotationPresent(TemporaryRedirect.class) -> {
                         statusAnnotationValue = m.getAnnotation(TemporaryRedirect.class).value();
-                        yield "TEMPORARY_REDIRECT";
+                        yield HttpStatusCode.TEMPORARY_REDIRECT;
                     }
                     case Method m when m.isAnnotationPresent(UnavailableForLegalReasons.class) -> {
                         statusAnnotationValue = m.getAnnotation(UnavailableForLegalReasons.class).value();
-                        yield "UNAVAILABLE_FOR_LEGAL_REASONS";
+                        yield HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS;
                     }
                     default -> null;
                 };
 
-                if (reqMethodTbl == null) {
-                    continue;
-                }
-                writeToDatabase(DATABASE, reqMethodTbl, endpointValue, clazz, method, statusAnnotation, statusAnnotationValue);
+                Database.addEndpointData(DATABASE, new ReqEndpoint(
+                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.ROOT),
+                        endpointValue.toLowerCase(Locale.ROOT),
+                        reqMethod, clazz, method, statusAnnotation, statusAnnotationValue));
             }
-        }
-    }
-
-    private static void writeToDatabase(final Connection DATABASE,
-                                        final String TABLE,
-                                        final String ENDPOINT,
-                                        final Class<?> CLAZZ,
-                                        final Method METHOD,
-                                        final String STATUS_ANNOTATION,
-                                        final String STATUS_ANNOTATION_VALUE) throws SQLException {
-        String query = "INSERT INTO " + TABLE + " VALUES (?, ?, ?, ?, ?)";
-        try (PreparedStatement ps = DATABASE.prepareStatement(query)) {
-            ps.setString(1, (CLAZZ.getAnnotation(HttpEndpoint.class).value().equals("/") ?
-                    "" : CLAZZ.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.ROOT))
-                    + ENDPOINT.toLowerCase(Locale.ROOT));
-            ps.setString(2, CLAZZ.getName());
-            ps.setString(3, METHOD.getName());
-            ps.setString(4, STATUS_ANNOTATION);
-            ps.setString(5, STATUS_ANNOTATION_VALUE);
-
-            ps.executeUpdate();
         }
     }
 }

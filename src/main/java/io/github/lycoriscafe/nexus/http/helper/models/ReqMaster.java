@@ -18,17 +18,24 @@ package io.github.lycoriscafe.nexus.http.helper.models;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 
+import java.util.Locale;
+
 public sealed class ReqMaster permits ReqEndpoint, ReqFile {
-    private final String endpoint;
+    private final String httpEndpoint;
+    private final String reqEndpoint;
     private final HttpRequestMethod reqMethod;
 
-    public ReqMaster(final String endpoint, final HttpRequestMethod reqMethod) {
-        this.endpoint = endpoint;
+    public ReqMaster(final String httpEndpoint,
+                     final String reqEndpoint,
+                     final HttpRequestMethod reqMethod) {
+        this.httpEndpoint = httpEndpoint;
+        this.reqEndpoint = reqEndpoint;
         this.reqMethod = reqMethod;
     }
 
     public String getEndpoint() {
-        return endpoint;
+        return httpEndpoint.equals("/") ? "" : httpEndpoint.toLowerCase(Locale.ROOT)
+                + reqEndpoint.toLowerCase(Locale.ROOT);
     }
 
     public HttpRequestMethod getReqMethod() {

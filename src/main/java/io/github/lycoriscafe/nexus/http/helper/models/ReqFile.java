@@ -23,11 +23,11 @@ public final class ReqFile extends ReqMaster {
     private final String lastModified;
     private final String eTag;
 
-    public ReqFile(String endpoint,
-                   String location,
-                   String lastModified,
-                   String eTag) {
-        super(endpoint, HttpRequestMethod.GET);
+    public ReqFile(final String requestEndpoint,
+                   final String location,
+                   final String lastModified,
+                   final String eTag) {
+        super("/", requestEndpoint, HttpRequestMethod.GET);
         this.location = location;
         this.lastModified = lastModified;
         this.eTag = eTag;

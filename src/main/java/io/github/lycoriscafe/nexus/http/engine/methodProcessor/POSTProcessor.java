@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.methodProcessor;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestHandler;
@@ -54,7 +54,7 @@ public final class POSTProcessor implements MethodProcessor {
         if (request.getHeaders().containsKey("content-length")) {
             int contentLen = Integer.parseInt(request.getHeaders().get("content-length").getFirst());
             if (contentLen > CONFIG.getMaxContentLength()) {
-                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.BAD_REQUEST);
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.BAD_REQUEST);
                 return null;
             }
 
@@ -62,7 +62,7 @@ public final class POSTProcessor implements MethodProcessor {
             try {
                 INPUT_STREAM.read(bytes, 0, bytes.length);
             } catch (IOException e) {
-                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.INTERNAL_SERVER_ERROR);
                 return null;
             }
             HttpRequest<byte[]> httpReq = request;
@@ -71,7 +71,7 @@ public final class POSTProcessor implements MethodProcessor {
         try {
             List<String> details = Database.getEndpointDetails(DATABASE, HttpRequestMethod.POST, request.getRequestURL());
             if (details.get(0) == null) {
-                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.NOT_FOUND);
+                REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.NOT_FOUND);
                 return httpResponse;
             }
             Class<?> clazz = Class.forName(details.get(1));
@@ -79,7 +79,7 @@ public final class POSTProcessor implements MethodProcessor {
             httpResponse = (HttpResponse<?>) method.invoke(null, request);
         } catch (SQLException | ClassNotFoundException | InvocationTargetException |
                  NoSuchMethodException | IllegalAccessException e) {
-            REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HTTPStatusCode.INTERNAL_SERVER_ERROR);
+            REQ_HANDLER.processBadRequest(request.getREQUEST_ID(), HttpStatusCode.INTERNAL_SERVER_ERROR);
         }
         return httpResponse;
     }

@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.core.HTTPVersion;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HTTPStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.methodProcessor.*;
@@ -83,11 +83,11 @@ public final class RequestProcessor {
             case DELETE -> methodProcessors.get(HttpRequestMethod.DELETE).process(httpRequest);
             case PATCH -> methodProcessors.get(HttpRequestMethod.PATCH).process(httpRequest);
             case TRACE -> {
-                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.METHOD_NOT_ALLOWED);
+                REQ_HANDLER.processBadRequest(REQUEST_ID, HttpStatusCode.METHOD_NOT_ALLOWED);
                 yield null;
             }
             default -> {
-                REQ_HANDLER.processBadRequest(REQUEST_ID, HTTPStatusCode.NOT_IMPLEMENTED);
+                REQ_HANDLER.processBadRequest(REQUEST_ID, HttpStatusCode.NOT_IMPLEMENTED);
                 yield null;
             }
         };
