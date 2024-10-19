@@ -114,7 +114,7 @@ public final class HttpServerConfiguration {
         private String databaseLocation = null;
 
         private int maxIncomingConnections = 100;
-        private int pipelineParallelProcesses = 0;
+        private int pipelineParallelProcesses = 1;
         private int maxContentLength = 5_242_880;
 
         private boolean debugEnabled;

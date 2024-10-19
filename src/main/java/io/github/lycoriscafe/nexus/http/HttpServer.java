@@ -58,6 +58,7 @@ public final class HttpServer {
                 while (true) {
                     // TODO implement using executorService
                     Socket socket = serverSocket.accept();
+                    socket.setSoTimeout(60_000);
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
