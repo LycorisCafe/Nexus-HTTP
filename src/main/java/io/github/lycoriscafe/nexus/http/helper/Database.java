@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.helper;
 
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
@@ -25,14 +26,15 @@ import java.io.IOException;
 import java.sql.*;
 
 public final class Database {
-    public static Connection getConnection(final String DB_LOCATION,
-                                           final int PORT) throws SQLException, IOException {
+    public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration)
+            throws SQLException, IOException {
         Connection conn;
-        if (DB_LOCATION == null) {
+        if (serverConfiguration.getDatabaseLocation() == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
-            String database = DB_LOCATION.isEmpty() ?
-                    "NexusHttp" + PORT + ".db" : DB_LOCATION + "/NexusHttp" + PORT + ".db";
+            String database = serverConfiguration.getDatabaseLocation().isEmpty() ?
+                    "NexusHttp" + serverConfiguration.getPort() + ".db" :
+                    serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
             File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) {

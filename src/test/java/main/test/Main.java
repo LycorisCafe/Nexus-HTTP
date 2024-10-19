@@ -16,7 +16,7 @@
 
 package main.test;
 
-import io.github.lycoriscafe.nexus.http.HTTPServer;
+import io.github.lycoriscafe.nexus.http.HttpServer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 
@@ -31,10 +31,10 @@ public class Main {
                     .setThreadType(ThreadType.VIRTUAL)
                     .setBacklog(5)
                     .setDatabaseLocation("");
-            HTTPServer httpServer1 = new HTTPServer(httpServerConfiguration);
+            HttpServer httpServer1 = new HttpServer(httpServerConfiguration);
             httpServer1.start();
 //            System.out.println(httpServerConfiguration.getBasePackage());
-            //            HTTPServer httpServer2 = new HTTPServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
+            //            HttpServer httpServer2 = new HttpServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
         } catch (
                 IOException | SQLException |
                 ClassNotFoundException e) {
