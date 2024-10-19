@@ -18,20 +18,50 @@ package io.github.lycoriscafe.nexus.http.helper.scanners;
 
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public final class FileScanner {
-    public static void scan(final HttpServerConfiguration serverConfiguration, final Database database) {
-
+    public static void scan(final HttpServerConfiguration serverConfiguration,
+                            final Database database) {
+        if (serverConfiguration.getStaticFilesDirectory() == null) {
+            return;
+        }
+        deepScan(Path.of(serverConfiguration.getStaticFilesDirectory()), database);
     }
 
-    public static byte[] calculate(Path path) throws NoSuchAlgorithmException, IOException {
+    private static void deepScan(final Path directory,
+                                 final Database database) {
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
+            for (Path path : stream) {
+                if (Files.isDirectory(path)) {
+                    deepScan(path, database);
+                    continue;
+                }
+
+                // TODO url ascii escapes
+                database.addEndpointData(new ReqFile(
+                        path.toString(),
+                        path.toString(),
+                        Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
+                        calculate(path))
+                );
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static String calculate(Path path) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("md5");
         BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));
         byte[] buffer = new byte[1024];
@@ -41,6 +71,8 @@ public final class FileScanner {
         }
 
         reader.close();
-        return messageDigest.digest();
+//        return messageDigest.digest();
+        // TODO implement this to return string
+        return null;
     }
 }

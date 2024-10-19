@@ -92,7 +92,7 @@ public final class Database {
         }
     }
 
-    public synchronized void addEndpointData(ReqMaster MODEL) throws SQLException {
+    public synchronized void addEndpointData(final ReqMaster MODEL) throws SQLException {
         PreparedStatement masterQuery = databaseConnection
                 .prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
         masterQuery.setString(1, MODEL.getEndpoint());
