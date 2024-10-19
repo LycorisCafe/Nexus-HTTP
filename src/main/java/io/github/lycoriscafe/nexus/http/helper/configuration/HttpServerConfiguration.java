@@ -33,7 +33,7 @@ public final class HttpServerConfiguration {
     private final int pipelineParallelProcesses;
     private final int maxContentLength;
 
-    private final boolean devLogging;
+    private final boolean debugEnabled;
 
     public HttpServerConfiguration(HttpServerConfigurationBuilder builder) {
         port = builder.port;
@@ -47,7 +47,7 @@ public final class HttpServerConfiguration {
         maxIncomingConnections = builder.maxIncomingConnections;
         pipelineParallelProcesses = builder.pipelineParallelProcesses;
         maxContentLength = builder.maxContentLength;
-        devLogging = builder.devLogging;
+        debugEnabled = builder.debugEnabled;
     }
 
     public int getPort() {
@@ -94,8 +94,8 @@ public final class HttpServerConfiguration {
         return maxContentLength;
     }
 
-    public boolean isDevLogging() {
-        return devLogging;
+    public boolean isDebugEnabled() {
+        return debugEnabled;
     }
 
     public static HttpServerConfigurationBuilder builder(String basePackage) {
@@ -117,7 +117,7 @@ public final class HttpServerConfiguration {
         private int pipelineParallelProcesses = 0;
         private int maxContentLength = 5_242_880;
 
-        private boolean devLogging = true;
+        private boolean debugEnabled;
 
         public HttpServerConfigurationBuilder(String basePackage) {
             this.basePackage = basePackage;
@@ -138,43 +138,65 @@ public final class HttpServerConfiguration {
             return this;
         }
 
-        public HttpServerConfigurationBuilder threadType(ThreadType threadType) {
+        public HttpServerConfigurationBuilder threadType(ThreadType threadType)
+                throws HttpServerConfigurationException {
+            if (threadType == null) {
+                throw new HttpServerConfigurationException("thread type cannot be null");
+            }
             this.threadType = threadType;
             return this;
         }
 
         public HttpServerConfigurationBuilder tempDirectory(String tempDirectory) {
-            this.tempDirectory = tempDirectory;
+            if (tempDirectory != null) {
+                this.tempDirectory = tempDirectory;
+            }
             return this;
         }
 
         public HttpServerConfigurationBuilder staticFilesDirectory(String staticFilesDirectory) {
-            this.staticFilesDirectory = staticFilesDirectory;
+            if (staticFilesDirectory != null) {
+                this.staticFilesDirectory = staticFilesDirectory;
+            }
             return this;
         }
 
         public HttpServerConfigurationBuilder databaseLocation(String databaseLocation) {
-            this.databaseLocation = databaseLocation;
+            if (databaseLocation != null) {
+                this.databaseLocation = databaseLocation;
+            }
             return this;
         }
 
-        public HttpServerConfigurationBuilder maxIncomingConnections(int maxIncomingConnections) {
+        public HttpServerConfigurationBuilder maxIncomingConnections(int maxIncomingConnections)
+                throws HttpServerConfigurationException {
+            if (maxIncomingConnections < 1) {
+                throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
+            }
             this.maxIncomingConnections = maxIncomingConnections;
             return this;
         }
 
-        public HttpServerConfigurationBuilder pipelineParallelProcesses(int pipelineParallelProcesses) {
+        public HttpServerConfigurationBuilder pipelineParallelProcesses(int pipelineParallelProcesses)
+                throws HttpServerConfigurationException {
+            if (pipelineParallelProcesses < 1) {
+                throw new HttpServerConfigurationException("pipeline processes count cannot be less than 1");
+            }
             this.pipelineParallelProcesses = pipelineParallelProcesses;
             return this;
         }
 
-        public HttpServerConfigurationBuilder maxContentLength(int maxContentLength) {
+        public HttpServerConfigurationBuilder maxContentLength(int maxContentLength)
+                throws HttpServerConfigurationException {
+            if (maxContentLength < 1) {
+                throw new HttpServerConfigurationException("max content length cannot be less than 1 (MB)");
+            }
             this.maxContentLength = maxContentLength;
             return this;
         }
 
-        public HttpServerConfigurationBuilder devLogging(boolean devLogging) {
-            this.devLogging = devLogging;
+        public HttpServerConfigurationBuilder enableDebug() {
+            debugEnabled = true;
             return this;
         }
 
