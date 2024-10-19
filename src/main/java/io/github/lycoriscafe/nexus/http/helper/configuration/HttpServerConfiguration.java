@@ -133,7 +133,11 @@ public final class HttpServerConfiguration {
             return this;
         }
 
-        public HttpServerConfigurationBuilder inetAddress(InetAddress inetAddress) {
+        public HttpServerConfigurationBuilder inetAddress(InetAddress inetAddress)
+                throws HttpServerConfigurationException {
+            if (inetAddress == null) {
+                throw new HttpServerConfigurationException("inet address cannot be null");
+            }
             this.inetAddress = inetAddress;
             return this;
         }
