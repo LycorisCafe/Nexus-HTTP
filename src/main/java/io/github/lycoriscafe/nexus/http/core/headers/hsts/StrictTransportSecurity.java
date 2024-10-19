@@ -22,9 +22,9 @@ public final class StrictTransportSecurity {
     private final boolean preload;
 
     public StrictTransportSecurity(StrictTransportSecurityBuilder builder) {
-        this.maxAge = builder.maxAge;
-        this.includeSubdomains = builder.includeSubdomains;
-        this.preload = builder.preload;
+        maxAge = builder.maxAge;
+        includeSubdomains = builder.includeSubdomains;
+        preload = builder.preload;
     }
 
     public long getMaxAge() {

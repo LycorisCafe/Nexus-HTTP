@@ -22,11 +22,11 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Set;
@@ -35,9 +35,9 @@ import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public final class EndpointScanner {
-    public static void scan(final Connection DATABASE,
-                            final String BASE_PACKAGE) throws SQLException, ScannerException {
-        Reflections reflections = new Reflections(BASE_PACKAGE);
+    public static void scan(final HttpServerConfiguration serverConfiguration, final Database database)
+            throws SQLException, ScannerException {
+        Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getMethods()) {
@@ -106,10 +106,11 @@ public final class EndpointScanner {
                     default -> null;
                 };
 
-                Database.addEndpointData(DATABASE, new ReqEndpoint(
+                database.addEndpointData(new ReqEndpoint(
                         clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.ROOT),
                         endpointValue.toLowerCase(Locale.ROOT),
-                        reqMethod, clazz, method, statusAnnotation, statusAnnotationValue));
+                        reqMethod, clazz, method, statusAnnotation, statusAnnotationValue)
+                );
             }
         }
     }

@@ -29,16 +29,16 @@ public final class Cookie {
     private final CookiePrefix prefix;
 
     private Cookie(CookieBuilder builder) {
-        this.name = builder.name;
-        this.value = builder.value;
-        this.expires = builder.expires;
-        this.maxAge = builder.maxAge;
-        this.secure = builder.secure;
-        this.httpOnly = builder.httpOnly;
-        this.domain = builder.domain;
-        this.path = builder.path;
-        this.sameSite = builder.sameSite;
-        this.prefix = builder.prefix;
+        name = builder.name;
+        value = builder.value;
+        expires = builder.expires;
+        maxAge = builder.maxAge;
+        secure = builder.secure;
+        httpOnly = builder.httpOnly;
+        domain = builder.domain;
+        path = builder.path;
+        sameSite = builder.sameSite;
+        prefix = builder.prefix;
     }
 
     public String getName() {
@@ -101,8 +101,8 @@ public final class Cookie {
 
         public CookieBuilder(String cookieName,
                              String cookieValue) {
-            this.name = cookieName;
-            this.value = cookieValue;
+            name = cookieName;
+            value = cookieValue;
         }
 
         public CookieBuilder expires(String expires) {

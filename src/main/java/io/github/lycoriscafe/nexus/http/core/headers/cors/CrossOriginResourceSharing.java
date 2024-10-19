@@ -30,12 +30,12 @@ public final class CrossOriginResourceSharing {
     private final List<String> accessControlAllowHeaders;
 
     public CrossOriginResourceSharing(CrossOriginResourceSharingBuilder builder) {
-        this.accessControlAllowOrigin = builder.accessControlAllowOrigin;
-        this.accessControlExposeHeaders = builder.accessControlExposeHeaders;
-        this.accessControlMaxAge = builder.accessControlMaxAge;
-        this.accessControlAllowCredentials = builder.accessControlAllowCredentials;
-        this.accessControlAllowMethods = builder.accessControlAllowMethods;
-        this.accessControlAllowHeaders = builder.accessControlAllowHeaders;
+        accessControlAllowOrigin = builder.accessControlAllowOrigin;
+        accessControlExposeHeaders = builder.accessControlExposeHeaders;
+        accessControlMaxAge = builder.accessControlMaxAge;
+        accessControlAllowCredentials = builder.accessControlAllowCredentials;
+        accessControlAllowMethods = builder.accessControlAllowMethods;
+        accessControlAllowHeaders = builder.accessControlAllowHeaders;
     }
 
     public String getAccessControlAllowOrigin() {

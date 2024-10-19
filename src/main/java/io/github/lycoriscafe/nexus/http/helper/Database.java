@@ -26,6 +26,16 @@ import java.io.IOException;
 import java.sql.*;
 
 public final class Database {
+    private final Connection databaseConnection;
+
+    public Database(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
+        databaseConnection = initializeDatabaseConnection(serverConfiguration);
+    }
+
+    public Connection getDatabaseConnection() {
+        return databaseConnection;
+    }
+
     public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration)
             throws SQLException, IOException {
         Connection conn;
@@ -82,20 +92,19 @@ public final class Database {
         }
     }
 
-    public static void addEndpointData(Connection DATABASE,
-                                       ReqMaster MODEL) throws SQLException {
-        PreparedStatement masterQuery
-                = DATABASE.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
+    public synchronized void addEndpointData(ReqMaster MODEL) throws SQLException {
+        PreparedStatement masterQuery = databaseConnection
+                .prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
         masterQuery.setString(1, MODEL.getEndpoint());
-        masterQuery.setString(2, MODEL.getEndpoint());
+        masterQuery.setString(2, MODEL.getReqMethod().name());
         masterQuery.executeUpdate();
 
-        Statement stmt = DATABASE.createStatement();
+        Statement stmt = databaseConnection.createStatement();
         int rowId = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster").getInt(1);
 
         switch (MODEL) {
             case ReqMaster m when m instanceof ReqEndpoint -> {
-                PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqEndpoint " +
+                PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
                         "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue) " +
                         "VALUES (?, ?, ?, ?, ?)");
                 subQuery.setInt(1, rowId);
@@ -106,7 +115,7 @@ public final class Database {
                 subQuery.executeUpdate();
             }
             case ReqMaster m when m instanceof ReqFile -> {
-                PreparedStatement subQuery = DATABASE.prepareStatement("INSERT INTO ReqFile " +
+                PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile " +
                         "(ROWID, location, lastModified, eTag) VALUES (?, ?, ?, ?)");
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, ((ReqFile) m).getLocation());

@@ -16,17 +16,18 @@
 
 package io.github.lycoriscafe.nexus.http.helper.scanners;
 
+import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
 
 public final class FileScanner {
-    public static void scan(final Connection DATABASE,
-                            final String BASE_DIR) {
+    public static void scan(final HttpServerConfiguration serverConfiguration, final Database database) {
 
     }
 

@@ -19,26 +19,33 @@ package io.github.lycoriscafe.nexus.http;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
+import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
+import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public final class HttpServer {
     private final HttpServerConfiguration serverConfiguration;
     private Thread serverThread;
     private ServerSocket serverSocket;
     private final ExecutorService executorService;
-    private final Connection databaseConnection;
+    private final Database database;
 
-    public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException {
+    public HttpServer(final HttpServerConfiguration httpServerConfiguration)
+            throws SQLException, IOException, ScannerException {
         serverConfiguration = httpServerConfiguration;
         executorService = initializeExecutorService(serverConfiguration);
-        databaseConnection = Database.initializeDatabaseConnection(serverConfiguration);
+        database = new Database(serverConfiguration);
+
+        EndpointScanner.scan(serverConfiguration, database);
+        FileScanner.scan(serverConfiguration, database);
     }
 
     private static ExecutorService initializeExecutorService(final HttpServerConfiguration serverConfiguration) {
@@ -67,8 +74,8 @@ public final class HttpServer {
     }
 
     public void shutdown() throws IOException, InterruptedException {
-        executorService.shutdown();
-        if (executorService.isShutdown()) {
+        executorService.awaitTermination(1, TimeUnit.MINUTES);
+        if (executorService.isShutdown() || executorService.isTerminated()) {
             serverSocket.close();
             Thread.sleep(1000);
             if (serverThread.isAlive()) {
