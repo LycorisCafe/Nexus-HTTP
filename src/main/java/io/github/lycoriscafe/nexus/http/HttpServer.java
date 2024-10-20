@@ -35,13 +35,12 @@ public final class HttpServer {
     private final HttpServerConfiguration serverConfiguration;
     private Thread serverThread;
     private ServerSocket serverSocket;
-    private final ExecutorService executorService;
+    private ExecutorService executorService;
     private final Database database;
 
     public HttpServer(final HttpServerConfiguration httpServerConfiguration)
             throws SQLException, IOException, ScannerException {
         serverConfiguration = httpServerConfiguration;
-        executorService = initializeExecutorService(serverConfiguration);
         database = new Database(serverConfiguration);
 
         EndpointScanner.scan(serverConfiguration, database);
@@ -55,6 +54,7 @@ public final class HttpServer {
     }
 
     public void initialize() {
+        executorService = initializeExecutorService(serverConfiguration);
         serverThread = Thread.ofPlatform().start(() -> {
             try {
                 serverSocket = serverConfiguration.getInetAddress() == null ?
