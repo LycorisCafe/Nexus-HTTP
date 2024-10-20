@@ -22,20 +22,20 @@ import java.util.Locale;
 
 public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     private final String httpEndpoint;
-    private final String reqEndpoint;
+    private final String requestEndpoint;
     private final HttpRequestMethod reqMethod;
 
     public ReqMaster(final String httpEndpoint,
-                     final String reqEndpoint,
+                     final String requestEndpoint,
                      final HttpRequestMethod reqMethod) {
         this.httpEndpoint = httpEndpoint;
-        this.reqEndpoint = reqEndpoint;
+        this.requestEndpoint = requestEndpoint;
         this.reqMethod = reqMethod;
     }
 
     public String getEndpoint() {
         return httpEndpoint.equals("/") ? "" : httpEndpoint.toLowerCase(Locale.ROOT)
-                + reqEndpoint.toLowerCase(Locale.ROOT);
+                + requestEndpoint.toLowerCase(Locale.ROOT);
     }
 
     public HttpRequestMethod getReqMethod() {

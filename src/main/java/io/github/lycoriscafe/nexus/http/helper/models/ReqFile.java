@@ -19,22 +19,19 @@ package io.github.lycoriscafe.nexus.http.helper.models;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 
 public final class ReqFile extends ReqMaster {
-    private final String location;
     private final String lastModified;
     private final String eTag;
 
-    public ReqFile(final String requestEndpoint,
-                   final String location,
+    public ReqFile(final String location,
                    final String lastModified,
                    final String eTag) {
-        super("/", requestEndpoint, HttpRequestMethod.GET);
-        this.location = location;
+        super("/", location, HttpRequestMethod.GET);
         this.lastModified = lastModified;
         this.eTag = eTag;
     }
 
     public String getLocation() {
-        return location;
+        return getEndpoint();
     }
 
     public String getLastModified() {

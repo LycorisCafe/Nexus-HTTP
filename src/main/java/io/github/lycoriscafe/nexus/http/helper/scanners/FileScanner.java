@@ -32,37 +32,44 @@ import java.security.NoSuchAlgorithmException;
 
 public final class FileScanner {
     public static void scan(final HttpServerConfiguration serverConfiguration,
-                            final Database database) {
+                            final Database database) throws ScannerException {
         if (serverConfiguration.getStaticFilesDirectory() == null) {
             return;
         }
-        deepScan(Path.of(serverConfiguration.getStaticFilesDirectory()), database);
+        Path dir = Path.of(serverConfiguration.getStaticFilesDirectory());
+        if (!Files.exists(dir)) {
+            throw new ScannerException("static files directory is not exists");
+        }
+        if (!Files.isDirectory(dir)) {
+            throw new ScannerException("static files directory is not a directory");
+        }
+        deepScan(dir, database, dir);
     }
 
     private static void deepScan(final Path directory,
-                                 final Database database) {
+                                 final Database database,
+                                 final Path staticFilesDirectory) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path path : stream) {
                 if (Files.isDirectory(path)) {
-                    deepScan(path, database);
+                    deepScan(path, database, staticFilesDirectory);
                     continue;
                 }
 
-                // TODO url ascii escapes
                 database.addEndpointData(new ReqFile(
-                        path.toString(),
-                        path.toString(),
+                        staticFilesDirectory.relativize(path).toString(),
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
                         calculate(path))
                 );
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 
-    private static String calculate(Path path) throws NoSuchAlgorithmException, IOException {
-        MessageDigest messageDigest = MessageDigest.getInstance("md5");
+    private static String calculate(Path path)
+            throws NoSuchAlgorithmException, IOException {
+        MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));
         byte[] buffer = new byte[1024];
 
@@ -73,6 +80,6 @@ public final class FileScanner {
         reader.close();
 //        return messageDigest.digest();
         // TODO implement this to return string
-        return null;
+        return "";
     }
 }

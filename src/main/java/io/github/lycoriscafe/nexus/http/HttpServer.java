@@ -62,7 +62,7 @@ public final class HttpServer {
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(),
                                 serverConfiguration.getInetAddress());
 
-                while (true) {
+                while (!serverSocket.isClosed()) {
                     // TODO implement using executorService
                     Socket socket = serverSocket.accept();
                     socket.setSoTimeout(60_000);
@@ -75,12 +75,9 @@ public final class HttpServer {
 
     public void shutdown() throws IOException, InterruptedException {
         executorService.awaitTermination(1, TimeUnit.MINUTES);
-        if (executorService.isShutdown() || executorService.isTerminated()) {
-            serverSocket.close();
-            Thread.sleep(1000);
-            if (serverThread.isAlive()) {
-                serverThread.interrupt();
-            }
+        serverSocket.close();
+        if (serverThread.isAlive()) {
+            serverThread.interrupt();
         }
     }
 }

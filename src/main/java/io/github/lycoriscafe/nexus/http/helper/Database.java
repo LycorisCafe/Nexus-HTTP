@@ -78,7 +78,6 @@ public final class Database {
                 // Handle static files GET
                 "CREATE TABLE ReqFile(" +
                         "ROWID INTEGER," +
-                        "location TEXT NOT NULL," +
                         "lastModified TEXT NOT NULL," +
                         "eTag TEXT NOT NULL," +
                         "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
@@ -116,11 +115,10 @@ public final class Database {
             }
             case ReqMaster m when m instanceof ReqFile -> {
                 PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile " +
-                        "(ROWID, location, lastModified, eTag) VALUES (?, ?, ?, ?)");
+                        "(ROWID, lastModified, eTag) VALUES (?, ?, ?)");
                 subQuery.setInt(1, rowId);
-                subQuery.setString(2, ((ReqFile) m).getLocation());
-                subQuery.setString(3, ((ReqFile) m).getLastModified());
-                subQuery.setString(4, ((ReqFile) m).getETag());
+                subQuery.setString(2, ((ReqFile) m).getLastModified());
+                subQuery.setString(3, ((ReqFile) m).getETag());
                 subQuery.executeUpdate();
             }
             default -> throw new IllegalStateException("Unexpected value: " + MODEL);
