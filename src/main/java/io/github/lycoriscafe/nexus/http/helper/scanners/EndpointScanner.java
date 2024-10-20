@@ -35,7 +35,8 @@ import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public final class EndpointScanner {
-    public static void scan(final HttpServerConfiguration serverConfiguration, final Database database)
+    public static void scan(final HttpServerConfiguration serverConfiguration,
+                            final Database database)
             throws SQLException, ScannerException {
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());

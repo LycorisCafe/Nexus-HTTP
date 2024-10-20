@@ -57,9 +57,9 @@ public final class FileScanner {
                 }
 
                 database.addEndpointData(new ReqFile(
-                        staticFilesDirectory.relativize(path).toString(),
+                        staticFilesDirectory.relativize(path).toString().replaceAll("\\\\", "/"),
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
-                        calculate(path))
+                        calculateETag(path))
                 );
             }
         } catch (Exception e) {
@@ -67,7 +67,7 @@ public final class FileScanner {
         }
     }
 
-    private static String calculate(Path path)
+    private static String calculateETag(Path path)
             throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));
