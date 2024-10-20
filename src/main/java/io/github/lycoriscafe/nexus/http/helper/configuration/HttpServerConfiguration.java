@@ -22,6 +22,7 @@ public final class HttpServerConfiguration {
     private final int port;
     private final int backlog;
     private final InetAddress inetAddress;
+    private final int connectionTimeout;
     private final ThreadType threadType;
 
     private final String basePackage;
@@ -39,6 +40,7 @@ public final class HttpServerConfiguration {
         port = builder.port;
         backlog = builder.backlog;
         inetAddress = builder.inetAddress;
+        connectionTimeout = builder.connectionTimeout;
         threadType = builder.threadType;
         basePackage = builder.basePackage;
         tempDirectory = builder.tempDirectory;
@@ -60,6 +62,10 @@ public final class HttpServerConfiguration {
 
     public InetAddress getInetAddress() {
         return inetAddress;
+    }
+
+    public int getConnectionTimeout() {
+        return connectionTimeout;
     }
 
     public ThreadType getThreadType() {
@@ -106,6 +112,7 @@ public final class HttpServerConfiguration {
         private int port = 0;
         private int backlog = 0;
         private InetAddress inetAddress = null;
+        private int connectionTimeout = 60_000;
         private ThreadType threadType = ThreadType.VIRTUAL;
 
         private final String basePackage;
@@ -139,6 +146,11 @@ public final class HttpServerConfiguration {
                 throw new HttpServerConfigurationException("inet address cannot be null");
             }
             this.inetAddress = inetAddress;
+            return this;
+        }
+
+        public HttpServerConfigurationBuilder connectionTimeout(int connectionTimeout) {
+            this.connectionTimeout = connectionTimeout;
             return this;
         }
 
