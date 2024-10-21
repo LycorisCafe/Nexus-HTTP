@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 public final class ContentSecurityPolicyReportOnly
         extends ContentSecurityPolicy {
-    public ContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnlyBuilder builder) {
+    private ContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnlyBuilder builder) {
         super(builder);
     }
 
@@ -29,7 +29,7 @@ public final class ContentSecurityPolicyReportOnly
 
     public static final class ContentSecurityPolicyReportOnlyBuilder
             extends ContentSecurityPolicyBuilder {
-        public ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
+        private ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
                 throws ContentSecurityPolicyException {
             super(directive);
         }

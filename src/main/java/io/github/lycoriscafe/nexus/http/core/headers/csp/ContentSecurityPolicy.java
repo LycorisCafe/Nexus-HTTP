@@ -50,11 +50,11 @@ public sealed class ContentSecurityPolicy
 
     public static sealed class ContentSecurityPolicyBuilder
             permits ContentSecurityPolicyReportOnly.ContentSecurityPolicyReportOnlyBuilder {
-        final CSPDirective directive;
+        private final CSPDirective directive;
         private List<CSPValue> values;
         final List<Object> hosts;
 
-        public ContentSecurityPolicyBuilder(CSPDirective directive)
+        ContentSecurityPolicyBuilder(CSPDirective directive)
                 throws ContentSecurityPolicyException {
             if (directive == null) {
                 throw new ContentSecurityPolicyException("directive cannot be null");

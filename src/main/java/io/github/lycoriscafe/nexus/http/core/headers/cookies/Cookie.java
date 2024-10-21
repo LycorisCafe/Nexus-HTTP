@@ -99,7 +99,7 @@ public final class Cookie {
         private CookieSameSite sameSite;
         private CookiePrefix prefix;
 
-        public CookieBuilder(String cookieName,
+        private CookieBuilder(String cookieName,
                              String cookieValue) {
             name = cookieName;
             value = cookieValue;

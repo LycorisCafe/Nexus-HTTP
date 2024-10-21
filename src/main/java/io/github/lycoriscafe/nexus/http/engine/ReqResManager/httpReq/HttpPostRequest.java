@@ -19,17 +19,33 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public final class HttpPostRequest extends HttpRequest {
-    private final Authorization authorization;
-    private final List<HttpPostContent> httpPostContents;
+    private Authorization authorization;
+    private List<HttpPostContent> httpPostContents;
 
-    public HttpPostRequest(HttpPostRequestBuilder builder) {
-        super(builder);
-        this.authorization = builder.authorization;
-        this.httpPostContents = builder.httpPostContents;
+    public HttpPostRequest(final long requestId,
+                           final String endpoint) {
+        super(requestId, endpoint);
+    }
+
+    public void setAuthorization(final Authorization authorization) {
+        if (authorization == null) {
+            throw new IllegalArgumentException("Authorization cannot be null");
+        }
+        this.authorization = authorization;
+    }
+
+    public void setContent(final String name,
+                           final String fileName,
+                           final Object content)
+            throws IllegalArgumentException {
+        if (!(content instanceof byte[] || content instanceof File)) {
+            throw new IllegalArgumentException("Content must be a byte array or a file. " +
+                    "If you need this to be null, just ignore this method.");
+        }
+        httpPostContents.add(new HttpPostContent(name, fileName, content));
     }
 
     public List<HttpPostContent> getHttpPostContents() {
@@ -40,43 +56,9 @@ public final class HttpPostRequest extends HttpRequest {
         return authorization;
     }
 
-    public static HttpPostRequestBuilder builder(long RESPONSE_ID) {
-        return new HttpPostRequestBuilder(RESPONSE_ID);
-    }
-
-    public static final class HttpPostRequestBuilder extends HttpRequestBuilder {
-        private Authorization authorization;
-        private final List<HttpPostContent> httpPostContents;
-
-        public HttpPostRequestBuilder(final long RESPONSE_ID) {
-            super(RESPONSE_ID);
-            httpPostContents = new ArrayList<>();
-        }
-
-        public HttpPostRequestBuilder authorization(Authorization authorization) {
-            if (authorization == null) {
-                throw new IllegalArgumentException("Authorization cannot be null");
-            }
-            this.authorization = authorization;
-            return this;
-        }
-
-        public HttpPostRequestBuilder content(String name, String fileName, Object content)
-                throws IllegalArgumentException {
-            if (!(content instanceof byte[] || content instanceof File)) {
-                throw new IllegalArgumentException("Content must be a byte array or a file. " +
-                        "If you need this to be null, just ignore this method.");
-            }
-            httpPostContents.add(new HttpPostContent(name, fileName, content));
-            return this;
-        }
-
-        @Override
-        public HttpPostRequest build() {
-            return new HttpPostRequest(this);
-        }
-    }
-
-    public record HttpPostContent(String name, String fileName, Object content) {
+    // TODO rethink about post data management
+    public record HttpPostContent(String name,
+                                  String fileName,
+                                  Object content) {
     }
 }

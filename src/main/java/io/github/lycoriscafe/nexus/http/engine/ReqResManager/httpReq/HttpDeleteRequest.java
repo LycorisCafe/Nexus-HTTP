@@ -17,22 +17,8 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 public final class HttpDeleteRequest extends HttpGetRequest {
-    public HttpDeleteRequest(HttpDeleteRequestBuilder builder) {
-        super(builder);
-    }
-
-    public static HttpDeleteRequestBuilder builder(long REQUEST_ID) {
-        return new HttpDeleteRequestBuilder(REQUEST_ID);
-    }
-
-    public static final class HttpDeleteRequestBuilder extends HttpGetRequestBuilder {
-        public HttpDeleteRequestBuilder(long REQUEST_ID) {
-            super(REQUEST_ID);
-        }
-
-        @Override
-        public HttpDeleteRequest build() {
-            return new HttpDeleteRequest(this);
-        }
+    public HttpDeleteRequest(final long requestId,
+                             final String endpoint) {
+        super(requestId, endpoint);
     }
 }

@@ -41,7 +41,7 @@ public final class ReportingEndpoint {
         private final String endpointName;
         private final String endpointValue;
 
-        public ReportingEndpointBuilder(String endpointName, String endpointValue) {
+        private ReportingEndpointBuilder(String endpointName, String endpointValue) {
             this.endpointName = endpointName;
             this.endpointValue = endpointValue;
         }

@@ -21,45 +21,22 @@ import java.io.File;
 public sealed class HttpGetRequest
         extends HttpRequest
         permits HttpDeleteRequest, HttpOptionsRequest, HttpPatchRequest, HttpPutRequest {
-    private final Object content;
+    private Object content;
 
-    public HttpGetRequest(HttpGetRequestBuilder builder) {
-        super(builder);
-        content = builder.content;
+    public HttpGetRequest(final long requestId,
+                          final String endpoint) {
+        super(requestId, endpoint);
+    }
+
+    public void setContent(Object content) throws IllegalArgumentException {
+        if (!(content instanceof byte[] || content instanceof File)) {
+            throw new IllegalArgumentException("Content must be a byte array or a file. " +
+                    "If you need this to be null, just ignore this method.");
+        }
+        this.content = content;
     }
 
     public Object getContent() {
         return content;
-    }
-
-    public static HttpGetRequestBuilder builder(long REQUEST_ID) {
-        return new HttpGetRequestBuilder(REQUEST_ID);
-    }
-
-    public static sealed class HttpGetRequestBuilder
-            extends HttpRequestBuilder
-            permits HttpDeleteRequest.HttpDeleteRequestBuilder,
-            HttpOptionsRequest.HttpOptionsRequestBuilder,
-            HttpPatchRequest.HttpPatchRequestBuilder,
-            HttpPutRequest.HttpPutRequestBuilder {
-        private Object content;
-
-        public HttpGetRequestBuilder(final long REQUEST_ID) {
-            super(REQUEST_ID);
-        }
-
-        public HttpRequestBuilder content(Object content) throws IllegalArgumentException {
-            if (!(content instanceof byte[] || content instanceof File)) {
-                throw new IllegalArgumentException("Content must be a byte array or a file. " +
-                        "If you need this to be null, just ignore this method.");
-            }
-            this.content = content;
-            return this;
-        }
-
-        @Override
-        public HttpGetRequest build() {
-            return new HttpGetRequest(this);
-        }
     }
 }

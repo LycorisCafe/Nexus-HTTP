@@ -22,13 +22,23 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class HttpOptionsRequest extends HttpGetRequest {
-    private final HttpRequestMethod accessControlRequestMethod;
-    private final List<String> accessControlRequestHeaders;
+    private HttpRequestMethod accessControlRequestMethod;
+    private List<String> accessControlRequestHeaders;
 
-    public HttpOptionsRequest(HttpOptionsRequestBuilder builder) {
-        super(builder);
-        this.accessControlRequestMethod = builder.accessControlRequestMethod;
-        this.accessControlRequestHeaders = builder.accessControlRequestHeaders;
+    public HttpOptionsRequest(final long requestId,
+                              final String endpoint) {
+        super(requestId, endpoint);
+    }
+
+    public void setAccessControlRequestMethod(final HttpRequestMethod accessControlRequestMethod) {
+        this.accessControlRequestMethod = accessControlRequestMethod;
+    }
+
+    public void setAccessControlRequestHeader(final String accessControlRequestHeader) {
+        if (accessControlRequestHeaders == null) {
+            accessControlRequestHeaders = new ArrayList<String>();
+        }
+        accessControlRequestHeaders.add(accessControlRequestHeader);
     }
 
     public HttpRequestMethod getAccessControlRequestMethod() {
@@ -37,36 +47,5 @@ public final class HttpOptionsRequest extends HttpGetRequest {
 
     public List<String> getAccessControlRequestHeaders() {
         return accessControlRequestHeaders;
-    }
-
-    public static HttpOptionsRequestBuilder builder(long REQUEST_ID) {
-        return new HttpOptionsRequestBuilder(REQUEST_ID);
-    }
-
-    public static final class HttpOptionsRequestBuilder extends HttpGetRequestBuilder {
-        private HttpRequestMethod accessControlRequestMethod;
-        private List<String> accessControlRequestHeaders;
-
-        public HttpOptionsRequestBuilder(long REQUEST_ID) {
-            super(REQUEST_ID);
-        }
-
-        public HttpOptionsRequestBuilder setAccessControlRequestMethod(HttpRequestMethod accessControlRequestMethod) {
-            this.accessControlRequestMethod = accessControlRequestMethod;
-            return this;
-        }
-
-        public HttpOptionsRequestBuilder setAccessControlRequestHeader(String accessControlRequestHeader) {
-            if (accessControlRequestHeaders == null) {
-                accessControlRequestHeaders = new ArrayList<String>();
-            }
-            accessControlRequestHeaders.add(accessControlRequestHeader);
-            return this;
-        }
-
-        @Override
-        public HttpOptionsRequest build() {
-            return new HttpOptionsRequest(this);
-        }
     }
 }

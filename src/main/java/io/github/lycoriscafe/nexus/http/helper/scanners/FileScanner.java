@@ -29,6 +29,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 
 public final class FileScanner {
     public static void scan(final HttpServerConfiguration serverConfiguration,
@@ -43,21 +44,25 @@ public final class FileScanner {
         if (!Files.isDirectory(dir)) {
             throw new ScannerException("static files directory is not a directory");
         }
-        deepScan(dir, database, dir);
+        deepScan(dir, database, serverConfiguration);
     }
 
     private static void deepScan(final Path directory,
                                  final Database database,
-                                 final Path staticFilesDirectory) {
+                                 final HttpServerConfiguration serverConfiguration) {
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(directory)) {
             for (Path path : stream) {
                 if (Files.isDirectory(path)) {
-                    deepScan(path, database, staticFilesDirectory);
+                    deepScan(path, database, serverConfiguration);
                     continue;
                 }
 
+                String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path)
+                        .toString().replaceAll("\\\\", "/");
                 database.addEndpointData(new ReqFile(
-                        staticFilesDirectory.relativize(path).toString().replaceAll("\\\\", "/"),
+                        serverConfiguration.isIgnoreEndpointCases() ?
+                                endpointName.toLowerCase(Locale.ROOT) : endpointName,
+                        // TODO http date format
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
                         calculateETag(path))
                 );

@@ -17,22 +17,8 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 public final class HttpPutRequest extends HttpGetRequest {
-    public HttpPutRequest(HttpPutRequestBuilder builder) {
-        super(builder);
-    }
-
-    public static HttpPutRequestBuilder builder(long REQUEST_ID) {
-        return new HttpPutRequestBuilder(REQUEST_ID);
-    }
-
-    public static final class HttpPutRequestBuilder extends HttpGetRequestBuilder {
-        public HttpPutRequestBuilder(long REQUEST_ID) {
-            super(REQUEST_ID);
-        }
-
-        @Override
-        public HttpPutRequest build() {
-            return new HttpPutRequest(this);
-        }
+    public HttpPutRequest(final long requestId,
+                          final String endpoint) {
+        super(requestId, endpoint);
     }
 }

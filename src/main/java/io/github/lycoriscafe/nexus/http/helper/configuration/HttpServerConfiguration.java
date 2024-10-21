@@ -30,6 +30,7 @@ public final class HttpServerConfiguration {
     private final String staticFilesDirectory;
     private final String databaseLocation;
 
+    private final boolean ignoreEndpointCases;
     private final int maxIncomingConnections;
     private final int pipelineParallelProcesses;
     private final int maxContentLength;
@@ -46,6 +47,7 @@ public final class HttpServerConfiguration {
         tempDirectory = builder.tempDirectory;
         staticFilesDirectory = builder.staticFilesDirectory;
         databaseLocation = builder.databaseLocation;
+        ignoreEndpointCases = builder.ignoreEndpointCases;
         maxIncomingConnections = builder.maxIncomingConnections;
         pipelineParallelProcesses = builder.pipelineParallelProcesses;
         maxContentLength = builder.maxContentLength;
@@ -88,6 +90,10 @@ public final class HttpServerConfiguration {
         return databaseLocation;
     }
 
+    public boolean isIgnoreEndpointCases() {
+        return ignoreEndpointCases;
+    }
+
     public int getMaxIncomingConnections() {
         return maxIncomingConnections;
     }
@@ -120,6 +126,7 @@ public final class HttpServerConfiguration {
         private String staticFilesDirectory = "NexusStatics";
         private String databaseLocation = null;
 
+        private boolean ignoreEndpointCases;
         private int maxIncomingConnections = 100;
         private int pipelineParallelProcesses = 1;
         private int maxContentLength = 5_242_880;
@@ -179,6 +186,11 @@ public final class HttpServerConfiguration {
             if (databaseLocation != null) {
                 this.databaseLocation = databaseLocation;
             }
+            return this;
+        }
+
+        public HttpServerConfigurationBuilder ignoreEndpointCases(boolean ignoreEndpointCases) {
+            this.ignoreEndpointCases = ignoreEndpointCases;
             return this;
         }
 

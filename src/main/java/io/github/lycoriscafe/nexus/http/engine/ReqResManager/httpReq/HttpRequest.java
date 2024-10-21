@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 
 import java.util.ArrayList;
@@ -25,64 +26,57 @@ import java.util.Map;
 
 public sealed class HttpRequest
         permits HttpGetRequest, HttpPostRequest, HttpHeadRequest {
-    private final long REQUEST_ID;
-    private final Map<String, String> parameters;
-    private final Map<String, List<String>> headers;
-    private final List<Cookie> cookies;
+    private final long requestId;
+    private final String endpoint;
+    private Map<String, String> parameters;
+    private List<Header> headers;
+    private List<Cookie> cookies;
 
-    HttpRequest(HttpRequestBuilder builder) {
-        this.REQUEST_ID = builder.REQUEST_ID;
-        this.parameters = builder.parameters;
-        this.headers = builder.headers;
-        this.cookies = builder.cookies;
+    public HttpRequest(final long requestId,
+                       final String endpoint) {
+        this.requestId = requestId;
+        this.endpoint = endpoint;
+    }
+
+    public void setParameter(final String key,
+                             final String value) {
+        if (parameters == null) {
+            parameters = new HashMap<>();
+        }
+        this.parameters.put(key, value);
+    }
+
+    public void setHeader(final Header header) {
+        if (headers == null) {
+            headers = new ArrayList<>();
+        }
+        headers.add(header);
+    }
+
+    public void setCookie(final Cookie cookie) {
+        if (cookie == null) {
+            cookies = new ArrayList<>();
+        }
+        cookies.add(cookie);
     }
 
     public long getRequestId() {
-        return REQUEST_ID;
+        return requestId;
+    }
+
+    public String getEndpoint() {
+        return endpoint;
     }
 
     public Map<String, String> getParameters() {
         return parameters;
     }
 
-    public Map<String, List<String>> getHeaders() {
+    public List<Header> getHeaders() {
         return headers;
     }
 
     public List<Cookie> getCookies() {
         return cookies;
-    }
-
-    public static sealed abstract class HttpRequestBuilder
-            permits HttpGetRequest.HttpGetRequestBuilder,
-            HttpPostRequest.HttpPostRequestBuilder,
-            HttpHeadRequest.HttpHeadRequestBuilder {
-        private final long REQUEST_ID;
-        private Map<String, String> parameters;
-        private final Map<String, List<String>> headers;
-        private final List<Cookie> cookies;
-
-        public HttpRequestBuilder(long REQUEST_ID) {
-            this.REQUEST_ID = REQUEST_ID;
-            headers = new HashMap<>();
-            cookies = new ArrayList<>();
-        }
-
-        public HttpRequestBuilder status(String key, String value) {
-            this.parameters.put(key, value);
-            return this;
-        }
-
-        public HttpRequestBuilder header(String name, List<String> values) {
-            headers.put(name, values);
-            return this;
-        }
-
-        public HttpRequestBuilder cookie(Cookie cookie) {
-            cookies.add(cookie);
-            return this;
-        }
-
-        public abstract HttpRequest build();
     }
 }

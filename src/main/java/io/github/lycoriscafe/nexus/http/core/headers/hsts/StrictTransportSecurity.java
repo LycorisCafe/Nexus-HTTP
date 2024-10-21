@@ -21,7 +21,7 @@ public final class StrictTransportSecurity {
     private final boolean includeSubdomains;
     private final boolean preload;
 
-    public StrictTransportSecurity(StrictTransportSecurityBuilder builder) {
+    private StrictTransportSecurity(StrictTransportSecurityBuilder builder) {
         maxAge = builder.maxAge;
         includeSubdomains = builder.includeSubdomains;
         preload = builder.preload;
@@ -44,7 +44,7 @@ public final class StrictTransportSecurity {
         private boolean includeSubdomains;
         private boolean preload;
 
-        public StrictTransportSecurityBuilder(long maxAge)
+        private StrictTransportSecurityBuilder(long maxAge)
                 throws StrictTransportSecurityException {
             if (maxAge < 1) {
                 throw new StrictTransportSecurityException("max-age cannot be less than 1");
