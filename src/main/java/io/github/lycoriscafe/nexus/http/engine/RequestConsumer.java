@@ -49,7 +49,7 @@ public final class RequestConsumer implements Runnable {
                                                   final String requestLine) {
         String[] parts = requestLine.split(" ");
 
-        if (!parts[2].toUpperCase(Locale.ROOT).equals("HTTP/1.0")) {
+        if (!parts[2].toUpperCase(Locale.ROOT).equals("HTTP/1.1")) {
             return null;
         }
 
@@ -85,10 +85,17 @@ public final class RequestConsumer implements Runnable {
         }
     }
 
+    private static HttpRequest processHeaders(final String headerLine,
+                                              final HttpRequest httpRequest) {
+        String[] parts = headerLine.split(":");
+
+        return null;
+    }
+
     @Override
     public void run() {
         try (var reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8))) {
-            HttpRequest request;
+            HttpRequest request = null;
             boolean isRequestLine = true;
 
             while (true) {
@@ -102,8 +109,15 @@ public final class RequestConsumer implements Runnable {
 
                 if (isRequestLine) {
                     request = getRequestInstance(serverConfiguration, requestId++, line);
+                    if (request == null) {
+                        // TODO handle http version error
+                        break;
+                    }
                     isRequestLine = false;
+                    continue;
                 }
+
+                request = processHeaders(line, request);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
