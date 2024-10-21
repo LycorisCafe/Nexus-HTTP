@@ -171,9 +171,7 @@ public final class HttpServerConfiguration {
         }
 
         public HttpServerConfigurationBuilder staticFilesDirectory(String staticFilesDirectory) {
-            if (staticFilesDirectory != null) {
-                this.staticFilesDirectory = staticFilesDirectory;
-            }
+            this.staticFilesDirectory = staticFilesDirectory;
             return this;
         }
 
