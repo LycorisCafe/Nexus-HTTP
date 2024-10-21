@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http;
 
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
@@ -25,7 +26,6 @@ import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
 import java.net.ServerSocket;
-import java.net.Socket;
 import java.sql.SQLException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -64,8 +64,11 @@ public final class HttpServer {
                 serverSocket.setSoTimeout(serverConfiguration.getConnectionTimeout());
 
                 while (!serverSocket.isClosed()) {
-                    // TODO implement using executorService
-                    Socket socket = serverSocket.accept();
+                    executorService.execute(new RequestConsumer(
+                            serverConfiguration,
+                            database,
+                            serverSocket.accept()
+                    ));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);
