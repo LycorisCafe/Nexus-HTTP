@@ -19,6 +19,9 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 
 public final class RequestConsumer implements Runnable {
@@ -36,6 +39,23 @@ public final class RequestConsumer implements Runnable {
 
     @Override
     public void run() {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 
+            while (true) {
+                String line = reader.readLine();
+                System.out.println(line);
+                if (line == null) {
+                    break;
+                }
+                if (line.isEmpty()) {
+                    System.out.println("headers end!!!!!!!!!");
+                }
+
+            }
+            System.out.println("broken");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

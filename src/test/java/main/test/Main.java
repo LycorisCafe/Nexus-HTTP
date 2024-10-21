@@ -18,27 +18,18 @@ package main.test;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
-import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
+import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) {
-        try {
-            HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration(Main.class)
-                    .setPort(2004)
-                    .setThreadType(ThreadType.VIRTUAL)
-                    .setBacklog(5)
-                    .setDatabaseLocation("");
-            HttpServer httpServer1 = new HttpServer(httpServerConfiguration);
-            httpServer1.start();
-//            System.out.println(httpServerConfiguration.getBasePackage());
-            //            HttpServer httpServer2 = new HttpServer(2004, ThreadType.VIRTUAL, MemoryType.PRIMARY, 5);
-        } catch (
-                IOException | SQLException |
-                ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
+    public static void main(String[] args) throws ScannerException, SQLException, IOException {
+        HttpServerConfiguration httpServerConfiguration = HttpServerConfiguration.builder("main.test")
+                .port(2004)
+                .staticFilesDirectory(null)
+                .build();
+        HttpServer httpServer = new HttpServer(httpServerConfiguration);
+        httpServer.initialize();
     }
 }
