@@ -29,11 +29,11 @@ public final class ReqEndpoint extends ReqMaster {
 
     public ReqEndpoint(final String httpEndpoint,
                        final String requestEndpoint,
-                       HttpRequestMethod reqMethod,
-                       Class<?> className,
-                       Method methodName,
-                       HttpStatusCode statusAnnotation,
-                       String statusAnnotationValue) {
+                       final HttpRequestMethod reqMethod,
+                       final Class<?> className,
+                       final Method methodName,
+                       final HttpStatusCode statusAnnotation,
+                       final String statusAnnotationValue) {
         super(httpEndpoint, requestEndpoint, reqMethod);
         this.className = className;
         this.methodName = methodName;

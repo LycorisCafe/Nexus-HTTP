@@ -27,12 +27,11 @@ public enum HttpRequestMethod {
     PUT,
     TRACE;
 
-    public static boolean validate(String requestMethod) {
+    public static HttpRequestMethod validate(String requestMethod) {
         try {
-            HttpRequestMethod.valueOf(requestMethod.toUpperCase());
-            return true;
+            return HttpRequestMethod.valueOf(requestMethod.toUpperCase());
         } catch (IllegalArgumentException e) {
-            return false;
+            return null;
         }
     }
 }

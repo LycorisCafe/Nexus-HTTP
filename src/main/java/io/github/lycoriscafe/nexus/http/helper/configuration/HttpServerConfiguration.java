@@ -31,6 +31,7 @@ public final class HttpServerConfiguration {
     private final String databaseLocation;
 
     private final boolean ignoreEndpointCases;
+    private final int maxHeadersPerRequest;
     private final int maxIncomingConnections;
     private final int pipelineParallelProcesses;
     private final int maxContentLength;
@@ -48,6 +49,7 @@ public final class HttpServerConfiguration {
         staticFilesDirectory = builder.staticFilesDirectory;
         databaseLocation = builder.databaseLocation;
         ignoreEndpointCases = builder.ignoreEndpointCases;
+        maxHeadersPerRequest = builder.maxHeadersPerRequest;
         maxIncomingConnections = builder.maxIncomingConnections;
         pipelineParallelProcesses = builder.pipelineParallelProcesses;
         maxContentLength = builder.maxContentLength;
@@ -94,6 +96,10 @@ public final class HttpServerConfiguration {
         return ignoreEndpointCases;
     }
 
+    public int getMaxHeadersPerRequest() {
+        return maxHeadersPerRequest;
+    }
+
     public int getMaxIncomingConnections() {
         return maxIncomingConnections;
     }
@@ -127,6 +133,7 @@ public final class HttpServerConfiguration {
         private String databaseLocation = null;
 
         private boolean ignoreEndpointCases;
+        private int maxHeadersPerRequest = 10;
         private int maxIncomingConnections = 100;
         private int pipelineParallelProcesses = 1;
         private int maxContentLength = 5_242_880;
@@ -191,6 +198,15 @@ public final class HttpServerConfiguration {
 
         public HttpServerConfigurationBuilder ignoreEndpointCases(boolean ignoreEndpointCases) {
             this.ignoreEndpointCases = ignoreEndpointCases;
+            return this;
+        }
+
+        public HttpServerConfigurationBuilder maxHeadersPerRequest(int maxHeadersPerRequest)
+                throws HttpServerConfigurationException {
+            if (maxHeadersPerRequest < 2) {
+                throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
+            }
+            this.maxHeadersPerRequest = maxHeadersPerRequest;
             return this;
         }
 

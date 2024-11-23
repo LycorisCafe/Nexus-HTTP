@@ -16,5 +16,43 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
+
+import java.io.BufferedReader;
+import java.net.Socket;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+
 public final class RequestProcessor {
+    private final RequestConsumer requestConsumer;
+
+    public RequestProcessor(final RequestConsumer requestConsumer) {
+        this.requestConsumer = requestConsumer;
+    }
+
+    public void process(final long requestId,
+                        final List<String> headers) {
+        String[] request = headers.getFirst().split(" ");
+        HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
+            case null -> // TODO Handle [Not Implemented]
+                    null;
+            case CONNECT -> // TODO Implement CONNECT
+                    null;
+            case DELETE -> new HttpDeleteRequest(requestId, uriDecoder(request[1]));
+            case GET -> new HttpGetRequest(requestId, uriDecoder(request[1]));
+            case HEAD -> new HttpHeadRequest(requestId, uriDecoder(request[1]));
+            case OPTIONS -> new HttpOptionsRequest(requestId, uriDecoder(request[1]));
+            case PATCH -> new HttpPatchRequest(requestId, uriDecoder(request[1]));
+            case POST -> new HttpPostRequest(requestId, uriDecoder(request[1]));
+            case PUT -> new HttpPutRequest(requestId, uriDecoder(request[1]));
+            case TRACE -> // TODO Implement TRACE
+                    null;
+        };
+    }
+
+    private String uriDecoder(final String uri) {
+        return URLDecoder.decode(uri.trim(), StandardCharsets.UTF_8);
+    }
 }
