@@ -86,6 +86,16 @@ public final class Cookie {
         return new CookieBuilder(cookieName, cookieValue);
     }
 
+    public static Cookie[] processIncomingCookies(String headerValue) {
+        String[] keyVal = headerValue.split(";", 0);
+        Cookie[] cookies = new Cookie[keyVal.length];
+        for (int i = 0; i < keyVal.length; i++) {
+            String[] parts = keyVal[i].split("=", 2);
+            cookies[i] = builder(parts[0].trim(), parts[1].trim()).build();
+        }
+        return cookies;
+    }
+
 
     public static final class CookieBuilder {
         private final String name;
@@ -100,7 +110,7 @@ public final class Cookie {
         private CookiePrefix prefix;
 
         private CookieBuilder(String cookieName,
-                             String cookieValue) {
+                              String cookieValue) {
             name = cookieName;
             value = cookieValue;
         }

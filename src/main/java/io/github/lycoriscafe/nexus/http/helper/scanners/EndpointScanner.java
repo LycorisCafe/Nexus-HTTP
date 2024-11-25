@@ -109,14 +109,14 @@ public final class EndpointScanner {
 
                 database.addEndpointData(new ReqEndpoint(
                                 serverConfiguration.isIgnoreEndpointCases() ?
-                                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.ROOT) :
+                                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
                                         clazz.getAnnotation(HttpEndpoint.class).value(),
                                 serverConfiguration.isIgnoreEndpointCases() ?
-                                        endpointValue.toLowerCase(Locale.ROOT) : endpointValue,
+                                        endpointValue.toLowerCase(Locale.US) : endpointValue,
                                 reqMethod, clazz, method, statusAnnotation,
                                 serverConfiguration.isIgnoreEndpointCases() ?
                                         statusAnnotationValue == null ?
-                                                null : statusAnnotationValue.toLowerCase(Locale.ROOT) :
+                                                null : statusAnnotationValue.toLowerCase(Locale.US) :
                                         statusAnnotationValue
                         )
                 );

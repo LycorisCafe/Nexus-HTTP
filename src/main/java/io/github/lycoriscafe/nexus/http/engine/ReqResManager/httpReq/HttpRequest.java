@@ -19,10 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public sealed class HttpRequest
         permits HttpGetRequest, HttpPostRequest, HttpHeadRequest {
@@ -35,29 +32,38 @@ public sealed class HttpRequest
     public HttpRequest(final long requestId,
                        final String endpoint) {
         this.requestId = requestId;
-        this.endpoint = endpoint;
-    }
+        String[] endpointParts = endpoint.split("\\?", 2);
+        this.endpoint = endpointParts[0];
 
-    public void setParameter(final String key,
-                             final String value) {
-        if (parameters == null) {
+        if (endpointParts.length > 1) {
             parameters = new HashMap<>();
+            for (String param : endpointParts[1].split("&", 0)) {
+                String[] keyValue = param.split("=");
+                parameters.put(keyValue[0], keyValue[1]);
+            }
         }
-        this.parameters.put(key, value);
     }
 
-    public void setHeader(final Header header) {
-        if (headers == null) {
-            headers = new ArrayList<>();
+    public void setHeaders(final Header... headers) {
+        if (cookies == null || headers.length == 0) {
+            return;
         }
-        headers.add(header);
+
+        if (this.headers == null) {
+            this.headers = new ArrayList<>();
+        }
+        this.headers.addAll(Arrays.asList(headers));
     }
 
-    public void setCookie(final Cookie cookie) {
-        if (cookie == null) {
-            cookies = new ArrayList<>();
+    public void setCookies(final Cookie... cookies) {
+        if (cookies == null || cookies.length == 0) {
+            return;
         }
-        cookies.add(cookie);
+
+        if (this.cookies == null) {
+            this.cookies = new ArrayList<>();
+        }
+        this.cookies.addAll(Arrays.asList(cookies));
     }
 
     public long getRequestId() {

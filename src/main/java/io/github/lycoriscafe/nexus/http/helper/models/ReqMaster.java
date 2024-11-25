@@ -34,8 +34,8 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     }
 
     public String getEndpoint() {
-        return httpEndpoint.equals("/") ? "" : httpEndpoint.toLowerCase(Locale.ROOT)
-                + requestEndpoint.toLowerCase(Locale.ROOT);
+        return httpEndpoint.equals("/") ? "" : httpEndpoint.toLowerCase(Locale.US)
+                + requestEndpoint.toLowerCase(Locale.US);
     }
 
     public HttpRequestMethod getReqMethod() {

@@ -16,59 +16,40 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public final class Header {
     private final String name;
-    private final List<String> values;
-    private final List<String> tokens;
+    private final String value;
 
     private Header(final HeaderBuilder builder) {
         name = builder.name;
-        values = builder.values;
-        tokens = builder.tokens;
+        value = builder.value;
     }
 
     public String getName() {
         return name;
     }
 
-    public List<String> getValues() {
-        return values;
+    public String getValue() {
+        return value;
     }
 
-    public List<String> getTokens() {
-        return tokens;
+    public static HeaderBuilder builder(final String name,
+                                        final String value) {
+        return new HeaderBuilder(name, value);
     }
 
-    public HeaderBuilder builder(final String name) {
-        return new HeaderBuilder(name);
+    public static Header processIncomingHeader(String[] headerParts) {
+        return builder(headerParts[0].trim(), headerParts[1].trim()).build();
     }
 
     public static class HeaderBuilder {
         private final String name;
-        private List<String> values;
-        private List<String> tokens;
+        private final String value;
 
-        private HeaderBuilder(final String name) {
+        private HeaderBuilder(final String name,
+                              final String value) {
             this.name = name;
-        }
-
-        public HeaderBuilder addValue(final String value) {
-            if (values == null) {
-                values = new ArrayList<>();
-            }
-            values.add(value);
-            return this;
-        }
-
-        public HeaderBuilder addToken(final String token) {
-            if (tokens == null) {
-                tokens = new ArrayList<>();
-            }
-            tokens.add(token);
-            return this;
+            this.value = value;
         }
 
         public Header build() {

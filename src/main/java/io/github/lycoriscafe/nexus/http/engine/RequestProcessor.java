@@ -16,14 +16,16 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
 
-import java.io.BufferedReader;
-import java.net.Socket;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Locale;
 
 public final class RequestProcessor {
     private final RequestConsumer requestConsumer;
@@ -33,11 +35,16 @@ public final class RequestProcessor {
     }
 
     public void process(final long requestId,
+                        final String requestLine,
                         final List<String> headers) {
-        String[] request = headers.getFirst().split(" ");
+        String[] request = requestLine.split(" ");
+
+        if (!request[2].trim().equals("HTTP/1.1")) {
+            requestConsumer.dropConnection(HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED);
+            return;
+        }
+
         HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
-            case null -> // TODO Handle [Not Implemented]
-                    null;
             case CONNECT -> // TODO Implement CONNECT
                     null;
             case DELETE -> new HttpDeleteRequest(requestId, uriDecoder(request[1]));
@@ -49,7 +56,24 @@ public final class RequestProcessor {
             case PUT -> new HttpPutRequest(requestId, uriDecoder(request[1]));
             case TRACE -> // TODO Implement TRACE
                     null;
+            case null -> {
+                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                yield null;
+            }
         };
+
+        if (httpRequest == null) {
+            return;
+        }
+
+        for (String header : headers) {
+            String[] parts = header.split(":", 2);
+            if (parts[0].toLowerCase(Locale.US).trim().equals("cookie")) {
+                httpRequest.setCookies(Cookie.processIncomingCookies(parts[1]));
+            } else {
+                httpRequest.setHeaders(Header.processIncomingHeader(parts));
+            }
+        }
     }
 
     private String uriDecoder(final String uri) {

@@ -16,6 +16,9 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
@@ -28,6 +31,7 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 public final class RequestConsumer implements Runnable {
     private final RequestProcessor requestProcessor;
@@ -78,27 +82,35 @@ public final class RequestConsumer implements Runnable {
     @Override
     public void run() {
         try {
+            String requestLine = null;
             List<String> headers = new ArrayList<>();
 
             while (true) {
                 String line = reader.readLine().trim();
                 if (line.length() > 8000) {
-                    // TODO Handle length exceeded
+                    // Handle length exceeded
+                    dropConnection(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
                 }
 
                 if (line.isEmpty()) {
-                    requestProcessor.process(requestId++, headers);
+                    requestProcessor.process(requestId++, requestLine, headers);
                     headers.clear();
                 }
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
-                    // TODO Handle max headers count exceeded
+                    // Handle max headers count exceeded
+                    dropConnection(HttpStatusCode.BAD_REQUEST);
                 }
+
                 headers.add(line);
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public void dropConnection(HttpStatusCode httpStatusCode) {
+        // TODO Handle response and drop connection
     }
 
     public void send(HttpResponse response) {

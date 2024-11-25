@@ -61,7 +61,7 @@ public final class FileScanner {
                         .toString().replaceAll("\\\\", "/");
                 database.addEndpointData(new ReqFile(
                         serverConfiguration.isIgnoreEndpointCases() ?
-                                endpointName.toLowerCase(Locale.ROOT) : endpointName,
+                                endpointName.toLowerCase(Locale.US) : endpointName,
                         // TODO http date format
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
                         calculateETag(path))
