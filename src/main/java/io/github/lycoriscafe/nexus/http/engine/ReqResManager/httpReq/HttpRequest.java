@@ -29,6 +29,8 @@ import java.sql.SQLException;
 import java.util.*;
 
 public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
+    private final RequestConsumer requestConsumer;
+
     private final long requestId;
     private final HttpRequestMethod requestMethod;
     private final String endpoint;
@@ -36,9 +38,12 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private List<Header> headers;
     private List<Cookie> cookies;
 
-    public HttpRequest(final long requestId,
+    public HttpRequest(final RequestConsumer requestConsumer,
+                       final long requestId,
                        final HttpRequestMethod requestMethod,
                        final String endpoint) {
+        this.requestConsumer = requestConsumer;
+
         this.requestId = requestId;
         this.requestMethod = requestMethod;
 
@@ -52,6 +57,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 parameters.put(keyValue[0], keyValue[1]);
             }
         }
+    }
+
+    public RequestConsumer getRequestConsumer() {
+        return requestConsumer;
     }
 
     public void setHeaders(final Header... headers) {
@@ -100,11 +109,16 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return cookies;
     }
 
-    public void finalizeRequest(final RequestConsumer requestConsumer) {
+    public void finalizeRequest() {
         try {
             ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
             if (endpointDetails == null) {
                 requestConsumer.dropConnection(HttpStatusCode.NOT_FOUND);
+                return;
+            }
+
+            if (endpointDetails.getStatusAnnotation() != null) {
+                processStatusAnnotation(endpointDetails);
                 return;
             }
 
@@ -114,5 +128,9 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             requestConsumer.dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
+    }
+
+    private void processStatusAnnotation(final ReqEndpoint reqEndpoint) {
+        // TODO Handle status annotations with response
     }
 }

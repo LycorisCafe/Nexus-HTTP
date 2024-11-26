@@ -17,11 +17,13 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 public final class HttpPutRequest extends HttpPostRequest {
-    public HttpPutRequest(final long requestId,
+    public HttpPutRequest(final RequestConsumer requestConsumer,
+                          final long requestId,
                           final HttpRequestMethod requestMethod,
                           final String endpoint) {
-        super(requestId, requestMethod, endpoint);
+        super(requestConsumer, requestId, requestMethod, endpoint);
     }
 }

@@ -25,20 +25,21 @@ import java.util.Locale;
 
 public sealed class HttpGetRequest extends HttpRequest
         permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
-    public HttpGetRequest(final long requestId,
+    public HttpGetRequest(final RequestConsumer requestConsumer,
+                          final long requestId,
                           final HttpRequestMethod requestMethod,
                           final String endpoint) {
-        super(requestId, requestMethod, endpoint);
+        super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
     @Override
-    public void finalizeRequest(RequestConsumer requestConsumer) {
+    public void finalizeRequest() {
         for (Header header : getHeaders()) {
             if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
                 return;
             }
         }
-        super.finalizeRequest(requestConsumer);
+        super.finalizeRequest();
     }
 }

@@ -24,14 +24,16 @@ public sealed class HttpPostRequest extends HttpRequest
         permits HttpPatchRequest, HttpPutRequest {
     private Content content;
 
-    public HttpPostRequest(final long requestId,
+    public HttpPostRequest(final RequestConsumer requestConsumer,
+                           final long requestId,
                            final HttpRequestMethod requestMethod,
                            final String endpoint) {
-        super(requestId, requestMethod, endpoint);
+        super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
     @Override
-    public void finalizeRequest(RequestConsumer requestConsumer) {
+    public void finalizeRequest() {
 
+        super.finalizeRequest();
     }
 }

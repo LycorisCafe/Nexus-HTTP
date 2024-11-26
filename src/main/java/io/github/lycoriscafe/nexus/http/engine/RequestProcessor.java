@@ -47,13 +47,20 @@ public final class RequestProcessor {
         HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
             case CONNECT -> // TODO Implement CONNECT
                     null;
-            case DELETE -> new HttpDeleteRequest(requestId, HttpRequestMethod.DELETE, uriDecoder(request[1]));
-            case GET -> new HttpGetRequest(requestId, HttpRequestMethod.GET, uriDecoder(request[1]));
-            case HEAD -> new HttpHeadRequest(requestId, HttpRequestMethod.HEAD, uriDecoder(request[1]));
-            case OPTIONS -> new HttpOptionsRequest(requestId, HttpRequestMethod.OPTIONS, uriDecoder(request[1]));
-            case PATCH -> new HttpPatchRequest(requestId, HttpRequestMethod.PATCH, uriDecoder(request[1]));
-            case POST -> new HttpPostRequest(requestId, HttpRequestMethod.POST, uriDecoder(request[1]));
-            case PUT -> new HttpPutRequest(requestId, HttpRequestMethod.PUT, uriDecoder(request[1]));
+            case DELETE -> new HttpDeleteRequest(requestConsumer,
+                    requestId, HttpRequestMethod.DELETE, uriDecoder(request[1]));
+            case GET -> new HttpGetRequest(requestConsumer,
+                    requestId, HttpRequestMethod.GET, uriDecoder(request[1]));
+            case HEAD -> new HttpHeadRequest(requestConsumer,
+                    requestId, HttpRequestMethod.HEAD, uriDecoder(request[1]));
+            case OPTIONS -> new HttpOptionsRequest(requestConsumer,
+                    requestId, HttpRequestMethod.OPTIONS, uriDecoder(request[1]));
+            case PATCH -> new HttpPatchRequest(requestConsumer,
+                    requestId, HttpRequestMethod.PATCH, uriDecoder(request[1]));
+            case POST -> new HttpPostRequest(requestConsumer,
+                    requestId, HttpRequestMethod.POST, uriDecoder(request[1]));
+            case PUT -> new HttpPutRequest(requestConsumer,
+                    requestId, HttpRequestMethod.PUT, uriDecoder(request[1]));
             case TRACE -> // TODO Implement TRACE
                     null;
             case null -> {
@@ -75,7 +82,7 @@ public final class RequestProcessor {
             }
         }
 
-        httpRequest.finalizeRequest(requestConsumer);
+        httpRequest.finalizeRequest();
     }
 
     private String uriDecoder(final String uri) {
