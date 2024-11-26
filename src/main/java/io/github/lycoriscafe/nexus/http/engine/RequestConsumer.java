@@ -16,8 +16,6 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
-import io.github.lycoriscafe.nexus.http.core.headers.Header;
-import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
@@ -31,7 +29,6 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
 public final class RequestConsumer implements Runnable {
     private final RequestProcessor requestProcessor;
@@ -44,7 +41,7 @@ public final class RequestConsumer implements Runnable {
     private final PrintWriter writer;
 
     private long requestId = 0L;
-    private long responseId = 0L;
+    private final long responseId = 0L;
 
     public RequestConsumer(final HttpServerConfiguration serverConfiguration,
                            final Database database,

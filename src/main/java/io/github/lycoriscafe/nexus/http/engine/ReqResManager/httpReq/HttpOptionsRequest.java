@@ -17,7 +17,6 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
