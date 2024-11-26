@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,8 +27,9 @@ public final class HttpOptionsRequest extends HttpGetRequest {
     private List<String> accessControlRequestHeaders;
 
     public HttpOptionsRequest(final long requestId,
+                              final HttpRequestMethod requestMethod,
                               final String endpoint) {
-        super(requestId, endpoint);
+        super(requestId, requestMethod, endpoint);
     }
 
     public void setAccessControlRequestMethod(final HttpRequestMethod accessControlRequestMethod) {

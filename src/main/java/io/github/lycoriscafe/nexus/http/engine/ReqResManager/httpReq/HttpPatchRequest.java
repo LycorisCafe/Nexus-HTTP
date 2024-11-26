@@ -16,9 +16,12 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
-public final class HttpPatchRequest extends HttpGetRequest {
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+
+public final class HttpPatchRequest extends HttpPostRequest {
     public HttpPatchRequest(final long requestId,
+                            final HttpRequestMethod requestMethod,
                             final String endpoint) {
-        super(requestId, endpoint);
+        super(requestId, requestMethod, endpoint);
     }
 }

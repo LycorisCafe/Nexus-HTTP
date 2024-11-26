@@ -59,23 +59,23 @@ public final class RequestConsumer implements Runnable {
         writer = new PrintWriter(socket.getOutputStream(), true, StandardCharsets.UTF_8);
     }
 
-    HttpServerConfiguration getServerConfiguration() {
+    public HttpServerConfiguration getServerConfiguration() {
         return serverConfiguration;
     }
 
-    Database getDatabase() {
+    public Database getDatabase() {
         return database;
     }
 
-    Socket getSocket() {
+    public Socket getSocket() {
         return socket;
     }
 
-    BufferedReader getReader() {
+    public BufferedReader getReader() {
         return reader;
     }
 
-    PrintWriter getWriter() {
+    public PrintWriter getWriter() {
         return writer;
     }
 

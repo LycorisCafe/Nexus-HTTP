@@ -27,6 +27,7 @@ import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.sql.SQLException;
 import java.util.Locale;
 import java.util.Set;
@@ -44,23 +45,28 @@ public final class EndpointScanner {
             for (Method method : clazz.getMethods()) {
                 String endpointValue = null;
                 HttpRequestMethod reqMethod = switch (method) {
-                    case Method m when m.isAnnotationPresent(GET.class) -> {
+                    case Method m when m.isAnnotationPresent(GET.class) &&
+                            Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(GET.class).value();
                         yield HttpRequestMethod.GET;
                     }
-                    case Method m when m.isAnnotationPresent(POST.class) -> {
+                    case Method m when m.isAnnotationPresent(POST.class) &&
+                            Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(POST.class).value();
                         yield HttpRequestMethod.POST;
                     }
-                    case Method m when m.isAnnotationPresent(PUT.class) -> {
+                    case Method m when m.isAnnotationPresent(PUT.class) &&
+                            Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(PUT.class).value();
                         yield HttpRequestMethod.PUT;
                     }
-                    case Method m when m.isAnnotationPresent(DELETE.class) -> {
+                    case Method m when m.isAnnotationPresent(DELETE.class) &&
+                            Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(DELETE.class).value();
                         yield HttpRequestMethod.DELETE;
                     }
-                    case Method m when m.isAnnotationPresent(PATCH.class) -> {
+                    case Method m when m.isAnnotationPresent(PATCH.class) &&
+                            Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(PATCH.class).value();
                         yield HttpRequestMethod.PATCH;
                     }
@@ -108,11 +114,11 @@ public final class EndpointScanner {
                 };
 
                 database.addEndpointData(new ReqEndpoint(
-                                serverConfiguration.isIgnoreEndpointCases() ?
+                                (serverConfiguration.isIgnoreEndpointCases() ?
                                         clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
-                                        clazz.getAnnotation(HttpEndpoint.class).value(),
-                                serverConfiguration.isIgnoreEndpointCases() ?
-                                        endpointValue.toLowerCase(Locale.US) : endpointValue,
+                                        clazz.getAnnotation(HttpEndpoint.class).value()) +
+                                        (serverConfiguration.isIgnoreEndpointCases() ?
+                                                endpointValue.toLowerCase(Locale.US) : endpointValue),
                                 reqMethod, clazz, method, statusAnnotation,
                                 serverConfiguration.isIgnoreEndpointCases() ?
                                         statusAnnotationValue == null ?

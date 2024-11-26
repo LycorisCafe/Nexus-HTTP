@@ -16,6 +16,9 @@
 
 package io.github.lycoriscafe.nexus.http.helper;
 
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
@@ -91,17 +94,19 @@ public final class Database {
         }
     }
 
-    public synchronized void addEndpointData(final ReqMaster MODEL) throws SQLException {
+    public synchronized void addEndpointData(final ReqMaster model) throws SQLException {
         PreparedStatement masterQuery = databaseConnection
                 .prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
-        masterQuery.setString(1, MODEL.getEndpoint());
-        masterQuery.setString(2, MODEL.getReqMethod().name());
+        masterQuery.setString(1, model.getRequestEndpoint());
+        masterQuery.setString(2, model.getReqMethod().name());
         masterQuery.executeUpdate();
+        masterQuery.close();
 
         Statement stmt = databaseConnection.createStatement();
         int rowId = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster").getInt(1);
+        stmt.close();
 
-        switch (MODEL) {
+        switch (model) {
             case ReqMaster m when m instanceof ReqEndpoint -> {
                 PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
                         "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue) " +
@@ -112,6 +117,7 @@ public final class Database {
                 subQuery.setString(4, ((ReqEndpoint) m).getStatusAnnotation());
                 subQuery.setString(5, ((ReqEndpoint) m).getStatusAnnotationValue());
                 subQuery.executeUpdate();
+                subQuery.close();
             }
             case ReqMaster m when m instanceof ReqFile -> {
                 PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile " +
@@ -120,8 +126,47 @@ public final class Database {
                 subQuery.setString(2, ((ReqFile) m).getLastModified());
                 subQuery.setString(3, ((ReqFile) m).getETag());
                 subQuery.executeUpdate();
+                subQuery.close();
             }
-            default -> throw new IllegalStateException("Unexpected value: " + MODEL);
+            default -> throw new IllegalStateException("Unexpected value: " + model);
         }
+    }
+
+    public ReqEndpoint getEndpointData(final HttpRequest httpRequest)
+            throws SQLException, ClassNotFoundException, NoSuchMethodException {
+        PreparedStatement masterQuery = databaseConnection
+                .prepareStatement("SELECT COUNT(ROWID), * FROM ReqMaster WHERE endpoint = ? AND reqMethod = ?");
+        masterQuery.setString(1, httpRequest.getEndpoint());
+        masterQuery.setString(2, httpRequest.getRequestMethod().name());
+
+        ResultSet rs = masterQuery.executeQuery();
+        if (rs.getInt(1) == 1) {
+            PreparedStatement subQuery = databaseConnection
+                    .prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
+            subQuery.setInt(1, rs.getInt(2));
+            ResultSet rs2 = subQuery.executeQuery();
+
+            Class<?> clazz = Class.forName(rs2.getString(2));
+
+            ReqEndpoint endpoint = new ReqEndpoint(
+                    httpRequest.getEndpoint(),
+                    httpRequest.getRequestMethod(),
+                    clazz,
+                    clazz.getMethod(rs2.getString(3), HttpRequest.class),
+                    HttpStatusCode.valueOf(rs2.getString(4)),
+                    rs2.getString(5)
+            );
+
+            rs2.close();
+            subQuery.close();
+            rs.close();
+            masterQuery.close();
+
+            return endpoint;
+        }
+
+        rs.close();
+        masterQuery.close();
+        return null;
     }
 }

@@ -16,27 +16,29 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
-import java.io.File;
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
-public sealed class HttpGetRequest
-        extends HttpRequest
-        permits HttpDeleteRequest, HttpOptionsRequest, HttpPatchRequest, HttpPutRequest {
-    private Object content;
+import java.util.Locale;
 
+public sealed class HttpGetRequest extends HttpRequest
+        permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
     public HttpGetRequest(final long requestId,
+                          final HttpRequestMethod requestMethod,
                           final String endpoint) {
-        super(requestId, endpoint);
+        super(requestId, requestMethod, endpoint);
     }
 
-    public void setContent(Object content) throws IllegalArgumentException {
-        if (!(content instanceof byte[] || content instanceof File)) {
-            throw new IllegalArgumentException("Content must be a byte array or a file. " +
-                    "If you need this to be null, just ignore this method.");
+    @Override
+    public void finalizeRequest(RequestConsumer requestConsumer) {
+        for (Header header : getHeaders()) {
+            if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
+                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                return;
+            }
         }
-        this.content = content;
-    }
-
-    public Object getContent() {
-        return content;
+        super.finalizeRequest(requestConsumer);
     }
 }

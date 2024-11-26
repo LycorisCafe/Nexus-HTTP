@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core;
+package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-import java.lang.annotation.*;
+import java.nio.charset.Charset;
 
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.TYPE)
-public @interface HttpEndpoint {
-    String value() default "";
+public record Content(String contentType, String transferEncoding, Charset charset, Object data) {
 }

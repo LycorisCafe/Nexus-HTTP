@@ -16,49 +16,22 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
-import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
+import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
-import java.io.File;
-import java.util.List;
-
-public final class HttpPostRequest extends HttpRequest {
-    private Authorization authorization;
-    private List<HttpPostContent> httpPostContents;
+public sealed class HttpPostRequest extends HttpRequest
+        permits HttpPatchRequest, HttpPutRequest {
+    private Content content;
 
     public HttpPostRequest(final long requestId,
+                           final HttpRequestMethod requestMethod,
                            final String endpoint) {
-        super(requestId, endpoint);
+        super(requestId, requestMethod, endpoint);
     }
 
-    public void setAuthorization(final Authorization authorization) {
-        if (authorization == null) {
-            throw new IllegalArgumentException("Authorization cannot be null");
-        }
-        this.authorization = authorization;
-    }
+    @Override
+    public void finalizeRequest(RequestConsumer requestConsumer) {
 
-    public void setContent(final String name,
-                           final String fileName,
-                           final Object content)
-            throws IllegalArgumentException {
-        if (!(content instanceof byte[] || content instanceof File)) {
-            throw new IllegalArgumentException("Content must be a byte array or a file. " +
-                    "If you need this to be null, just ignore this method.");
-        }
-        httpPostContents.add(new HttpPostContent(name, fileName, content));
-    }
-
-    public List<HttpPostContent> getHttpPostContents() {
-        return httpPostContents;
-    }
-
-    public Authorization getAuthorization() {
-        return authorization;
-    }
-
-    // TODO rethink about post data management
-    public record HttpPostContent(String name,
-                                  String fileName,
-                                  Object content) {
     }
 }

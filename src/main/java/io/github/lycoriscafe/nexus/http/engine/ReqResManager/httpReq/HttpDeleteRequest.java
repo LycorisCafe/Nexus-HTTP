@@ -16,9 +16,12 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+
 public final class HttpDeleteRequest extends HttpGetRequest {
     public HttpDeleteRequest(final long requestId,
+                             final HttpRequestMethod requestMethod,
                              final String endpoint) {
-        super(requestId, endpoint);
+        super(requestId, requestMethod, endpoint);
     }
 }

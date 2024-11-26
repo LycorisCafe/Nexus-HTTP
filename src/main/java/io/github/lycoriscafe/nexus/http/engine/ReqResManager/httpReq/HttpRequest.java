@@ -18,20 +18,30 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 
+import java.lang.reflect.InvocationTargetException;
+import java.sql.SQLException;
 import java.util.*;
 
-public sealed class HttpRequest
-        permits HttpGetRequest, HttpPostRequest, HttpHeadRequest {
+public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final long requestId;
+    private final HttpRequestMethod requestMethod;
     private final String endpoint;
     private Map<String, String> parameters;
     private List<Header> headers;
     private List<Cookie> cookies;
 
     public HttpRequest(final long requestId,
+                       final HttpRequestMethod requestMethod,
                        final String endpoint) {
         this.requestId = requestId;
+        this.requestMethod = requestMethod;
+
         String[] endpointParts = endpoint.split("\\?", 2);
         this.endpoint = endpointParts[0];
 
@@ -70,6 +80,10 @@ public sealed class HttpRequest
         return requestId;
     }
 
+    public HttpRequestMethod getRequestMethod() {
+        return requestMethod;
+    }
+
     public String getEndpoint() {
         return endpoint;
     }
@@ -84,5 +98,21 @@ public sealed class HttpRequest
 
     public List<Cookie> getCookies() {
         return cookies;
+    }
+
+    public void finalizeRequest(final RequestConsumer requestConsumer) {
+        try {
+            ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
+            if (endpointDetails == null) {
+                requestConsumer.dropConnection(HttpStatusCode.NOT_FOUND);
+                return;
+            }
+
+            requestConsumer.send((HttpResponse) endpointDetails.getMethod().invoke(null, this));
+        } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
+                 IllegalAccessException e) {
+            requestConsumer.dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(e);
+        }
     }
 }
