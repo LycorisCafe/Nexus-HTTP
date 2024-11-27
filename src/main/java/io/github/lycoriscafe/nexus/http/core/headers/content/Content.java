@@ -16,8 +16,8 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-public record Content(String type,
-                      long length,
-                      Encoding encoding,
-                      Object... data) {
+public record Content<T>(String type,
+                         long length,
+                         Encoding encoding,
+                         T data) {
 }

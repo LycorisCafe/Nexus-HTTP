@@ -29,7 +29,7 @@ import java.util.Map;
 
 public sealed class HttpPostRequest extends HttpRequest
         permits HttpPatchRequest, HttpPutRequest {
-    private Content content;
+    private Content<?> content;
 
     public HttpPostRequest(final RequestConsumer requestConsumer,
                            final long requestId,
@@ -38,7 +38,7 @@ public sealed class HttpPostRequest extends HttpRequest
         super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
-    public Content getContent() {
+    public Content<?> getContent() {
         return content;
     }
 
@@ -116,14 +116,15 @@ public sealed class HttpPostRequest extends HttpRequest
 
     private void processXWWWFormUrlencoded() {
         Map<String, String> parameters = new HashMap<>();
-
+        // TODO process
+        content = new Content<>("application/x-www-form-urlencoded", contentLength, contentEncoding, parameters);
     }
 
     private void processText(String contentType) {
-
+        // TODO process
     }
 
     private void processDefault(String contentType) {
-
+        // TODO process
     }
 }
