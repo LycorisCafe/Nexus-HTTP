@@ -36,7 +36,10 @@ import java.util.zip.GZIPInputStream;
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
     private Content<?> content;
 
-    public HttpPostRequest(final RequestConsumer requestConsumer, final long requestId, final HttpRequestMethod requestMethod, final String endpoint) {
+    public HttpPostRequest(final RequestConsumer requestConsumer,
+                           final long requestId,
+                           final HttpRequestMethod requestMethod,
+                           final String endpoint) {
         super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
@@ -89,7 +92,8 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
             if (header.getName().equalsIgnoreCase("content-contentEncoding")) {
                 String value = header.getValue().toLowerCase(Locale.US);
                 getHeaders().remove(header);
-                return value.equals("gzip") ? ContentEncoding.GZIP : value.equals("chunked") ? ContentEncoding.CHUNKED : null;
+                return value.equals("gzip") ? ContentEncoding.GZIP :
+                        value.equals("chunked") ? ContentEncoding.CHUNKED : null;
             }
         }
         return ContentEncoding.NONE;
@@ -120,13 +124,16 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private void processXWWWFormUrlencoded() {
-        Map<String, String> parameters = new HashMap<>();
         ByteArrayOutputStream byteArrayOutputStream = null;
         try {
             switch (contentEncoding) {
+                case CHUNKED -> {
+                    getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
                 case NONE ->
                         byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
-                case ContentEncoding.GZIP ->
+                case GZIP ->
                         byteArrayOutputStream = readGzipContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
             }
         } catch (IOException e) {
@@ -142,9 +149,11 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         }
 
         String[] contentParts = byteArrayOutputStream.toString(StandardCharsets.UTF_8).split("&", 0);
+        Map<String, String> parameters = new HashMap<>();
         for (String part : contentParts) {
             String[] keyVal = part.split("=");
-            parameters.put(keyVal[0], keyVal[1]);
+            parameters.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
+                    URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
         }
 
         content = new Content<>("application/x-www-form-urlencoded", contentLength, contentEncoding, parameters);
@@ -158,18 +167,18 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         // TODO process
     }
 
-    private static String decodeUrl(String url) {
-        return URLDecoder.decode(url, StandardCharsets.UTF_8);
-    }
-
-    private static ByteArrayOutputStream readContent(final InputStream inputStream, final int contentLength) throws IOException {
+    private static ByteArrayOutputStream readContent(final InputStream inputStream,
+                                                     final int contentLength) throws IOException {
         var byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.writeBytes(inputStream.readNBytes(contentLength));
         return byteArrayOutputStream;
     }
 
-    private static ByteArrayOutputStream readGzipContent(final InputStream inputStream, final int contentLength) throws IOException {
+    private static ByteArrayOutputStream readGzipContent(final InputStream inputStream,
+                                                         final int contentLength) throws IOException {
         var gzipInputStream = new GZIPInputStream(inputStream);
         return readContent(gzipInputStream, contentLength);
     }
+
+//    private static Path readChunkedContent()
 }
