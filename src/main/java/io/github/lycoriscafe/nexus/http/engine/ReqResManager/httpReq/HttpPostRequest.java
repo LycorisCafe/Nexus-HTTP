@@ -18,26 +18,25 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
-import io.github.lycoriscafe.nexus.http.core.headers.content.Encoding;
+import io.github.lycoriscafe.nexus.http.core.headers.content.ContentEncoding;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.zip.GZIPInputStream;
 
-public sealed class HttpPostRequest extends HttpRequest
-        permits HttpPatchRequest, HttpPutRequest {
+public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
     private Content<?> content;
 
-    public HttpPostRequest(final RequestConsumer requestConsumer,
-                           final long requestId,
-                           final HttpRequestMethod requestMethod,
-                           final String endpoint) {
+    public HttpPostRequest(final RequestConsumer requestConsumer, final long requestId, final HttpRequestMethod requestMethod, final String endpoint) {
         super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
@@ -45,7 +44,7 @@ public sealed class HttpPostRequest extends HttpRequest
         return content;
     }
 
-    private Encoding contentEncoding;
+    private ContentEncoding contentEncoding;
     private Integer contentLength;
 
     @Override
@@ -85,16 +84,15 @@ public sealed class HttpPostRequest extends HttpRequest
         super.finalizeRequest();
     }
 
-    private Encoding getContentEncoding() {
+    private ContentEncoding getContentEncoding() {
         for (Header header : getHeaders()) {
-            if (header.getName().equalsIgnoreCase("content-encoding")) {
+            if (header.getName().equalsIgnoreCase("content-contentEncoding")) {
                 String value = header.getValue().toLowerCase(Locale.US);
                 getHeaders().remove(header);
-                return value.equals("gzip") ? Encoding.GZIP :
-                        value.equals("chunked") ? Encoding.CHUNKED : null;
+                return value.equals("gzip") ? ContentEncoding.GZIP : value.equals("chunked") ? ContentEncoding.CHUNKED : null;
             }
         }
-        return Encoding.NONE;
+        return ContentEncoding.NONE;
     }
 
     private Integer getContentLength() {
@@ -115,7 +113,7 @@ public sealed class HttpPostRequest extends HttpRequest
     }
 
     private void processMultiPartFormData(String boundary) {
-        if (getContentEncoding() == Encoding.CHUNKED) {
+        if (getContentEncoding() == ContentEncoding.CHUNKED) {
             getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
             suspendProcessing();
         }
@@ -123,25 +121,30 @@ public sealed class HttpPostRequest extends HttpRequest
 
     private void processXWWWFormUrlencoded() {
         Map<String, String> parameters = new HashMap<>();
-
-        char[] buffer = new char[contentLength];
-        int length;
+        ByteArrayOutputStream byteArrayOutputStream = null;
         try {
-            length = getRequestConsumer().getReader().read(buffer, 0, contentLength);
+            switch (contentEncoding) {
+                case NONE ->
+                        byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
+                case ContentEncoding.GZIP ->
+                        byteArrayOutputStream = readGzipContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
+            }
         } catch (IOException e) {
             getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            suspendProcessing();
             return;
         }
 
-        if (length < contentLength) {
+        if (byteArrayOutputStream == null || byteArrayOutputStream.size() < contentLength) {
             getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            suspendProcessing();
             return;
         }
 
-        String[] contentParts = new String(buffer).split("&");
+        String[] contentParts = byteArrayOutputStream.toString(StandardCharsets.UTF_8).split("&", 0);
         for (String part : contentParts) {
             String[] keyVal = part.split("=");
-            parameters.put(decodeUrl(keyVal[0]), decodeUrl(keyVal[1]));
+            parameters.put(keyVal[0], keyVal[1]);
         }
 
         content = new Content<>("application/x-www-form-urlencoded", contentLength, contentEncoding, parameters);
@@ -155,7 +158,18 @@ public sealed class HttpPostRequest extends HttpRequest
         // TODO process
     }
 
-    private String decodeUrl(String url) {
+    private static String decodeUrl(String url) {
         return URLDecoder.decode(url, StandardCharsets.UTF_8);
+    }
+
+    private static ByteArrayOutputStream readContent(final InputStream inputStream, final int contentLength) throws IOException {
+        var byteArrayOutputStream = new ByteArrayOutputStream();
+        byteArrayOutputStream.writeBytes(inputStream.readNBytes(contentLength));
+        return byteArrayOutputStream;
+    }
+
+    private static ByteArrayOutputStream readGzipContent(final InputStream inputStream, final int contentLength) throws IOException {
+        var gzipInputStream = new GZIPInputStream(inputStream);
+        return readContent(gzipInputStream, contentLength);
     }
 }
