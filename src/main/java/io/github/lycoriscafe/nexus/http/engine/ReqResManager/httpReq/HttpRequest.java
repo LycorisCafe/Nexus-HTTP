@@ -30,6 +30,7 @@ import java.util.*;
 
 public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final RequestConsumer requestConsumer;
+    private boolean suspendProcessing;
 
     private final long requestId;
     private final HttpRequestMethod requestMethod;
@@ -61,6 +62,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public RequestConsumer getRequestConsumer() {
         return requestConsumer;
+    }
+
+    public void suspendProcessing() {
+        suspendProcessing = true;
     }
 
     public void setHeaders(final Header... headers) {
@@ -110,6 +115,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     public void finalizeRequest() {
+        if (suspendProcessing) {
+            return;
+        }
+
         try {
             ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
             if (endpointDetails == null) {

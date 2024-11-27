@@ -18,5 +18,9 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 import java.util.Map;
 
-public record MultiPartFormData(String name, Map<String, String> parameters, Object data) {
+public record MultiPartFormData(String contentDisposition,
+                                String name,
+                                String fileName,
+                                Map<String, String> parameters,
+                                Object data) {
 }

@@ -16,8 +16,18 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-public record Content(String type,
-                      long length,
-                      Encoding encoding,
-                      Object... data) {
+public enum Encoding {
+    NONE(null),
+    CHUNKED("chunked"),
+    GZIP("gzip");
+
+    private final String value;
+
+    Encoding(String value) {
+        this.value = value;
+    }
+
+    public String getValue() {
+        return value;
+    }
 }
