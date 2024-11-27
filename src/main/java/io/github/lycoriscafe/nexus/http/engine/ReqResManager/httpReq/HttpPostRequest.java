@@ -23,6 +23,9 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -43,7 +46,7 @@ public sealed class HttpPostRequest extends HttpRequest
     }
 
     private Encoding contentEncoding;
-    private Long contentLength;
+    private Integer contentLength;
 
     @Override
     public void finalizeRequest() {
@@ -58,6 +61,10 @@ public sealed class HttpPostRequest extends HttpRequest
                 contentLength = getContentLength();
                 if (contentLength == null) {
                     getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
+                if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
+                    getRequestConsumer().dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
                     return;
                 }
 
@@ -90,11 +97,11 @@ public sealed class HttpPostRequest extends HttpRequest
         return Encoding.NONE;
     }
 
-    private Long getContentLength() {
+    private Integer getContentLength() {
         for (Header header : getHeaders()) {
             if (header.getName().equalsIgnoreCase("content-length")) {
                 try {
-                    Long value = Long.parseLong(header.getValue());
+                    Integer value = Integer.parseInt(header.getValue());
                     getHeaders().remove(header);
                     return value;
                 } catch (NumberFormatException e) {
@@ -116,7 +123,27 @@ public sealed class HttpPostRequest extends HttpRequest
 
     private void processXWWWFormUrlencoded() {
         Map<String, String> parameters = new HashMap<>();
-        // TODO process
+
+        char[] buffer = new char[contentLength];
+        int length;
+        try {
+            length = getRequestConsumer().getReader().read(buffer, 0, contentLength);
+        } catch (IOException e) {
+            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            return;
+        }
+
+        if (length < contentLength) {
+            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            return;
+        }
+
+        String[] contentParts = new String(buffer).split("&");
+        for (String part : contentParts) {
+            String[] keyVal = part.split("=");
+            parameters.put(decodeUrl(keyVal[0]), decodeUrl(keyVal[1]));
+        }
+
         content = new Content<>("application/x-www-form-urlencoded", contentLength, contentEncoding, parameters);
     }
 
@@ -126,5 +153,9 @@ public sealed class HttpPostRequest extends HttpRequest
 
     private void processDefault(String contentType) {
         // TODO process
+    }
+
+    private String decodeUrl(String url) {
+        return URLDecoder.decode(url, StandardCharsets.UTF_8);
     }
 }
