@@ -16,13 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-public enum ContentEncoding {
+public enum TransferEncoding {
     NONE(null),
+    CHUNKED("chunked"),
     GZIP("gzip");
 
     private final String value;
 
-    ContentEncoding(String value) {
+    TransferEncoding(String value) {
         this.value = value;
     }
 

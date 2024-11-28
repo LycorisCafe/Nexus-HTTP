@@ -35,6 +35,7 @@ public final class HttpServerConfiguration {
     private final int maxIncomingConnections;
     private final int pipelineParallelProcesses;
     private final int maxContentLength;
+    private final int maxChunkedContentLength;
 
     private final boolean debugEnabled;
 
@@ -53,6 +54,7 @@ public final class HttpServerConfiguration {
         maxIncomingConnections = builder.maxIncomingConnections;
         pipelineParallelProcesses = builder.pipelineParallelProcesses;
         maxContentLength = builder.maxContentLength;
+        maxChunkedContentLength = builder.maxChunkedContentLength;
         debugEnabled = builder.debugEnabled;
     }
 
@@ -112,6 +114,10 @@ public final class HttpServerConfiguration {
         return maxContentLength;
     }
 
+    public int getMaxChunkedContentLength() {
+        return maxChunkedContentLength;
+    }
+
     public boolean isDebugEnabled() {
         return debugEnabled;
     }
@@ -137,6 +143,7 @@ public final class HttpServerConfiguration {
         private int maxIncomingConnections = 100;
         private int pipelineParallelProcesses = 1;
         private int maxContentLength = 5_242_880;
+        private int maxChunkedContentLength = 104_857_600;
 
         private boolean debugEnabled;
 
@@ -231,9 +238,18 @@ public final class HttpServerConfiguration {
         public HttpServerConfigurationBuilder maxContentLength(int maxContentLength)
                 throws HttpServerConfigurationException {
             if (maxContentLength < 1) {
-                throw new HttpServerConfigurationException("max content length cannot be less than 1 (MB)");
+                throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
             }
             this.maxContentLength = maxContentLength;
+            return this;
+        }
+
+        public HttpServerConfigurationBuilder maxChunkedContentLength(int maxChunkedContentLength)
+                throws HttpServerConfigurationException {
+            if (maxChunkedContentLength < 1) {
+                throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
+            }
+            this.maxChunkedContentLength = maxChunkedContentLength;
             return this;
         }
 
