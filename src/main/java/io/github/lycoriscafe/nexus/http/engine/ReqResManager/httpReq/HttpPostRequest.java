@@ -25,13 +25,13 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.io.*;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 import java.util.zip.GZIPInputStream;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
@@ -57,8 +57,8 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         for (Header header : getHeaders()) {
             if (header.getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
-                if (getContentLength(!(transferEncoding == null ||
-                        transferEncoding.contains(TransferEncoding.CHUNKED)))) return;
+                if (getContentLength(transferEncoding == null ||
+                        transferEncoding.contains(TransferEncoding.CHUNKED))) return;
 
                 String value = header.getValue().toLowerCase(Locale.US);
                 switch (value) {
@@ -69,6 +69,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                     case "application/x-www-form-urlencoded" -> processXWWWFormUrlencoded();
                     default -> processDefault(value);
                 }
+
                 getHeaders().remove(header);
                 break;
             }
@@ -116,27 +117,27 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return true;
     }
 
-    private boolean getContentLength(final boolean mandatory) {
-        if (mandatory) {
-            for (Header header : getHeaders()) {
-                if (header.getName().equalsIgnoreCase("content-length")) {
-                    try {
-                        contentLength = Integer.parseInt(header.getValue());
+    private boolean getContentLength(final boolean optional) {
+        for (Header header : getHeaders()) {
+            if (header.getName().equalsIgnoreCase("content-length")) {
+                try {
+                    contentLength = Integer.parseInt(header.getValue());
 
-                        if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
-                            getRequestConsumer().dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
-                            return false;
-                        }
-
-                        getHeaders().remove(header);
-                        return true;
-                    } catch (NumberFormatException e) {
-                        getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                    if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
+                        getRequestConsumer().dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
                         return false;
                     }
+
+                    getHeaders().remove(header);
+                    return true;
+                } catch (NumberFormatException e) {
+                    getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                    return false;
                 }
             }
+        }
 
+        if (!optional) {
             getRequestConsumer().dropConnection(HttpStatusCode.LENGTH_REQUIRED);
             return false;
         }
@@ -145,45 +146,11 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private void processMultiPartFormData(String boundary) {
-        if (contentEncoding == ContentEncoding.CHUNKED) {
-            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-            suspendProcessing();
-        }
+
     }
 
     private void processXWWWFormUrlencoded() {
-        if (contentEncoding == ContentEncoding.CHUNKED) {
-            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-            suspendProcessing();
-            return;
-        }
 
-        try {
-            ByteArrayOutputStream byteArrayOutputStream = switch (contentEncoding) {
-                case NONE -> readContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
-                case GZIP -> readGzipContent(getRequestConsumer().getSocket().getInputStream(), contentLength);
-                default -> throw new IllegalStateException("Unexpected value: " + contentEncoding);
-            };
-
-            if (byteArrayOutputStream.size() < contentLength) {
-                getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-                suspendProcessing();
-                return;
-            }
-
-            String[] contentParts = byteArrayOutputStream.toString(StandardCharsets.UTF_8).split("&", 0);
-            Map<String, String> parameters = new HashMap<>();
-            for (String part : contentParts) {
-                String[] keyVal = part.split("=");
-                parameters.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
-                        URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
-            }
-
-            content = new Content<>("application/x-www-form-urlencoded", contentLength, contentEncoding, parameters);
-        } catch (IOException e) {
-            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-            suspendProcessing();
-        }
     }
 
     private void processText(String contentType) {
@@ -191,7 +158,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private void processDefault(String contentType) {
-        // TODO process
+
     }
 
     private static ByteArrayOutputStream readContent(final InputStream inputStream,
@@ -207,15 +174,16 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return readContent(gzipInputStream, contentLength);
     }
 
-    private static Path readChunkedContent(final ContentEncoding contentEncoding,
-                                           final RequestConsumer requestConsumer) throws IOException {
+    private static Path readChunkedTransfer(final List<TransferEncoding> transferEncoding,
+                                            final RequestConsumer requestConsumer) throws IOException {
         Path filePath = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
-                "ChunkedContent", null);
+                "ChunkedContent-", null);
 
+        int totalSize = 0;
         int chunkSize;
         InputStream inputStream;
 
-        if (contentEncoding == ContentEncoding.GZIP) {
+        if (transferEncoding.contains(TransferEncoding.GZIP)) {
             inputStream = new GZIPInputStream(requestConsumer.getSocket().getInputStream());
         } else {
             inputStream = requestConsumer.getSocket().getInputStream();
@@ -223,10 +191,22 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
         while (true) {
-            chunkSize = Integer.parseInt(bufferedReader.readLine(), 16);
+            try {
+                chunkSize = Integer.parseInt(bufferedReader.readLine(), 16);
+            } catch (NumberFormatException e) {
+                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                return null;
+            }
+
             if (chunkSize == 0) break;
             if (chunkSize > requestConsumer.getServerConfiguration().getMaxContentLength()) {
                 requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                return null;
+            }
+
+            totalSize += chunkSize;
+            if (totalSize > requestConsumer.getServerConfiguration().getMaxChunkedContentLength()) {
+                requestConsumer.dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
                 return null;
             }
 
