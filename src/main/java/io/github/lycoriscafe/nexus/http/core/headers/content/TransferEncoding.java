@@ -17,7 +17,6 @@
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 public enum TransferEncoding {
-    NONE(null),
     CHUNKED("chunked"),
     GZIP("gzip");
 

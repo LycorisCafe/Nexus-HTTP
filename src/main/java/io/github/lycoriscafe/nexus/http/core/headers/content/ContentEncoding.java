@@ -17,7 +17,6 @@
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 public enum ContentEncoding {
-    NONE(null),
     GZIP("gzip");
 
     private final String value;

@@ -31,9 +31,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
@@ -50,30 +48,22 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return content;
     }
 
-    private final TransferEncoding[] transferEncoding = {TransferEncoding.NONE};
-    private ContentEncoding[] contentEncoding = {ContentEncoding.NONE};
+    private List<TransferEncoding> transferEncoding;
+    private List<ContentEncoding> contentEncoding;
     private Integer contentLength = null;
 
     @Override
     public void finalizeRequest() {
         for (Header header : getHeaders()) {
             if (header.getName().equalsIgnoreCase("content-type")) {
-                contentEncoding = getContentEncoding();
-                contentLength = getContentLength(contentEncoding != ContentEncoding.CHUNKED);
-
-                if (contentLength == null) {
-                    getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-                    return;
-                }
-                if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
-                    getRequestConsumer().dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
-                    return;
-                }
+                if (!getEncodings()) return;
+                if (getContentLength(!(transferEncoding == null ||
+                        transferEncoding.contains(TransferEncoding.CHUNKED)))) return;
 
                 String value = header.getValue().toLowerCase(Locale.US);
                 switch (value) {
                     case String x when x.startsWith("multipart/form-data") ->
-                            processMultiPartFormData(value.split(";")[1].trim());
+                            processMultiPartFormData(value.split(";")[1].trim().split("=")[1]);
                     case String x when x.startsWith("text/") -> processText(value);
                     case "application/json", "application/xml" -> processText(value);
                     case "application/x-www-form-urlencoded" -> processXWWWFormUrlencoded();
@@ -87,42 +77,71 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         super.finalizeRequest();
     }
 
-    private void getEncodings() {
+    private boolean getEncodings() {
         for (Header header : getHeaders()) {
             String headerName = header.getName().toLowerCase(Locale.US);
             if (headerName.equals("transfer-encoding") || headerName.equals("content-encoding")) {
-                String[] value = header.getValue().toLowerCase(Locale.US).split(",", 0);
+                String[] values = header.getValue().toLowerCase(Locale.US).split(",", 0);
                 getHeaders().remove(header);
 
-                switch (headerName) {
+                return switch (headerName) {
                     case "transfer-encoding" -> {
-
+                        transferEncoding = new ArrayList<>();
+                        for (String value : values) {
+                            try {
+                                transferEncoding.add(TransferEncoding.valueOf(value));
+                            } catch (IllegalArgumentException e) {
+                                getRequestConsumer().dropConnection(HttpStatusCode.NOT_IMPLEMENTED);
+                                yield false;
+                            }
+                        }
+                        yield true;
                     }
                     case "content-encoding" -> {
+                        contentEncoding = new ArrayList<>();
+                        for (String value : values) {
+                            try {
+                                contentEncoding.add(ContentEncoding.valueOf(value));
+                            } catch (IllegalArgumentException e) {
+                                getRequestConsumer().dropConnection(HttpStatusCode.NOT_IMPLEMENTED);
+                                yield false;
+                            }
+                        }
+                        yield true;
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + headerName);
+                };
+            }
+        }
+        return true;
+    }
 
+    private boolean getContentLength(final boolean mandatory) {
+        if (mandatory) {
+            for (Header header : getHeaders()) {
+                if (header.getName().equalsIgnoreCase("content-length")) {
+                    try {
+                        contentLength = Integer.parseInt(header.getValue());
+
+                        if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
+                            getRequestConsumer().dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
+                            return false;
+                        }
+
+                        getHeaders().remove(header);
+                        return true;
+                    } catch (NumberFormatException e) {
+                        getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                        return false;
                     }
                 }
             }
-        }
-    }
 
-    private void getContentLength(final boolean mandatory) {
-        for (Header header : getHeaders()) {
-            if (header.getName().equalsIgnoreCase("content-length")) {
-                try {
-                    contentLength = Integer.parseInt(header.getValue());
-                    getHeaders().remove(header);
-                    return;
-                } catch (NumberFormatException e) {
-                    getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
-                    return;
-                }
-            }
-        }
-
-        if (mandatory) {
             getRequestConsumer().dropConnection(HttpStatusCode.LENGTH_REQUIRED);
+            return false;
         }
+
+        return true;
     }
 
     private void processMultiPartFormData(String boundary) {
