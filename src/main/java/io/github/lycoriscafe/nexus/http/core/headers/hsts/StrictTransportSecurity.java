@@ -18,13 +18,25 @@ package io.github.lycoriscafe.nexus.http.core.headers.hsts;
 
 public final class StrictTransportSecurity {
     private final long maxAge;
-    private final boolean includeSubdomains;
-    private final boolean preload;
+    private boolean includeSubdomains;
+    private boolean preload;
 
-    private StrictTransportSecurity(StrictTransportSecurityBuilder builder) {
-        maxAge = builder.maxAge;
-        includeSubdomains = builder.includeSubdomains;
-        preload = builder.preload;
+    private StrictTransportSecurity(final long maxAge)
+            throws StrictTransportSecurityException {
+        if (maxAge < 1) {
+            throw new StrictTransportSecurityException("max-age cannot be less than 1");
+        }
+        this.maxAge = maxAge;
+    }
+
+    public StrictTransportSecurity includeSubdomains(final boolean includeSubdomains) {
+        this.includeSubdomains = includeSubdomains;
+        return this;
+    }
+
+    public StrictTransportSecurity preload(final boolean preload) {
+        this.preload = preload;
+        return this;
     }
 
     public long getMaxAge() {
@@ -37,33 +49,5 @@ public final class StrictTransportSecurity {
 
     public boolean isPreload() {
         return preload;
-    }
-
-    public static class StrictTransportSecurityBuilder {
-        private final long maxAge;
-        private boolean includeSubdomains;
-        private boolean preload;
-
-        private StrictTransportSecurityBuilder(long maxAge)
-                throws StrictTransportSecurityException {
-            if (maxAge < 1) {
-                throw new StrictTransportSecurityException("max-age cannot be less than 1");
-            }
-            this.maxAge = maxAge;
-        }
-
-        public StrictTransportSecurityBuilder includeSubdomains(boolean includeSubdomains) {
-            this.includeSubdomains = includeSubdomains;
-            return this;
-        }
-
-        public StrictTransportSecurityBuilder preload(boolean preload) {
-            this.preload = preload;
-            return this;
-        }
-
-        public StrictTransportSecurity build() {
-            return new StrictTransportSecurity(this);
-        }
     }
 }

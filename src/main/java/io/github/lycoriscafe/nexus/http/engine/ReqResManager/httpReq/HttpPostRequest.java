@@ -25,8 +25,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Locale;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
@@ -43,8 +42,8 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return content;
     }
 
-    private List<TransferEncoding> transferEncoding;
-    private List<ContentEncoding> contentEncoding;
+    private HashSet<TransferEncoding> transferEncoding;
+    private HashSet<ContentEncoding> contentEncoding;
     private Integer contentLength = null;
 
     @Override
@@ -92,7 +91,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
                 return switch (headerName) {
                     case "transfer-encoding" -> {
-                        transferEncoding = new ArrayList<>();
+                        transferEncoding = new HashSet<>();
                         for (String value : values) {
                             try {
                                 transferEncoding.add(TransferEncoding.valueOf(value));
@@ -104,7 +103,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         yield true;
                     }
                     case "content-encoding" -> {
-                        contentEncoding = new ArrayList<>();
+                        contentEncoding = new HashSet<>();
                         for (String value : values) {
                             try {
                                 contentEncoding.add(ContentEncoding.valueOf(value));

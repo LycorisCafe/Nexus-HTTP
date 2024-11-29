@@ -18,31 +18,60 @@ package io.github.lycoriscafe.nexus.http.core.headers.cors;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 public final class CrossOriginResourceSharing {
-    private final String accessControlAllowOrigin;
-    private final List<String> accessControlExposeHeaders;
-    private final long accessControlMaxAge;
-    private final boolean accessControlAllowCredentials;
-    private final List<HttpRequestMethod> accessControlAllowMethods;
-    private final List<String> accessControlAllowHeaders;
+    private String accessControlAllowOrigin;
+    private HashSet<String> accessControlExposeHeaders;
+    private long accessControlMaxAge;
+    private boolean accessControlAllowCredentials;
+    private HashSet<HttpRequestMethod> accessControlAllowMethods;
+    private HashSet<String> accessControlAllowHeaders;
 
-    private CrossOriginResourceSharing(CrossOriginResourceSharingBuilder builder) {
-        accessControlAllowOrigin = builder.accessControlAllowOrigin;
-        accessControlExposeHeaders = builder.accessControlExposeHeaders;
-        accessControlMaxAge = builder.accessControlMaxAge;
-        accessControlAllowCredentials = builder.accessControlAllowCredentials;
-        accessControlAllowMethods = builder.accessControlAllowMethods;
-        accessControlAllowHeaders = builder.accessControlAllowHeaders;
+    private CrossOriginResourceSharing accessControlAllowOrigin(final String accessControlAllowOrigin) {
+        this.accessControlAllowOrigin = accessControlAllowOrigin;
+        return this;
+    }
+
+    public CrossOriginResourceSharing accessControlExposeHeader(final String accessControlExposeHeader) {
+        if (this.accessControlExposeHeaders == null) {
+            this.accessControlExposeHeaders = new HashSet<>();
+        }
+        accessControlExposeHeaders.add(accessControlExposeHeader);
+        return this;
+    }
+
+    public CrossOriginResourceSharing accessControlMaxAge(final long accessControlMaxAge) {
+        this.accessControlMaxAge = accessControlMaxAge;
+        return this;
+    }
+
+    public CrossOriginResourceSharing accessControlAllowCredentials(final boolean accessControlAllowCredentials) {
+        this.accessControlAllowCredentials = accessControlAllowCredentials;
+        return this;
+    }
+
+    public CrossOriginResourceSharing accessControlAllowMethod(final HttpRequestMethod accessControlAllowMethod) {
+        if (this.accessControlAllowMethods == null) {
+            this.accessControlAllowMethods = new HashSet<>();
+        }
+        accessControlAllowMethods.add(accessControlAllowMethod);
+        return this;
+    }
+
+    public CrossOriginResourceSharing accessControlAllowHeader(final String accessControlAllowHeader) {
+        if (this.accessControlAllowHeaders == null) {
+            this.accessControlAllowHeaders = new HashSet<>();
+        }
+        accessControlAllowHeaders.add(accessControlAllowHeader);
+        return this;
     }
 
     public String getAccessControlAllowOrigin() {
         return accessControlAllowOrigin;
     }
 
-    public List<String> getAccessControlExposeHeaders() {
+    public HashSet<String> getAccessControlExposeHeaders() {
         return accessControlExposeHeaders;
     }
 
@@ -54,67 +83,11 @@ public final class CrossOriginResourceSharing {
         return accessControlAllowCredentials;
     }
 
-    public List<HttpRequestMethod> getAccessControlAllowMethods() {
+    public HashSet<HttpRequestMethod> getAccessControlAllowMethods() {
         return accessControlAllowMethods;
     }
 
-    public List<String> getAccessControlAllowHeaders() {
+    public HashSet<String> getAccessControlAllowHeaders() {
         return accessControlAllowHeaders;
-    }
-
-    public static CrossOriginResourceSharingBuilder builder() {
-        return new CrossOriginResourceSharingBuilder();
-    }
-
-    public static class CrossOriginResourceSharingBuilder {
-        private String accessControlAllowOrigin;
-        private List<String> accessControlExposeHeaders;
-        private long accessControlMaxAge;
-        private boolean accessControlAllowCredentials;
-        private List<HttpRequestMethod> accessControlAllowMethods;
-        private List<String> accessControlAllowHeaders;
-
-        private CrossOriginResourceSharingBuilder accessControlAllowOrigin(String accessControlAllowOrigin) {
-            this.accessControlAllowOrigin = accessControlAllowOrigin;
-            return this;
-        }
-
-        public CrossOriginResourceSharingBuilder accessControlExposeHeader(String accessControlExposeHeader) {
-            if (this.accessControlExposeHeaders == null) {
-                this.accessControlExposeHeaders = new ArrayList<>();
-            }
-            accessControlExposeHeaders.add(accessControlExposeHeader);
-            return this;
-        }
-
-        public CrossOriginResourceSharingBuilder accessControlMaxAge(long accessControlMaxAge) {
-            this.accessControlMaxAge = accessControlMaxAge;
-            return this;
-        }
-
-        public CrossOriginResourceSharingBuilder accessControlAllowCredentials(boolean accessControlAllowCredentials) {
-            this.accessControlAllowCredentials = accessControlAllowCredentials;
-            return this;
-        }
-
-        public CrossOriginResourceSharingBuilder accessControlAllowMethod(HttpRequestMethod accessControlAllowMethod) {
-            if (this.accessControlAllowMethods == null) {
-                this.accessControlAllowMethods = new ArrayList<>();
-            }
-            accessControlAllowMethods.add(accessControlAllowMethod);
-            return this;
-        }
-
-        public CrossOriginResourceSharingBuilder accessControlAllowHeader(String accessControlAllowHeader) {
-            if (this.accessControlAllowHeaders == null) {
-                this.accessControlAllowHeaders = new ArrayList<>();
-            }
-            accessControlAllowHeaders.add(accessControlAllowHeader);
-            return this;
-        }
-
-        public CrossOriginResourceSharing build() {
-            return new CrossOriginResourceSharing(this);
-        }
     }
 }

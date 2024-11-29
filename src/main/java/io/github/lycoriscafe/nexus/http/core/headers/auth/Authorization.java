@@ -16,14 +16,16 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-public class Authorization {
+public abstract class Authorization {
     private final AuthScheme authScheme;
 
-    public Authorization(AuthScheme authScheme) {
+    public Authorization(final AuthScheme authScheme) {
         this.authScheme = authScheme;
     }
 
     public AuthScheme getAuthScheme() {
         return authScheme;
     }
+
+    public abstract String processHeader();
 }

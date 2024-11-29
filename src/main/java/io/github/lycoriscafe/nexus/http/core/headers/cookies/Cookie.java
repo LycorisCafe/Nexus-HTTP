@@ -19,26 +19,67 @@ package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 public final class Cookie {
     private final String name;
     private final String value;
-    private final String expires;
-    private final long maxAge;
-    private final boolean secure;
-    private final boolean httpOnly;
-    private final String domain;
-    private final String path;
-    private final CookieSameSite sameSite;
-    private final CookiePrefix prefix;
+    private String expires;
+    private long maxAge;
+    private boolean secure;
+    private boolean httpOnly;
+    private String domain;
+    private String path;
+    private CookieSameSite sameSite;
+    private CookiePrefix prefix;
 
-    private Cookie(CookieBuilder builder) {
-        name = builder.name;
-        value = builder.value;
-        expires = builder.expires;
-        maxAge = builder.maxAge;
-        secure = builder.secure;
-        httpOnly = builder.httpOnly;
-        domain = builder.domain;
-        path = builder.path;
-        sameSite = builder.sameSite;
-        prefix = builder.prefix;
+    private Cookie(final String cookieName,
+                   final String cookieValue) {
+        name = cookieName;
+        value = cookieValue;
+    }
+
+    public Cookie expires(final String expires) {
+        this.expires = expires;
+        return this;
+    }
+
+    public Cookie maxAge(final long maxAge) {
+        this.maxAge = maxAge;
+        return this;
+    }
+
+    public Cookie secure(final boolean secure) {
+        this.secure = secure;
+        return this;
+    }
+
+    public Cookie httpOnly(final boolean httpOnly) {
+        this.httpOnly = httpOnly;
+        return this;
+    }
+
+    public Cookie domain(final String domain) {
+        this.domain = domain;
+        return this;
+    }
+
+    public Cookie path(final String path) {
+        this.path = path;
+        return this;
+    }
+
+    public Cookie sameSite(final CookieSameSite sameSite) throws CookieException {
+        if (this.sameSite == null) {
+            throw new CookieException("Same Site cannot be null. " +
+                    "If you need this to be null, just ignore this method.");
+        }
+        this.sameSite = sameSite;
+        return this;
+    }
+
+    public Cookie prefix(final CookiePrefix prefix) throws CookieException {
+        if (prefix == null) {
+            throw new CookieException("Cookie prefix cannot be null. " +
+                    "If you need this to be null, just ignore this method.");
+        }
+        this.prefix = prefix;
+        return this;
     }
 
     public String getName() {
@@ -81,90 +122,13 @@ public final class Cookie {
         return prefix;
     }
 
-    public static CookieBuilder builder(String cookieName,
-                                        String cookieValue) {
-        return new CookieBuilder(cookieName, cookieValue);
-    }
-
     public static Cookie[] processIncomingCookies(String headerValue) {
         String[] keyVal = headerValue.split(";", 0);
         Cookie[] cookies = new Cookie[keyVal.length];
         for (int i = 0; i < keyVal.length; i++) {
             String[] parts = keyVal[i].split("=", 2);
-            cookies[i] = builder(parts[0].trim(), parts[1].trim()).build();
+            cookies[i] = new Cookie(parts[0].trim(), parts[1].trim());
         }
         return cookies;
-    }
-
-
-    public static final class CookieBuilder {
-        private final String name;
-        private final String value;
-        private String expires;
-        private long maxAge;
-        private boolean secure;
-        private boolean httpOnly;
-        private String domain;
-        private String path;
-        private CookieSameSite sameSite;
-        private CookiePrefix prefix;
-
-        private CookieBuilder(String cookieName,
-                              String cookieValue) {
-            name = cookieName;
-            value = cookieValue;
-        }
-
-        public CookieBuilder expires(String expires) {
-            this.expires = expires;
-            return this;
-        }
-
-        public CookieBuilder maxAge(long maxAge) {
-            this.maxAge = maxAge;
-            return this;
-        }
-
-        public CookieBuilder secure(boolean secure) {
-            this.secure = secure;
-            return this;
-        }
-
-        public CookieBuilder httpOnly(boolean httpOnly) {
-            this.httpOnly = httpOnly;
-            return this;
-        }
-
-        public CookieBuilder domain(String domain) {
-            this.domain = domain;
-            return this;
-        }
-
-        public CookieBuilder path(String path) {
-            this.path = path;
-            return this;
-        }
-
-        public CookieBuilder sameSite(CookieSameSite sameSite) throws CookieException {
-            if (this.sameSite == null) {
-                throw new CookieException("Same Site cannot be null. " +
-                        "If you need this to be null, just ignore this method.");
-            }
-            this.sameSite = sameSite;
-            return this;
-        }
-
-        public CookieBuilder prefix(CookiePrefix prefix) throws CookieException {
-            if (prefix == null) {
-                throw new CookieException("Cookie prefix cannot be null. " +
-                        "If you need this to be null, just ignore this method.");
-            }
-            this.prefix = prefix;
-            return this;
-        }
-
-        public Cookie build() {
-            return new Cookie(this);
-        }
     }
 }

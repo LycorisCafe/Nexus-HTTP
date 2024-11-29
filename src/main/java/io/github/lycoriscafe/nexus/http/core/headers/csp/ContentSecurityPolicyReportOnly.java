@@ -16,31 +16,25 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
-public final class ContentSecurityPolicyReportOnly
-        extends ContentSecurityPolicy {
-    private ContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnlyBuilder builder) {
-        super(builder);
+public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
+    private ContentSecurityPolicyReportOnly(final CSPDirective directive) throws ContentSecurityPolicyException {
+        super(directive);
     }
 
-    public static ContentSecurityPolicyReportOnlyBuilder builder(CSPDirective directive)
-            throws ContentSecurityPolicyException {
-        return new ContentSecurityPolicyReportOnlyBuilder(directive);
-    }
-
-    public static final class ContentSecurityPolicyReportOnlyBuilder
-            extends ContentSecurityPolicyBuilder {
-        private ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
-                throws ContentSecurityPolicyException {
-            super(directive);
-        }
-
-        @Override
-        public ContentSecurityPolicyReportOnly build()
-                throws ContentSecurityPolicyException {
-            if (super.hosts.isEmpty()) {
-                throw new ContentSecurityPolicyException("no host/endpoint provided");
-            }
-            return new ContentSecurityPolicyReportOnly(this);
-        }
-    }
+//    public static final class ContentSecurityPolicyReportOnlyBuilder
+//            extends ContentSecurityPolicyBuilder {
+//        private ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
+//                throws ContentSecurityPolicyException {
+//            super(directive);
+//        }
+//
+//        @Override
+//        public ContentSecurityPolicyReportOnly build()
+//                throws ContentSecurityPolicyException {
+//            if (super.hosts.isEmpty()) {
+//                throw new ContentSecurityPolicyException("no host/endpoint provided");
+//            }
+//            return new ContentSecurityPolicyReportOnly(this);
+//        }
+//    }
 }

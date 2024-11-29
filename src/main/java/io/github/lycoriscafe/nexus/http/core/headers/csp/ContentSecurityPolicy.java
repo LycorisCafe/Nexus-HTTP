@@ -16,95 +16,81 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
-public sealed class ContentSecurityPolicy
-        permits ContentSecurityPolicyReportOnly {
+public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnly {
     private final CSPDirective directive;
-    private final List<CSPValue> values;
-    private final List<Object> hosts;
+    private HashSet<CSPValue> values;
+    final HashSet<Object> hosts;
 
-    ContentSecurityPolicy(ContentSecurityPolicyBuilder builder) {
-        directive = builder.directive;
-        values = builder.values;
-        hosts = builder.hosts;
+    ContentSecurityPolicy(final CSPDirective directive) throws ContentSecurityPolicyException {
+        if (directive == null) {
+            throw new ContentSecurityPolicyException("directive cannot be null");
+        }
+        this.directive = directive;
+        hosts = new HashSet<>();
+    }
+
+    public ContentSecurityPolicy value(final CSPValue value) throws ContentSecurityPolicyException {
+        if (directive == CSPDirective.REPORT_TO || directive == CSPDirective.REPORT_URI) {
+            throw new ContentSecurityPolicyException("report-to & report-uri cannot be contain any value");
+        }
+        if (values == null) {
+            values = new HashSet<>();
+        }
+        this.values.add(value);
+        return this;
+    }
+
+    public ContentSecurityPolicy host(final String host) throws ContentSecurityPolicyException {
+        if (directive == CSPDirective.REPORT_TO) {
+            throw new ContentSecurityPolicyException("provided directive must have a ReportingEndpoint instance");
+        }
+        if (host == null) {
+            throw new ContentSecurityPolicyException("host cannot be null");
+        }
+        this.hosts.add(host);
+        return this;
+    }
+
+    public ContentSecurityPolicy host(final ReportingEndpoint host) throws ContentSecurityPolicyException {
+        if (directive != CSPDirective.REPORT_TO) {
+            throw new ContentSecurityPolicyException("provided directive must have a String host/endpoint");
+        }
+        if (host == null) {
+            throw new ContentSecurityPolicyException("host cannot be null");
+        }
+        this.hosts.add(host);
+        return this;
     }
 
     public CSPDirective getDirective() {
         return directive;
     }
 
-    public List<CSPValue> getValues() {
+    public HashSet<CSPValue> getValues() {
         return values;
     }
 
-    public List<Object> getHosts() {
+    public HashSet<Object> getHosts() {
         return hosts;
     }
 
-    public static ContentSecurityPolicyBuilder builder(CSPDirective directive)
-            throws ContentSecurityPolicyException {
-        return new ContentSecurityPolicyBuilder(directive);
-    }
-
-    public static sealed class ContentSecurityPolicyBuilder
-            permits ContentSecurityPolicyReportOnly.ContentSecurityPolicyReportOnlyBuilder {
-        private final CSPDirective directive;
-        private List<CSPValue> values;
-        final List<Object> hosts;
-
-        ContentSecurityPolicyBuilder(CSPDirective directive)
-                throws ContentSecurityPolicyException {
-            if (directive == null) {
-                throw new ContentSecurityPolicyException("directive cannot be null");
-            }
-            this.directive = directive;
-            hosts = new ArrayList<>();
-        }
-
-        public ContentSecurityPolicyBuilder value(CSPValue value)
-                throws ContentSecurityPolicyException {
-            if (directive == CSPDirective.REPORT_TO || directive == CSPDirective.REPORT_URI) {
-                throw new ContentSecurityPolicyException("report-to & report-uri cannot be contain any value");
-            }
-            if (values == null) {
-                values = new ArrayList<>();
-            }
-            this.values.add(value);
-            return this;
-        }
-
-        public ContentSecurityPolicyBuilder host(String host)
-                throws ContentSecurityPolicyException {
-            if (directive == CSPDirective.REPORT_TO) {
-                throw new ContentSecurityPolicyException("provided directive must have a ReportingEndpoint instance");
-            }
-            if (host == null) {
-                throw new ContentSecurityPolicyException("host cannot be null");
-            }
-            this.hosts.add(host);
-            return this;
-        }
-
-        public ContentSecurityPolicyBuilder host(ReportingEndpoint host)
-                throws ContentSecurityPolicyException {
-            if (directive != CSPDirective.REPORT_TO) {
-                throw new ContentSecurityPolicyException("provided directive must have a String host/endpoint");
-            }
-            if (host == null) {
-                throw new ContentSecurityPolicyException("host cannot be null");
-            }
-            this.hosts.add(host);
-            return this;
-        }
-
-        public ContentSecurityPolicy build()
-                throws ContentSecurityPolicyException {
-            if (hosts.isEmpty()) {
-                throw new ContentSecurityPolicyException("no host/endpoint provided");
-            }
-            return new ContentSecurityPolicy(this);
-        }
-    }
+//    public static ContentSecurityPolicy builder(CSPDirective directive)
+//            throws ContentSecurityPolicyException {
+//        return new ContentSecurityPolicy(directive);
+//    }
+//
+//    public static sealed class ContentSecurityPolicy
+//            permits ContentSecurityPolicyReportOnly.ContentSecurityPolicyReportOnlyBuilder {
+//
+//
+//        public ContentSecurityPolicy build()
+//                throws ContentSecurityPolicyException {
+//            if (hosts.isEmpty()) {
+//                throw new ContentSecurityPolicyException("no host/endpoint provided");
+//            }
+//            return new ContentSecurityPolicy(this);
+//        }
+//    }
 }

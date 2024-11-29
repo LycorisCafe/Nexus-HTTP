@@ -25,10 +25,9 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws ScannerException, SQLException, IOException {
-        HttpServerConfiguration httpServerConfiguration = HttpServerConfiguration.builder("main.test")
+        HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration("main.test")
                 .port(2004)
-                .staticFilesDirectory(null)
-                .build();
+                .staticFilesDirectory(null);
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
     }

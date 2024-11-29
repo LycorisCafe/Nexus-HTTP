@@ -19,43 +19,135 @@ package io.github.lycoriscafe.nexus.http.helper.configuration;
 import java.net.InetAddress;
 
 public final class HttpServerConfiguration {
-    private final int port;
-    private final int backlog;
-    private final InetAddress inetAddress;
-    private final int connectionTimeout;
-    private final ThreadType threadType;
+    private int port = 0;
+    private int backlog = 0;
+    private InetAddress inetAddress = null;
+    private int connectionTimeout = 60_000;
+    private ThreadType threadType = ThreadType.VIRTUAL;
 
     private final String basePackage;
-    private final String tempDirectory;
-    private final String staticFilesDirectory;
-    private final String databaseLocation;
+    private String tempDirectory = "NexusTemp";
+    private String staticFilesDirectory = "NexusStatics";
+    private String databaseLocation = null;
 
-    private final boolean ignoreEndpointCases;
-    private final int maxHeadersPerRequest;
-    private final int maxIncomingConnections;
-    private final int pipelineParallelProcesses;
-    private final int maxContentLength;
-    private final int maxChunkedContentLength;
+    private boolean ignoreEndpointCases;
+    private int maxHeadersPerRequest = 10;
+    private int maxIncomingConnections = 100;
+    private int pipelineParallelProcesses = 1;
+    private int maxContentLength = 5_242_880;
+    private int maxChunkedContentLength = 104_857_600;
 
-    private final boolean debugEnabled;
+    private boolean debugEnabled;
 
-    public HttpServerConfiguration(HttpServerConfigurationBuilder builder) {
-        port = builder.port;
-        backlog = builder.backlog;
-        inetAddress = builder.inetAddress;
-        connectionTimeout = builder.connectionTimeout;
-        threadType = builder.threadType;
-        basePackage = builder.basePackage;
-        tempDirectory = builder.tempDirectory;
-        staticFilesDirectory = builder.staticFilesDirectory;
-        databaseLocation = builder.databaseLocation;
-        ignoreEndpointCases = builder.ignoreEndpointCases;
-        maxHeadersPerRequest = builder.maxHeadersPerRequest;
-        maxIncomingConnections = builder.maxIncomingConnections;
-        pipelineParallelProcesses = builder.pipelineParallelProcesses;
-        maxContentLength = builder.maxContentLength;
-        maxChunkedContentLength = builder.maxChunkedContentLength;
-        debugEnabled = builder.debugEnabled;
+    public HttpServerConfiguration(String basePackage) {
+        this.basePackage = basePackage;
+    }
+
+    public HttpServerConfiguration port(int port) {
+        this.port = port;
+        return this;
+    }
+
+    public HttpServerConfiguration backlog(int backlog) {
+        this.backlog = backlog;
+        return this;
+    }
+
+    public HttpServerConfiguration inetAddress(InetAddress inetAddress)
+            throws HttpServerConfigurationException {
+        if (inetAddress == null) {
+            throw new HttpServerConfigurationException("inet address cannot be null");
+        }
+        this.inetAddress = inetAddress;
+        return this;
+    }
+
+    public HttpServerConfiguration connectionTimeout(int connectionTimeout) {
+        this.connectionTimeout = connectionTimeout;
+        return this;
+    }
+
+    public HttpServerConfiguration threadType(ThreadType threadType)
+            throws HttpServerConfigurationException {
+        if (threadType == null) {
+            throw new HttpServerConfigurationException("thread type cannot be null");
+        }
+        this.threadType = threadType;
+        return this;
+    }
+
+    public HttpServerConfiguration tempDirectory(String tempDirectory) {
+        if (tempDirectory != null) {
+            this.tempDirectory = tempDirectory;
+        }
+        return this;
+    }
+
+    public HttpServerConfiguration staticFilesDirectory(String staticFilesDirectory) {
+        this.staticFilesDirectory = staticFilesDirectory;
+        return this;
+    }
+
+    public HttpServerConfiguration databaseLocation(String databaseLocation) {
+        if (databaseLocation != null) {
+            this.databaseLocation = databaseLocation;
+        }
+        return this;
+    }
+
+    public HttpServerConfiguration ignoreEndpointCases(boolean ignoreEndpointCases) {
+        this.ignoreEndpointCases = ignoreEndpointCases;
+        return this;
+    }
+
+    public HttpServerConfiguration maxHeadersPerRequest(int maxHeadersPerRequest)
+            throws HttpServerConfigurationException {
+        if (maxHeadersPerRequest < 2) {
+            throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
+        }
+        this.maxHeadersPerRequest = maxHeadersPerRequest;
+        return this;
+    }
+
+    public HttpServerConfiguration maxIncomingConnections(int maxIncomingConnections)
+            throws HttpServerConfigurationException {
+        if (maxIncomingConnections < 1) {
+            throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
+        }
+        this.maxIncomingConnections = maxIncomingConnections;
+        return this;
+    }
+
+    public HttpServerConfiguration pipelineParallelProcesses(int pipelineParallelProcesses)
+            throws HttpServerConfigurationException {
+        if (pipelineParallelProcesses < 1) {
+            throw new HttpServerConfigurationException("pipeline processes count cannot be less than 1");
+        }
+        this.pipelineParallelProcesses = pipelineParallelProcesses;
+        return this;
+    }
+
+    public HttpServerConfiguration maxContentLength(int maxContentLength)
+            throws HttpServerConfigurationException {
+        if (maxContentLength < 1) {
+            throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
+        }
+        this.maxContentLength = maxContentLength;
+        return this;
+    }
+
+    public HttpServerConfiguration maxChunkedContentLength(int maxChunkedContentLength)
+            throws HttpServerConfigurationException {
+        if (maxChunkedContentLength < 1) {
+            throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
+        }
+        this.maxChunkedContentLength = maxChunkedContentLength;
+        return this;
+    }
+
+    public HttpServerConfiguration enableDebug() {
+        debugEnabled = true;
+        return this;
     }
 
     public int getPort() {
@@ -120,146 +212,5 @@ public final class HttpServerConfiguration {
 
     public boolean isDebugEnabled() {
         return debugEnabled;
-    }
-
-    public static HttpServerConfigurationBuilder builder(String basePackage) {
-        return new HttpServerConfigurationBuilder(basePackage);
-    }
-
-    public static final class HttpServerConfigurationBuilder {
-        private int port = 0;
-        private int backlog = 0;
-        private InetAddress inetAddress = null;
-        private int connectionTimeout = 60_000;
-        private ThreadType threadType = ThreadType.VIRTUAL;
-
-        private final String basePackage;
-        private String tempDirectory = "NexusTemp";
-        private String staticFilesDirectory = "NexusStatics";
-        private String databaseLocation = null;
-
-        private boolean ignoreEndpointCases;
-        private int maxHeadersPerRequest = 10;
-        private int maxIncomingConnections = 100;
-        private int pipelineParallelProcesses = 1;
-        private int maxContentLength = 5_242_880;
-        private int maxChunkedContentLength = 104_857_600;
-
-        private boolean debugEnabled;
-
-        public HttpServerConfigurationBuilder(String basePackage) {
-            this.basePackage = basePackage;
-        }
-
-        public HttpServerConfigurationBuilder port(int port) {
-            this.port = port;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder backlog(int backlog) {
-            this.backlog = backlog;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder inetAddress(InetAddress inetAddress)
-                throws HttpServerConfigurationException {
-            if (inetAddress == null) {
-                throw new HttpServerConfigurationException("inet address cannot be null");
-            }
-            this.inetAddress = inetAddress;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder connectionTimeout(int connectionTimeout) {
-            this.connectionTimeout = connectionTimeout;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder threadType(ThreadType threadType)
-                throws HttpServerConfigurationException {
-            if (threadType == null) {
-                throw new HttpServerConfigurationException("thread type cannot be null");
-            }
-            this.threadType = threadType;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder tempDirectory(String tempDirectory) {
-            if (tempDirectory != null) {
-                this.tempDirectory = tempDirectory;
-            }
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder staticFilesDirectory(String staticFilesDirectory) {
-            this.staticFilesDirectory = staticFilesDirectory;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder databaseLocation(String databaseLocation) {
-            if (databaseLocation != null) {
-                this.databaseLocation = databaseLocation;
-            }
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder ignoreEndpointCases(boolean ignoreEndpointCases) {
-            this.ignoreEndpointCases = ignoreEndpointCases;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder maxHeadersPerRequest(int maxHeadersPerRequest)
-                throws HttpServerConfigurationException {
-            if (maxHeadersPerRequest < 2) {
-                throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
-            }
-            this.maxHeadersPerRequest = maxHeadersPerRequest;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder maxIncomingConnections(int maxIncomingConnections)
-                throws HttpServerConfigurationException {
-            if (maxIncomingConnections < 1) {
-                throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
-            }
-            this.maxIncomingConnections = maxIncomingConnections;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder pipelineParallelProcesses(int pipelineParallelProcesses)
-                throws HttpServerConfigurationException {
-            if (pipelineParallelProcesses < 1) {
-                throw new HttpServerConfigurationException("pipeline processes count cannot be less than 1");
-            }
-            this.pipelineParallelProcesses = pipelineParallelProcesses;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder maxContentLength(int maxContentLength)
-                throws HttpServerConfigurationException {
-            if (maxContentLength < 1) {
-                throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
-            }
-            this.maxContentLength = maxContentLength;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder maxChunkedContentLength(int maxChunkedContentLength)
-                throws HttpServerConfigurationException {
-            if (maxChunkedContentLength < 1) {
-                throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
-            }
-            this.maxChunkedContentLength = maxChunkedContentLength;
-            return this;
-        }
-
-        public HttpServerConfigurationBuilder enableDebug() {
-            debugEnabled = true;
-            return this;
-        }
-
-        public HttpServerConfiguration build() {
-            return new HttpServerConfiguration(this);
-        }
     }
 }

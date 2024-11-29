@@ -19,12 +19,11 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
 
 public final class HttpOptionsRequest extends HttpGetRequest {
     private HttpRequestMethod accessControlRequestMethod;
-    private List<String> accessControlRequestHeaders;
+    private HashSet<String> accessControlRequestHeaders;
 
     public HttpOptionsRequest(final RequestConsumer requestConsumer,
                               final long requestId,
@@ -39,7 +38,7 @@ public final class HttpOptionsRequest extends HttpGetRequest {
 
     public void setAccessControlRequestHeader(final String accessControlRequestHeader) {
         if (accessControlRequestHeaders == null) {
-            accessControlRequestHeaders = new ArrayList<String>();
+            accessControlRequestHeaders = new HashSet<>();
         }
         accessControlRequestHeaders.add(accessControlRequestHeader);
     }
@@ -48,7 +47,7 @@ public final class HttpOptionsRequest extends HttpGetRequest {
         return accessControlRequestMethod;
     }
 
-    public List<String> getAccessControlRequestHeaders() {
+    public HashSet<String> getAccessControlRequestHeaders() {
         return accessControlRequestHeaders;
     }
 }

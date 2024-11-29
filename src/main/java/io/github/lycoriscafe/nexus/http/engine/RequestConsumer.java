@@ -21,10 +21,7 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpRespons
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -38,7 +35,7 @@ public final class RequestConsumer implements Runnable {
     private final Socket socket;
 
     private final BufferedReader reader;
-    private final PrintWriter writer;
+    private final BufferedWriter writer;
 
     private long requestId = 0L;
     private final long responseId = 0L;
@@ -53,7 +50,7 @@ public final class RequestConsumer implements Runnable {
         this.socket = socket;
 
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        writer = new PrintWriter(socket.getOutputStream(), true, StandardCharsets.UTF_8);
+        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
     }
 
     public HttpServerConfiguration getServerConfiguration() {
@@ -72,7 +69,7 @@ public final class RequestConsumer implements Runnable {
         return reader;
     }
 
-    public PrintWriter getWriter() {
+    public BufferedWriter getWriter() {
         return writer;
     }
 
@@ -87,16 +84,25 @@ public final class RequestConsumer implements Runnable {
                 if (line.length() > 8000) {
                     // Handle length exceeded
                     dropConnection(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
+                    return;
+                }
+
+                if (requestLine == null) {
+                    requestLine = line;
+                    continue;
                 }
 
                 if (line.isEmpty()) {
                     requestProcessor.process(requestId++, requestLine, headers);
+                    requestLine = null;
                     headers.clear();
+                    continue;
                 }
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
                     // Handle max headers count exceeded
                     dropConnection(HttpStatusCode.BAD_REQUEST);
+                    return;
                 }
 
                 headers.add(line);

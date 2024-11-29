@@ -26,7 +26,10 @@ import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 
 public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final RequestConsumer requestConsumer;
@@ -35,8 +38,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final HttpRequestMethod requestMethod;
     private final String endpoint;
     private Map<String, String> parameters;
-    private List<Header> headers;
-    private List<Cookie> cookies;
+    private HashSet<Header> headers;
+    private HashSet<Cookie> cookies;
 
     public HttpRequest(final RequestConsumer requestConsumer,
                        final long requestId,
@@ -69,7 +72,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         }
 
         if (this.headers == null) {
-            this.headers = new ArrayList<>();
+            this.headers = new HashSet<>();
         }
         this.headers.addAll(Arrays.asList(headers));
     }
@@ -80,7 +83,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         }
 
         if (this.cookies == null) {
-            this.cookies = new ArrayList<>();
+            this.cookies = new HashSet<>();
         }
         this.cookies.addAll(Arrays.asList(cookies));
     }
@@ -101,11 +104,11 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return parameters;
     }
 
-    public List<Header> getHeaders() {
+    public HashSet<Header> getHeaders() {
         return headers;
     }
 
-    public List<Cookie> getCookies() {
+    public HashSet<Cookie> getCookies() {
         return cookies;
     }
 

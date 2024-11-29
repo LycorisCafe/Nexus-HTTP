@@ -20,9 +20,10 @@ public final class Header {
     private final String name;
     private final String value;
 
-    private Header(final HeaderBuilder builder) {
-        name = builder.name;
-        value = builder.value;
+    private Header(final String name,
+                   final String value) {
+        this.name = name;
+        this.value = value;
     }
 
     public String getName() {
@@ -33,27 +34,7 @@ public final class Header {
         return value;
     }
 
-    public static HeaderBuilder builder(final String name,
-                                        final String value) {
-        return new HeaderBuilder(name, value);
-    }
-
-    public static Header processIncomingHeader(String[] headerParts) {
-        return builder(headerParts[0].trim(), headerParts[1].trim()).build();
-    }
-
-    public static class HeaderBuilder {
-        private final String name;
-        private final String value;
-
-        private HeaderBuilder(final String name,
-                              final String value) {
-            this.name = name;
-            this.value = value;
-        }
-
-        public Header build() {
-            return new Header(this);
-        }
+    public static Header processIncomingHeader(final String[] headerParts) {
+        return new Header(headerParts[0].trim(), headerParts[1].trim());
     }
 }

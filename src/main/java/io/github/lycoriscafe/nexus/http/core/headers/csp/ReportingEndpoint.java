@@ -20,14 +20,10 @@ public final class ReportingEndpoint {
     private final String endpointName;
     private final String endpointValue;
 
-    private ReportingEndpoint(ReportingEndpointBuilder builder) {
-        endpointName = builder.endpointName;
-        endpointValue = builder.endpointValue;
-    }
-
-    public static ReportingEndpointBuilder builder(String endpointName,
-                                                   String endpointValue) {
-        return new ReportingEndpointBuilder(endpointName, endpointValue);
+    private ReportingEndpoint(final String endpointName,
+                              final String endpointValue) {
+        this.endpointName = endpointName;
+        this.endpointValue = endpointValue;
     }
 
     public String getEndpointName() {
@@ -36,20 +32,5 @@ public final class ReportingEndpoint {
 
     public String getEndpointValue() {
         return endpointValue;
-    }
-
-    public static final class ReportingEndpointBuilder {
-        private final String endpointName;
-        private final String endpointValue;
-
-        private ReportingEndpointBuilder(String endpointName,
-                                         String endpointValue) {
-            this.endpointName = endpointName;
-            this.endpointValue = endpointValue;
-        }
-
-        public ReportingEndpoint build() {
-            return new ReportingEndpoint(this);
-        }
     }
 }

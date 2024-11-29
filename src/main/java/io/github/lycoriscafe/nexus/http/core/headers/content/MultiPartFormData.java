@@ -25,10 +25,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class MultiPartFormData {
+public final class MultiPartFormData {
     private String name;
     private String fileName;
     private Map<String, String> parameters;
@@ -37,10 +38,10 @@ public class MultiPartFormData {
     private MultiPartFormData() {
     }
 
-    public MultiPartFormData(String name,
-                             String fileName,
-                             Map<String, String> parameters,
-                             Object data) {
+    public MultiPartFormData(final String name,
+                             final String fileName,
+                             final Map<String, String> parameters,
+                             final Object data) {
         this.name = name;
         this.fileName = fileName;
         this.parameters = parameters;
@@ -65,8 +66,8 @@ public class MultiPartFormData {
 
 
     public static Content process(final RequestConsumer requestConsumer,
-                                  final List<TransferEncoding> transferEncoding,
-                                  final List<ContentEncoding> contentEncoding,
+                                  final HashSet<TransferEncoding> transferEncoding,
+                                  final HashSet<ContentEncoding> contentEncoding,
                                   final int contentLength,
                                   final String boundary) {
         if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
