@@ -16,11 +16,55 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+
+import java.util.List;
 import java.util.Map;
 
-public record MultiPartFormData(String contentDisposition,
-                                String name,
-                                String fileName,
-                                Map<String, String> parameters,
-                                Object data) {
+public class MultiPartFormData {
+    String contentDisposition;
+    String name;
+    String fileName;
+    Map<String, String> parameters;
+    Object data;
+
+    public MultiPartFormData(String contentDisposition,
+                             String name,
+                             String fileName,
+                             Map<String, String> parameters,
+                             Object data) {
+        this.contentDisposition = contentDisposition;
+        this.name = name;
+        this.fileName = fileName;
+        this.parameters = parameters;
+        this.data = data;
+    }
+
+    public String getContentDisposition() {
+        return contentDisposition;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public Map<String, String> getParameters() {
+        return parameters;
+    }
+
+    public Object getData() {
+        return data;
+    }
+
+    public static Content process(final RequestConsumer requestConsumer,
+                                  final List<TransferEncoding> transferEncoding,
+                                  final List<ContentEncoding> contentEncoding,
+                                  final int contentLength,
+                                  final String boundary) {
+        return null;
+    }
 }
