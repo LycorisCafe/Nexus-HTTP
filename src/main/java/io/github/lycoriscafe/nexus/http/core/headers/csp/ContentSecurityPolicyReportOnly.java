@@ -16,25 +16,11 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
-public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
-    private ContentSecurityPolicyReportOnly(final CSPDirective directive) throws ContentSecurityPolicyException {
-        super(directive);
-    }
+import java.util.HashSet;
 
-//    public static final class ContentSecurityPolicyReportOnlyBuilder
-//            extends ContentSecurityPolicyBuilder {
-//        private ContentSecurityPolicyReportOnlyBuilder(CSPDirective directive)
-//                throws ContentSecurityPolicyException {
-//            super(directive);
-//        }
-//
-//        @Override
-//        public ContentSecurityPolicyReportOnly build()
-//                throws ContentSecurityPolicyException {
-//            if (super.hosts.isEmpty()) {
-//                throw new ContentSecurityPolicyException("no host/endpoint provided");
-//            }
-//            return new ContentSecurityPolicyReportOnly(this);
-//        }
-//    }
+public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
+    private ContentSecurityPolicyReportOnly(final CSPDirective directive,
+                                            final HashSet<String> value) throws ContentSecurityPolicyException {
+        super(directive, value);
+    }
 }
