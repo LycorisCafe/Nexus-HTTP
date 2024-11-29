@@ -46,7 +46,9 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
         if (name == null || url == null) {
             throw new ContentSecurityPolicyException("directive cannot be null");
         }
-        reportingEndpoint = new HashMap<>();
+        if (reportingEndpoint == null) {
+            reportingEndpoint = new HashMap<>();
+        }
         reportingEndpoint.put(name, url);
         return this;
     }
