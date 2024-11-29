@@ -16,7 +16,15 @@
 
 package io.github.lycoriscafe.nexus.http.helper.configuration;
 
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
+import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
+import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
+
 import java.net.InetAddress;
+import java.util.HashSet;
 
 public final class HttpServerConfiguration {
     private int port = 0;
@@ -37,6 +45,13 @@ public final class HttpServerConfiguration {
     private int maxContentLength = 5_242_880;
     private int maxChunkedContentLength = 104_857_600;
 
+    private HashSet<Header> defaultHeaders = null;
+    private HashSet<WWWAuthentication> defaultAuthentications = null;
+    private HashSet<Cookie> defaultCookies = null;
+    private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
+    private ContentSecurityPolicy defaultContentSecurityPolicy = null;
+    private StrictTransportSecurity defaultStrictTransportSecurity = null;
+
     private boolean debugEnabled;
 
     public HttpServerConfiguration(String basePackage) {
@@ -53,11 +68,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration inetAddress(InetAddress inetAddress)
-            throws HttpServerConfigurationException {
-        if (inetAddress == null) {
-            throw new HttpServerConfigurationException("inet address cannot be null");
-        }
+    public HttpServerConfiguration inetAddress(InetAddress inetAddress) {
         this.inetAddress = inetAddress;
         return this;
     }
@@ -89,9 +100,7 @@ public final class HttpServerConfiguration {
     }
 
     public HttpServerConfiguration databaseLocation(String databaseLocation) {
-        if (databaseLocation != null) {
-            this.databaseLocation = databaseLocation;
-        }
+        this.databaseLocation = databaseLocation;
         return this;
     }
 
@@ -142,6 +151,36 @@ public final class HttpServerConfiguration {
             throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
         }
         this.maxChunkedContentLength = maxChunkedContentLength;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultHeaders(HashSet<Header> defaultHeaders) {
+        this.defaultHeaders = defaultHeaders;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultAuthentications(HashSet<WWWAuthentication> defaultAuthentications) {
+        this.defaultAuthentications = defaultAuthentications;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultCookies(HashSet<Cookie> defaultCookies) {
+        this.defaultCookies = defaultCookies;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultCrossOriginResourceSharing(CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
+        this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultContentSecurityPolicy(ContentSecurityPolicy defaultContentSecurityPolicy) {
+        this.defaultContentSecurityPolicy = defaultContentSecurityPolicy;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultStrictTransportSecurity(StrictTransportSecurity defaultStrictTransportSecurity) {
+        this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
         return this;
     }
 
@@ -208,6 +247,30 @@ public final class HttpServerConfiguration {
 
     public int getMaxChunkedContentLength() {
         return maxChunkedContentLength;
+    }
+
+    public HashSet<Header> getDefaultHeaders() {
+        return defaultHeaders;
+    }
+
+    public HashSet<WWWAuthentication> getDefaultAuthentications() {
+        return defaultAuthentications;
+    }
+
+    public HashSet<Cookie> getDefaultCookies() {
+        return defaultCookies;
+    }
+
+    public CrossOriginResourceSharing getDefaultCrossOriginResourceSharing() {
+        return defaultCrossOriginResourceSharing;
+    }
+
+    public ContentSecurityPolicy getDefaultContentSecurityPolicy() {
+        return defaultContentSecurityPolicy;
+    }
+
+    public StrictTransportSecurity getDefaultStrictTransportSecurity() {
+        return defaultStrictTransportSecurity;
     }
 
     public boolean isDebugEnabled() {
