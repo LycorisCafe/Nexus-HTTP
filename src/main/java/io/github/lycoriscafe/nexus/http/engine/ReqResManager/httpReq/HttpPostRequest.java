@@ -25,17 +25,17 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.io.*;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.zip.GZIPInputStream;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
-    private Content<?> content;
+    private Content content;
 
     public HttpPostRequest(final RequestConsumer requestConsumer,
                            final long requestId,
@@ -44,7 +44,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         super(requestConsumer, requestId, requestMethod, endpoint);
     }
 
-    public Content<?> getContent() {
+    public Content getContent() {
         return content;
     }
 
@@ -61,13 +61,15 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         transferEncoding.contains(TransferEncoding.CHUNKED))) return;
 
                 String value = header.getValue().toLowerCase(Locale.US);
-                switch (value) {
+                if (!switch (value) {
                     case String x when x.startsWith("multipart/form-data") ->
                             processMultiPartFormData(value.split(";")[1].trim().split("=")[1]);
                     case String x when x.startsWith("text/") -> processText(value);
                     case "application/json", "application/xml" -> processText(value);
                     case "application/x-www-form-urlencoded" -> processXWWWFormUrlencoded();
                     default -> processDefault(value);
+                }) {
+                    return;
                 }
 
                 getHeaders().remove(header);
@@ -145,37 +147,115 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return true;
     }
 
-    private void processMultiPartFormData(String boundary) {
-
+    private boolean processMultiPartFormData(String boundary) {
+        return true;
     }
 
-    private void processXWWWFormUrlencoded() {
+    private boolean processXWWWFormUrlencoded() {
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        try {
+            if (transferEncoding != null) {
+                if (transferEncoding.contains(TransferEncoding.CHUNKED)) {
+                    getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                    return false;
+                } else {
+                    byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                            contentLength, true);
+                }
+            }
 
+            if (contentEncoding != null) {
+                if (contentEncoding.contains(ContentEncoding.GZIP)) {
+                    if (byteArrayOutputStream == null) {
+                        byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                                contentLength, true);
+                    } else {
+                        byteArrayOutputStream = readContent(new ByteArrayInputStream(byteArrayOutputStream
+                                .toByteArray()), contentLength, true);
+                    }
+                }
+            } else {
+                byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                        contentLength, false);
+            }
+
+            Map<String, String> data = new HashMap<>();
+            String[] values = byteArrayOutputStream.toString(StandardCharsets.UTF_8).split("&", 0);
+            for (String value : values) {
+                String[] keyVal = value.split("=", 0);
+                data.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
+                        URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
+            }
+
+            content = new Content("application/x-www-form-urlencoded", contentLength, transferEncoding,
+                    contentEncoding, data);
+        } catch (IOException e) {
+            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            return false;
+        }
+
+        return true;
     }
 
-    private void processText(String contentType) {
-        // TODO process
+    private boolean processText(String contentType) {
+        boolean status = processDefault(contentType);
+        if (status) {
+            content.setData(((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8));
+        }
+        return status;
     }
 
-    private void processDefault(String contentType) {
+    private boolean processDefault(String contentType) {
+        ByteArrayOutputStream byteArrayOutputStream = null;
+        try {
+            if (transferEncoding != null) {
+                if (transferEncoding.contains(TransferEncoding.CHUNKED)) {
+                    Path filePath = readChunkedTransfer(getRequestConsumer(),
+                            transferEncoding.contains(TransferEncoding.GZIP));
+                    content = new Content(contentType, contentLength, transferEncoding, contentEncoding, filePath);
+                } else {
+                    byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                            contentLength, true);
+                }
+            }
 
+            if (contentEncoding != null) {
+                if (contentEncoding.contains(ContentEncoding.GZIP)) {
+                    if (byteArrayOutputStream == null) {
+                        byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                                contentLength, true);
+                    } else {
+                        byteArrayOutputStream = readContent(new ByteArrayInputStream(byteArrayOutputStream
+                                .toByteArray()), contentLength, true);
+                    }
+
+                }
+            } else {
+                byteArrayOutputStream = readContent(getRequestConsumer().getSocket().getInputStream(),
+                        contentLength, false);
+            }
+
+            content = new Content(contentType, contentLength, transferEncoding,
+                    contentEncoding, byteArrayOutputStream);
+        } catch (IOException e) {
+            getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+            return false;
+        }
+
+        return true;
     }
 
-    private static ByteArrayOutputStream readContent(final InputStream inputStream,
-                                                     final int contentLength) throws IOException {
+    private static ByteArrayOutputStream readContent(InputStream inputStream,
+                                                     final int contentLength,
+                                                     final boolean gzipped) throws IOException {
+        if (gzipped) inputStream = new GZIPInputStream(inputStream);
         var byteArrayOutputStream = new ByteArrayOutputStream();
         byteArrayOutputStream.writeBytes(inputStream.readNBytes(contentLength));
         return byteArrayOutputStream;
     }
 
-    private static ByteArrayOutputStream readGzipContent(final InputStream inputStream,
-                                                         final int contentLength) throws IOException {
-        var gzipInputStream = new GZIPInputStream(inputStream);
-        return readContent(gzipInputStream, contentLength);
-    }
-
-    private static Path readChunkedTransfer(final List<TransferEncoding> transferEncoding,
-                                            final RequestConsumer requestConsumer) throws IOException {
+    private static Path readChunkedTransfer(final RequestConsumer requestConsumer,
+                                            final boolean gzipped) throws IOException {
         Path filePath = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
                 "ChunkedContent-", null);
 
@@ -183,7 +263,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         int chunkSize;
         InputStream inputStream;
 
-        if (transferEncoding.contains(TransferEncoding.GZIP)) {
+        if (gzipped) {
             inputStream = new GZIPInputStream(requestConsumer.getSocket().getInputStream());
         } else {
             inputStream = requestConsumer.getSocket().getInputStream();

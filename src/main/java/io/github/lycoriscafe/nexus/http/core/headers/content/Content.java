@@ -16,8 +16,48 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-public record Content<T>(String contentType,
-                         long contentLength,
-                         ContentEncoding contentEncoding,
-                         T data) {
+import java.util.List;
+
+public class Content {
+    private final String contentType;
+    private final long contentLength;
+    private final List<TransferEncoding> transferEncodings;
+    private final List<ContentEncoding> contentEncodings;
+    private Object data;
+
+    public Content(String contentType,
+                   long contentLength,
+                   List<TransferEncoding> transferEncodings,
+                   List<ContentEncoding> contentEncodings,
+                   Object data) {
+        this.contentType = contentType;
+        this.contentLength = contentLength;
+        this.transferEncodings = transferEncodings;
+        this.contentEncodings = contentEncodings;
+        this.data = data;
+    }
+
+    public void setData(final Object data) {
+        this.data = data;
+    }
+
+    public String getContentType() {
+        return contentType;
+    }
+
+    public long getContentLength() {
+        return contentLength;
+    }
+
+    public List<TransferEncoding> getTransferEncodings() {
+        return transferEncodings;
+    }
+
+    public List<ContentEncoding> getContentEncodings() {
+        return contentEncodings;
+    }
+
+    public Object getData() {
+        return data;
+    }
 }
