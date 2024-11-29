@@ -36,7 +36,7 @@ public class Content {
     private final long contentLength;
     private final List<TransferEncoding> transferEncodings;
     private final List<ContentEncoding> contentEncodings;
-    private Object data;
+    Object data;
 
     public Content(String contentType,
                    long contentLength,
@@ -47,10 +47,6 @@ public class Content {
         this.contentLength = contentLength;
         this.transferEncodings = transferEncodings;
         this.contentEncodings = contentEncodings;
-        this.data = data;
-    }
-
-    private void setData(final Object data) {
         this.data = data;
     }
 
@@ -144,7 +140,7 @@ public class Content {
         Content content = processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
                 contentLength, contentType);
         if (content != null) {
-            content.setData(((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8));
+            content.data = (((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8));
         }
         return content;
     }
@@ -160,7 +156,7 @@ public class Content {
 
         Content content = processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
                 contentLength, "application/x-www-form-urlencoded");
-        if (content != null) return null;
+        if (content == null) return null;
 
         Map<String, String> data = new HashMap<>();
         String[] values = ((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8)
@@ -170,7 +166,7 @@ public class Content {
             data.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
                     URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
         }
-        content.setData(data);
+        content.data = data;
 
         return content;
     }
