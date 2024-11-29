@@ -21,6 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
+import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 
 import java.net.InetAddress;
@@ -50,9 +51,8 @@ public final class HttpServerConfiguration {
     private HashSet<Cookie> defaultCookies = null;
     private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
+    private ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly = null;
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
-
-    private boolean debugEnabled;
 
     public HttpServerConfiguration(String basePackage) {
         this.basePackage = basePackage;
@@ -169,7 +169,8 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultCrossOriginResourceSharing(CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
+    public HttpServerConfiguration defaultCrossOriginResourceSharing(
+            CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
         this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
         return this;
     }
@@ -179,13 +180,14 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultStrictTransportSecurity(StrictTransportSecurity defaultStrictTransportSecurity) {
-        this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
+    public HttpServerConfiguration defaultContentSecurityPolicyReportOnly(
+            ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
+        this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
         return this;
     }
 
-    public HttpServerConfiguration enableDebug() {
-        debugEnabled = true;
+    public HttpServerConfiguration defaultStrictTransportSecurity(StrictTransportSecurity defaultStrictTransportSecurity) {
+        this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
         return this;
     }
 
@@ -269,11 +271,11 @@ public final class HttpServerConfiguration {
         return defaultContentSecurityPolicy;
     }
 
-    public StrictTransportSecurity getDefaultStrictTransportSecurity() {
-        return defaultStrictTransportSecurity;
+    public ContentSecurityPolicyReportOnly getDefaultContentSecurityPolicyReportOnly() {
+        return defaultContentSecurityPolicyReportOnly;
     }
 
-    public boolean isDebugEnabled() {
-        return debugEnabled;
+    public StrictTransportSecurity getDefaultStrictTransportSecurity() {
+        return defaultStrictTransportSecurity;
     }
 }

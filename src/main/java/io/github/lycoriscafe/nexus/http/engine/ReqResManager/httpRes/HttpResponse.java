@@ -20,49 +20,52 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
-import io.github.lycoriscafe.nexus.http.core.headers.csp.CSPDirective;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 
 public final class HttpResponse {
-    private boolean csproReport;
+    private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    private boolean aborted = false;
+    private final HttpRequest httpRequest;
 
-    private final long RESPONSE_ID;
-    private HttpStatusCode status;
-    private Map<String, HashSet<String>> headers;
-    private HashSet<Cookie> cookies;
-    private HashSet<ContentSecurityPolicy> contentSecurityPolicies;
-    private HashSet<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnlys;
-    private StrictTransportSecurity strictTransportSecurity;
+    private final HttpStatusCode httpStatusCode;
+    private Map<String, HashSet<String>> headers = null;
+    private HashSet<Cookie> cookies = null;
+    private ContentSecurityPolicy contentSecurityPolicy = null;
+    private ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly = null;
+    private StrictTransportSecurity strictTransportSecurity = null;
     private boolean xContentTypeOptionsNoSniff;
-    private CrossOriginResourceSharing crossOriginResourceSharing;
-    private HashSet<WWWAuthentication> wwwAuthentications;
-    private Content content;
+    private CrossOriginResourceSharing crossOriginResourceSharing = null;
+    private HashSet<WWWAuthentication> wwwAuthentications = null;
+    private Content content = null;
 
-    public HttpResponse(long RESPONSE_ID) {
-        this.RESPONSE_ID = RESPONSE_ID;
-    }
-
-    public HttpResponse status(HttpStatusCode status)
-            throws HttpResponseException {
-        if (status == null) {
-            throw new HttpResponseException("http status code cannot be null");
+    public HttpResponse(final HttpRequest httpRequest,
+                        final HttpStatusCode httpStatusCode) {
+        if (httpRequest == null) {
+            throw new NullPointerException("invalid http request passed");
         }
-        this.status = status;
-        return this;
+        this.httpRequest = httpRequest;
+        this.httpStatusCode = httpStatusCode;
     }
 
-    public HttpResponse header(String name,
-                               HashSet<String> values)
-            throws HttpResponseException {
-        if (name == null || values == null) {
-            throw new HttpResponseException("parameters cannot be null");
+    public HttpResponse header(final String name,
+                               final HashSet<String> values) {
+        if (aborted) return this;
+        if (name == null || values == null || values.isEmpty()) {
+            logger.atError().log("invalid header detected, " +
+                    "aborting with " + HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
+            httpRequest.getRequestConsumer().dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
+            aborted = true;
+            return this;
         }
         if (headers == null) {
             headers = new HashMap<>();
@@ -71,10 +74,11 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpResponse cookie(Cookie cookie)
-            throws HttpResponseException {
+    public HttpResponse cookie(final Cookie cookie) {
+        if (aborted) return this;
         if (cookie == null) {
-            throw new HttpResponseException("cookie cannot be null");
+            logger.atDebug().log("cookie with null value detected, ignoring");
+            return this;
         }
         if (cookies == null) {
             cookies = new HashSet<>();
@@ -83,61 +87,57 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpResponse contentSecurityPolicy(ContentSecurityPolicy contentSecurityPolicy)
-            throws HttpResponseException {
+    public HttpResponse contentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
+        if (aborted) return this;
         if (contentSecurityPolicy == null) {
-            throw new HttpResponseException("content-security-policy cannot be null");
+            logger.atDebug().log("content security policy with null value detected, ignoring");
+            return this;
         }
-        if (contentSecurityPolicies == null) {
-            contentSecurityPolicies = new HashSet<>();
-        }
-        contentSecurityPolicies.add(contentSecurityPolicy);
+        this.contentSecurityPolicy = contentSecurityPolicy;
         return this;
     }
 
-    public HttpResponse contentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly)
-            throws HttpResponseException {
+    public HttpResponse contentSecurityPolicy(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
+        if (aborted) return this;
         if (contentSecurityPolicyReportOnly == null) {
-            throw new HttpResponseException("content-security-policy-report-only cannot be null");
+            logger.atDebug().log("content security policy report only with null value detected, ignoring");
+            return this;
         }
-        if (contentSecurityPolicyReportOnlys == null) {
-            contentSecurityPolicyReportOnlys = new HashSet<>();
-        }
-        contentSecurityPolicyReportOnlys.add(contentSecurityPolicyReportOnly);
-        if (contentSecurityPolicyReportOnly.getDirective() == CSPDirective.REPORT_TO ||
-                contentSecurityPolicyReportOnly.getDirective() == CSPDirective.REPORT_URI) {
-            csproReport = true;
-        }
+        this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
         return this;
     }
 
-    public HttpResponse strictTransportSecurity(StrictTransportSecurity strictTransportSecurity)
-            throws HttpResponseException {
+    public HttpResponse strictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
+        if (aborted) return this;
         if (strictTransportSecurity == null) {
-            throw new HttpResponseException("strict-transport-security cannot be null");
+            logger.atDebug().log("strict transport security with null value detected, ignoring");
+            return this;
         }
         this.strictTransportSecurity = strictTransportSecurity;
         return this;
     }
 
-    public HttpResponse xContentTypeOptionsNoSniff(boolean xContentTypeOptionsNoSniff) {
+    public HttpResponse xContentTypeOptionsNoSniff(final boolean xContentTypeOptionsNoSniff) {
+        if (aborted) return this;
         this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
         return this;
     }
 
-    public HttpResponse crossOriginResourceSharing(CrossOriginResourceSharing crossOriginResourceSharing)
-            throws HttpResponseException {
+    public HttpResponse crossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
+        if (aborted) return this;
         if (crossOriginResourceSharing == null) {
-            throw new HttpResponseException("cross origin resource sharing cannot be null");
+            logger.atDebug().log("cross origin resource sharing with null value detected, ignoring");
+            return this;
         }
         this.crossOriginResourceSharing = crossOriginResourceSharing;
         return this;
     }
 
-    public HttpResponse wwwAuthentication(WWWAuthentication wwwAuthentication)
-            throws HttpResponseException {
+    public HttpResponse wwwAuthentication(final WWWAuthentication wwwAuthentication) {
+        if (aborted) return this;
         if (wwwAuthentication == null) {
-            throw new HttpResponseException("www authentication cannot be null");
+            logger.atDebug().log("www authentication with null value detected, ignoring");
+            return this;
         }
         if (wwwAuthentications == null) {
             wwwAuthentications = new HashSet<>();
@@ -146,21 +146,26 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpResponse content(Content content)
-            throws IllegalArgumentException {
+    public HttpResponse content(final Content content) {
+        if (aborted) return this;
         if (content == null) {
-            throw new IllegalArgumentException("Content cannot be null");
+            logger.atDebug().log("content with null value detected, ignoring");
+            return this;
         }
         this.content = content;
         return this;
     }
 
-    public long getResponseId() {
-        return RESPONSE_ID;
+    public boolean isAborted() {
+        return aborted;
     }
 
-    public HttpStatusCode getStatus() {
-        return status;
+    public HttpRequest getHttpRequest() {
+        return httpRequest;
+    }
+
+    public HttpStatusCode getHttpStatusCode() {
+        return httpStatusCode;
     }
 
     public Map<String, HashSet<String>> getHeaders() {
@@ -171,12 +176,12 @@ public final class HttpResponse {
         return cookies;
     }
 
-    public HashSet<ContentSecurityPolicy> getContentSecurityPolicies() {
-        return contentSecurityPolicies;
+    public ContentSecurityPolicy getContentSecurityPolicy() {
+        return contentSecurityPolicy;
     }
 
-    public HashSet<ContentSecurityPolicyReportOnly> getContentSecurityPolicyReportOnlys() {
-        return contentSecurityPolicyReportOnlys;
+    public ContentSecurityPolicyReportOnly getContentSecurityPolicyReportOnly() {
+        return contentSecurityPolicyReportOnly;
     }
 
     public StrictTransportSecurity getStrictTransportSecurity() {
