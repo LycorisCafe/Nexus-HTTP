@@ -134,7 +134,8 @@ public final class HttpResponse {
             return this;
         }
 
-        public HttpResponseBuilder header(String name, List<String> values)
+        public HttpResponseBuilder header(String name,
+                                          List<String> values)
                 throws HttpResponseException {
             if (name == null || values == null) {
                 throw new HttpResponseException("parameters cannot be null");

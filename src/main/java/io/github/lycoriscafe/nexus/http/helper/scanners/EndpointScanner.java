@@ -125,7 +125,7 @@ public final class EndpointScanner {
                                                 null : statusAnnotationValue.toLowerCase(Locale.US) :
                                         statusAnnotationValue
                         )
-                );
+                                        );
             }
         }
     }
