@@ -21,7 +21,9 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpRespons
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -35,7 +37,6 @@ public final class RequestConsumer implements Runnable {
     private final Socket socket;
 
     private final BufferedReader reader;
-    private final BufferedWriter writer;
 
     private long requestId = 0L;
     private final long responseId = 0L;
@@ -50,7 +51,6 @@ public final class RequestConsumer implements Runnable {
         this.socket = socket;
 
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        writer = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), StandardCharsets.UTF_8));
     }
 
     public HttpServerConfiguration getServerConfiguration() {
@@ -67,10 +67,6 @@ public final class RequestConsumer implements Runnable {
 
     public BufferedReader getReader() {
         return reader;
-    }
-
-    public BufferedWriter getWriter() {
-        return writer;
     }
 
     @Override
@@ -116,7 +112,7 @@ public final class RequestConsumer implements Runnable {
         // TODO Handle response and drop connection
     }
 
-    public void send(HttpResponse response) {
+    public void send(final HttpResponse response) {
 
     }
 }

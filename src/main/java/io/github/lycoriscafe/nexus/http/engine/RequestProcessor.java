@@ -45,8 +45,10 @@ public final class RequestProcessor {
         }
 
         HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
-            case CONNECT -> // TODO Implement CONNECT
-                    null;
+            case CONNECT, TRACE -> {
+                requestConsumer.dropConnection(HttpStatusCode.NOT_IMPLEMENTED);
+                yield null;
+            }
             case DELETE -> new HttpDeleteRequest(requestConsumer,
                     requestId, HttpRequestMethod.DELETE, uriDecoder(request[1]));
             case GET -> new HttpGetRequest(requestConsumer,
@@ -61,8 +63,6 @@ public final class RequestProcessor {
                     requestId, HttpRequestMethod.POST, uriDecoder(request[1]));
             case PUT -> new HttpPutRequest(requestConsumer,
                     requestId, HttpRequestMethod.PUT, uriDecoder(request[1]));
-            case TRACE -> // TODO Implement TRACE
-                    null;
             case null -> {
                 requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
                 yield null;

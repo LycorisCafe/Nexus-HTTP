@@ -16,6 +16,9 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
+import java.util.HashSet;
+import java.util.List;
+
 public final class Cookie {
     private final String name;
     private final String value;
@@ -66,8 +69,8 @@ public final class Cookie {
 
     public Cookie sameSite(final CookieSameSite sameSite) throws CookieException {
         if (this.sameSite == null) {
-            throw new CookieException("Same Site cannot be null. " +
-                    "If you need this to be null, just ignore this method.");
+            throw new CookieException(
+                    "Same Site cannot be null. " + "If you need this to be null, just ignore this method.");
         }
         this.sameSite = sameSite;
         return this;
@@ -75,8 +78,8 @@ public final class Cookie {
 
     public Cookie prefix(final CookiePrefix prefix) throws CookieException {
         if (prefix == null) {
-            throw new CookieException("Cookie prefix cannot be null. " +
-                    "If you need this to be null, just ignore this method.");
+            throw new CookieException(
+                    "Cookie prefix cannot be null. " + "If you need this to be null, just ignore this method.");
         }
         this.prefix = prefix;
         return this;
@@ -122,7 +125,7 @@ public final class Cookie {
         return prefix;
     }
 
-    public static Cookie[] processIncomingCookies(String headerValue) {
+    public static Cookie[] processIncomingCookies(final String headerValue) {
         String[] keyVal = headerValue.split(";", 0);
         Cookie[] cookies = new Cookie[keyVal.length];
         for (int i = 0; i < keyVal.length; i++) {
@@ -130,5 +133,21 @@ public final class Cookie {
             cookies[i] = new Cookie(parts[0].trim(), parts[1].trim());
         }
         return cookies;
+    }
+
+    public static String processOutgoingCookies(final HashSet<Cookie> cookies) {
+        if (cookies == null || cookies.isEmpty()) {
+            return "";
+        }
+
+        List<Cookie> cookieList = cookies.stream().toList();
+        StringBuilder output = new StringBuilder("Set-Cookie: ");
+        for (int i = 0; i < cookies.size(); i++) {
+            output.append(cookieList.get(i).getName()).append("=").append(cookieList.get(i).getValue());
+            if (i != cookies.size() - 1) {
+                output.append("; ");
+            }
+        }
+        return output.append("\r\n").toString();
     }
 }

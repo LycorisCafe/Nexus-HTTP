@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
@@ -28,24 +29,22 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.List;
 
 public final class HttpResponse {
     private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private boolean aborted = false;
     private final HttpRequest httpRequest;
 
     private final HttpStatusCode httpStatusCode;
-    private Map<String, HashSet<String>> headers = null;
-    private HashSet<Cookie> cookies = null;
-    private ContentSecurityPolicy contentSecurityPolicy = null;
-    private ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly = null;
-    private StrictTransportSecurity strictTransportSecurity = null;
+    private HashSet<Header> headers;
+    private HashSet<Cookie> cookies;
+    private ContentSecurityPolicy contentSecurityPolicy;
+    private ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly;
+    private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
-    private CrossOriginResourceSharing crossOriginResourceSharing = null;
-    private HashSet<WWWAuthentication> wwwAuthentications = null;
+    private CrossOriginResourceSharing crossOriginResourceSharing;
+    private HashSet<WWWAuthentication> wwwAuthentications;
     private Content content = null;
 
     public HttpResponse(final HttpRequest httpRequest,
@@ -53,31 +52,45 @@ public final class HttpResponse {
         if (httpRequest == null) {
             throw new NullPointerException("invalid http request passed");
         }
+        if (httpStatusCode == null) {
+            throw new NullPointerException("invalid httpStatusCode passed");
+        }
+
         this.httpRequest = httpRequest;
         this.httpStatusCode = httpStatusCode;
+
+        headers = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultHeaders();
+        cookies = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCookies();
+        contentSecurityPolicy =
+                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultContentSecurityPolicy();
+        contentSecurityPolicyReportOnly =
+                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
+        strictTransportSecurity =
+                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultStrictTransportSecurity();
+        xContentTypeOptionsNoSniff =
+                httpRequest.getRequestConsumer().getServerConfiguration().isxContentTypeOptionsNoSniff();
+        crossOriginResourceSharing =
+                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCrossOriginResourceSharing();
+        wwwAuthentications = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultAuthentications();
     }
 
-    public HttpResponse header(final String name,
-                               final HashSet<String> values) {
-        if (aborted) return this;
-        if (name == null || values == null || values.isEmpty()) {
-            logger.atError().log("invalid header detected, " +
-                    "aborting with " + HttpStatusCode.INTERNAL_SERVER_ERROR.getStatusCode());
-            httpRequest.getRequestConsumer().dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
-            aborted = true;
+    public HttpResponse header(final Header header) {
+        if (header == null) {
+            logger.atDebug().log("header with null value detected, resetting global settings");
+            headers = null;
             return this;
         }
         if (headers == null) {
-            headers = new HashMap<>();
+            headers = new HashSet<>();
         }
-        headers.put(name, values);
+        headers.add(header);
         return this;
     }
 
     public HttpResponse cookie(final Cookie cookie) {
-        if (aborted) return this;
         if (cookie == null) {
-            logger.atDebug().log("cookie with null value detected, ignoring");
+            logger.atDebug().log("cookie with null value detected, resetting global settings");
+            cookies = null;
             return this;
         }
         if (cookies == null) {
@@ -88,9 +101,8 @@ public final class HttpResponse {
     }
 
     public HttpResponse contentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
-        if (aborted) return this;
         if (contentSecurityPolicy == null) {
-            logger.atDebug().log("content security policy with null value detected, ignoring");
+            logger.atDebug().log("content security policy with null value detected, resetting global settings");
             return this;
         }
         this.contentSecurityPolicy = contentSecurityPolicy;
@@ -98,9 +110,9 @@ public final class HttpResponse {
     }
 
     public HttpResponse contentSecurityPolicy(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
-        if (aborted) return this;
         if (contentSecurityPolicyReportOnly == null) {
-            logger.atDebug().log("content security policy report only with null value detected, ignoring");
+            logger.atDebug()
+                    .log("content security policy report only with null value detected, resetting global settings");
             return this;
         }
         this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
@@ -108,9 +120,8 @@ public final class HttpResponse {
     }
 
     public HttpResponse strictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
-        if (aborted) return this;
         if (strictTransportSecurity == null) {
-            logger.atDebug().log("strict transport security with null value detected, ignoring");
+            logger.atDebug().log("strict transport security with null value detected, resetting global settings");
             return this;
         }
         this.strictTransportSecurity = strictTransportSecurity;
@@ -118,15 +129,13 @@ public final class HttpResponse {
     }
 
     public HttpResponse xContentTypeOptionsNoSniff(final boolean xContentTypeOptionsNoSniff) {
-        if (aborted) return this;
         this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
         return this;
     }
 
     public HttpResponse crossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
-        if (aborted) return this;
         if (crossOriginResourceSharing == null) {
-            logger.atDebug().log("cross origin resource sharing with null value detected, ignoring");
+            logger.atDebug().log("cross origin resource sharing with null value detected, resetting global settings");
             return this;
         }
         this.crossOriginResourceSharing = crossOriginResourceSharing;
@@ -134,9 +143,8 @@ public final class HttpResponse {
     }
 
     public HttpResponse wwwAuthentication(final WWWAuthentication wwwAuthentication) {
-        if (aborted) return this;
         if (wwwAuthentication == null) {
-            logger.atDebug().log("www authentication with null value detected, ignoring");
+            logger.atDebug().log("www authentication with null value detected, resetting global settings");
             return this;
         }
         if (wwwAuthentications == null) {
@@ -147,17 +155,12 @@ public final class HttpResponse {
     }
 
     public HttpResponse content(final Content content) {
-        if (aborted) return this;
         if (content == null) {
-            logger.atDebug().log("content with null value detected, ignoring");
+            logger.atDebug().log("content with null value detected, resetting global settings");
             return this;
         }
         this.content = content;
         return this;
-    }
-
-    public boolean isAborted() {
-        return aborted;
     }
 
     public HttpRequest getHttpRequest() {
@@ -168,12 +171,12 @@ public final class HttpResponse {
         return httpStatusCode;
     }
 
-    public Map<String, HashSet<String>> getHeaders() {
-        return headers;
+    public List<Header> getHeaders() {
+        return headers.stream().toList();
     }
 
-    public HashSet<Cookie> getCookies() {
-        return cookies;
+    public List<Cookie> getCookies() {
+        return cookies.stream().toList();
     }
 
     public ContentSecurityPolicy getContentSecurityPolicy() {
@@ -196,11 +199,25 @@ public final class HttpResponse {
         return crossOriginResourceSharing;
     }
 
-    public HashSet<WWWAuthentication> getWWWAuthentications() {
-        return wwwAuthentications;
+    public List<WWWAuthentication> getWWWAuthentications() {
+        return wwwAuthentications.stream().toList();
     }
 
     public Content getContent() {
         return content;
+    }
+
+    public String finalizeResponse() {
+
+        String stringBuilder = "HTTP/1.1" + " " + httpStatusCode.getStatusCode() + "\r\n" +
+                "Server:" + " " + "nexus-http/1.0.0" + "\r\n" +
+                "Connection:" + " " + "keep-alive" + "\r\n" +
+                Header.processOutgoingHeader(headers) +
+                Cookie.processOutgoingCookies(cookies) +
+                ContentSecurityPolicy
+                        .processOutgoingCsp(contentSecurityPolicy, contentSecurityPolicyReportOnly);
+
+
+        return stringBuilder;
     }
 }

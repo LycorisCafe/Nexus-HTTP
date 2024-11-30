@@ -38,16 +38,6 @@ public final class MultiPartFormData {
     private MultiPartFormData() {
     }
 
-    public MultiPartFormData(final String name,
-                             final String fileName,
-                             final Map<String, String> parameters,
-                             final Object data) {
-        this.name = name;
-        this.fileName = fileName;
-        this.parameters = parameters;
-        this.data = data;
-    }
-
     public String getName() {
         return name;
     }
@@ -79,7 +69,7 @@ public final class MultiPartFormData {
                 contentLength, "multipart/form-data");
         if (content == null) return null;
 
-        List<MultiPartFormData> data = new ArrayList<>();
+        HashSet<MultiPartFormData> data = new HashSet<>();
         ByteArrayInputStream byteArrayInputStream =
                 new ByteArrayInputStream(((ByteArrayOutputStream) content.getData()).toByteArray());
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(byteArrayInputStream));

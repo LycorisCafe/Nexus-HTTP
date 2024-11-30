@@ -53,6 +53,7 @@ public final class HttpServerConfiguration {
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
     private ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly = null;
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
+    private boolean xContentTypeOptionsNoSniff;
 
     public HttpServerConfiguration(String basePackage) {
         this.basePackage = basePackage;
@@ -191,6 +192,11 @@ public final class HttpServerConfiguration {
         return this;
     }
 
+    public HttpServerConfiguration xContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
+        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
+        return this;
+    }
+
     public int getPort() {
         return port;
     }
@@ -277,5 +283,9 @@ public final class HttpServerConfiguration {
 
     public StrictTransportSecurity getDefaultStrictTransportSecurity() {
         return defaultStrictTransportSecurity;
+    }
+
+    public boolean isxContentTypeOptionsNoSniff() {
+        return xContentTypeOptionsNoSniff;
     }
 }

@@ -33,21 +33,25 @@ import java.util.zip.GZIPInputStream;
 
 public final class Content {
     private final String contentType;
-    private final long contentLength;
-    private final HashSet<TransferEncoding> transferEncodings;
-    private final HashSet<ContentEncoding> contentEncodings;
+    private long contentLength;
+    private HashSet<TransferEncoding> transferEncodings;
+    private HashSet<ContentEncoding> contentEncodings;
     Object data;
 
     public Content(final String contentType,
-                   final long contentLength,
-                   final HashSet<TransferEncoding> transferEncodings,
-                   final HashSet<ContentEncoding> contentEncodings,
                    final Object data) {
         this.contentType = contentType;
-        this.contentLength = contentLength;
-        this.transferEncodings = transferEncodings;
-        this.contentEncodings = contentEncodings;
         this.data = data;
+    }
+
+    public Content setTransferEncodings(HashSet<TransferEncoding> transferEncodings) {
+        this.transferEncodings = transferEncodings;
+        return this;
+    }
+
+    public Content setContentEncodings(HashSet<ContentEncoding> contentEncodings) {
+        this.contentEncodings = contentEncodings;
+        return this;
     }
 
     public String getContentType() {
@@ -182,7 +186,11 @@ public final class Content {
             if (transferEncoding != null) {
                 if (transferEncoding.contains(TransferEncoding.CHUNKED)) {
                     Path filePath = readTransfer(requestConsumer, transferEncoding.contains(TransferEncoding.GZIP));
-                    return new Content(contentType, contentLength, transferEncoding, contentEncoding, filePath);
+                    content = new Content(contentType, filePath);
+                    content.contentLength = contentLength;
+                    content.transferEncodings = transferEncoding;
+                    content.contentEncodings = contentEncoding;
+                    return content;
                 } else {
                     byteArrayOutputStream = readContent(requestConsumer.getSocket().getInputStream(),
                             contentLength, true);
@@ -205,8 +213,10 @@ public final class Content {
                         contentLength, false);
             }
 
-            content = new Content(contentType, contentLength, transferEncoding,
-                    contentEncoding, byteArrayOutputStream);
+            content = new Content(contentType, byteArrayOutputStream);
+            content.contentLength = contentLength;
+            content.transferEncodings = transferEncoding;
+            content.contentEncodings = contentEncoding;
         } catch (IOException e) {
             requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
             return null;

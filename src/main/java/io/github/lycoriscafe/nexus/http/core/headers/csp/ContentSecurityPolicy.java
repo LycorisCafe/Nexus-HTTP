@@ -18,6 +18,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnly {
@@ -59,5 +60,68 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
 
     public Map<String, String> getReportingEndpoint() {
         return reportingEndpoint;
+    }
+
+    public static String processOutgoingCsp(ContentSecurityPolicy contentSecurityPolicy,
+                                            final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
+        StringBuilder output = new StringBuilder();
+        StringBuilder reportEndpoint = null;
+        StringBuilder tempOutput = null;
+
+        for (int j = 0; true; j++) {
+            StringBuilder csp = new StringBuilder();
+
+            if (j == 1) {
+                contentSecurityPolicy = contentSecurityPolicyReportOnly;
+            }
+
+            if (contentSecurityPolicy != null) {
+                csp.append("Content-Security-Policy").append(j == 1 ? "-Report-Only" : "").append(":");
+                for (CSPDirective directive : contentSecurityPolicy.getPolicy().keySet()) {
+                    csp.append(" ").append(directive.getName());
+
+                    List<String> values = contentSecurityPolicy.getPolicy().get(directive).stream().toList();
+                    for (int i = 0; i < values.size(); i++) {
+                        csp.append(" ").append(values.get(i));
+
+                        if (i != values.size() - 1) {
+                            csp.append(";");
+                        }
+                    }
+                }
+
+                if (contentSecurityPolicy.getReportingEndpoint() != null) {
+                    if (reportEndpoint == null) {
+                        reportEndpoint = new StringBuilder().append("Reporting-Endpoints:").append(" ");
+                    } else {
+                        reportEndpoint.append(" ");
+                    }
+
+                    csp.append(";").append(" ").append("report-to");
+                    List<String> keys = contentSecurityPolicy.getReportingEndpoint().keySet().stream().toList();
+                    for (int i = 0; i < contentSecurityPolicy.getReportingEndpoint().size(); i++) {
+                        csp.append(" ").append(keys.get(i));
+                        reportEndpoint.append(" ").append(keys.get(i)).append("=").append("\"")
+                                .append(contentSecurityPolicy.getReportingEndpoint().get(keys.get(i))).append("\"");
+
+                        if (i != keys.size() - 1) {
+                            reportEndpoint.append(",");
+                        }
+                    }
+                }
+
+                csp.append("\r\n");
+            }
+
+            if (j == 1) {
+                if (reportEndpoint != null) {
+                    output.append(reportEndpoint).append("\r\n");
+                }
+                return output.append(tempOutput).append("\r\n")
+                        .append(csp).append("\r\n").toString();
+            }
+
+            tempOutput = csp;
+        }
     }
 }
