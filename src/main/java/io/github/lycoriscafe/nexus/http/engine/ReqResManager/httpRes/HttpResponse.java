@@ -18,6 +18,7 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
+import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
@@ -45,6 +46,7 @@ public final class HttpResponse {
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
     private HashSet<WWWAuthentication> wwwAuthentications;
+    private CacheControl cacheControl;
     private Content content = null;
 
     public HttpResponse(final HttpRequest httpRequest,
@@ -103,6 +105,7 @@ public final class HttpResponse {
     public HttpResponse contentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
         if (contentSecurityPolicy == null) {
             logger.atDebug().log("content security policy with null value detected, resetting global settings");
+            this.contentSecurityPolicy = null;
             return this;
         }
         this.contentSecurityPolicy = contentSecurityPolicy;
@@ -113,6 +116,7 @@ public final class HttpResponse {
         if (contentSecurityPolicyReportOnly == null) {
             logger.atDebug()
                     .log("content security policy report only with null value detected, resetting global settings");
+            this.contentSecurityPolicyReportOnly = null;
             return this;
         }
         this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
@@ -122,6 +126,7 @@ public final class HttpResponse {
     public HttpResponse strictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
         if (strictTransportSecurity == null) {
             logger.atDebug().log("strict transport security with null value detected, resetting global settings");
+            this.strictTransportSecurity = null;
             return this;
         }
         this.strictTransportSecurity = strictTransportSecurity;
@@ -136,6 +141,7 @@ public final class HttpResponse {
     public HttpResponse crossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
         if (crossOriginResourceSharing == null) {
             logger.atDebug().log("cross origin resource sharing with null value detected, resetting global settings");
+            this.crossOriginResourceSharing = null;
             return this;
         }
         this.crossOriginResourceSharing = crossOriginResourceSharing;
@@ -145,12 +151,23 @@ public final class HttpResponse {
     public HttpResponse wwwAuthentication(final WWWAuthentication wwwAuthentication) {
         if (wwwAuthentication == null) {
             logger.atDebug().log("www authentication with null value detected, resetting global settings");
+            this.wwwAuthentications = null;
             return this;
         }
         if (wwwAuthentications == null) {
             wwwAuthentications = new HashSet<>();
         }
         wwwAuthentications.add(wwwAuthentication);
+        return this;
+    }
+
+    public HttpResponse cashControl(final CacheControl cacheControl) {
+        if (cacheControl == null) {
+            logger.atDebug().log("cache control with null value detected, resetting global settings");
+            this.cacheControl = null;
+            return this;
+        }
+        this.cacheControl = cacheControl;
         return this;
     }
 
@@ -203,6 +220,10 @@ public final class HttpResponse {
         return wwwAuthentications.stream().toList();
     }
 
+    public CacheControl getCacheControl() {
+        return cacheControl;
+    }
+
     public Content getContent() {
         return content;
     }
@@ -217,7 +238,10 @@ public final class HttpResponse {
                 .append(Cookie.processOutgoingCookies(cookies))
                 .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
                         contentSecurityPolicyReportOnly))
-                .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity));
+                .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
+                .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
+                .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
+                .append(CacheControl.processOutgoingCacheControl(cacheControl));
 
         if (xContentTypeOptionsNoSniff) {
             output.append("X-Content-Type-Options: nosniff").append("\r\n");

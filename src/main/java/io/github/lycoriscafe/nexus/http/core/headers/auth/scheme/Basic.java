@@ -14,24 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers.auth;
+package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme;
 
-import java.util.HashSet;
-
-public class WWWAuthentication {
-    private final AuthScheme authScheme;
-
-    public WWWAuthentication(final AuthScheme authScheme) {
-        this.authScheme = authScheme;
-    }
-
-    public AuthScheme getAuthScheme() {
-        return authScheme;
-    }
-
-    public static String processOutgoingAuth(final HashSet<WWWAuthentication> wwwAuthentications) {
-        if (wwwAuthentications == null || wwwAuthentications.isEmpty()) return "";
-        // TODO implement
-        return "";
-    }
+public class Basic {
 }

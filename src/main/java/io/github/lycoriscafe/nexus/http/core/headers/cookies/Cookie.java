@@ -159,7 +159,7 @@ public final class Cookie {
                     .append(cookie.isHttpOnly() ? "; HttpOnly" : "")
                     .append(cookie.getDomain() != null ? "; Domain=" + cookie.getDomain() : "")
                     .append(cookie.getPath() != null ? "; Path=" + cookie.getPath() : "")
-                    .append(cookie.getSameSite() != null ? "; SameSite=" + cookie.getSameSite() : "")
+                    .append(cookie.getSameSite() != null ? "; SameSite=" + cookie.getSameSite().getValue() : "")
                     .append("\r\n");
         }
         return output.toString();
