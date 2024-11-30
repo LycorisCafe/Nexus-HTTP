@@ -74,6 +74,7 @@ public final class HttpResponse {
         crossOriginResourceSharing =
                 httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCrossOriginResourceSharing();
         wwwAuthentications = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultAuthentications();
+        cacheControl = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCacheControl();
     }
 
     public HttpResponse header(final Header header) {
@@ -229,19 +230,18 @@ public final class HttpResponse {
     }
 
     public String finalizeResponse() {
-        StringBuilder output = new StringBuilder()
-                .append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode()).append("\r\n")
-                .append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
-                .append("Connection:").append(" ").append("keep-alive").append("\r\n")
+        StringBuilder output =
+                new StringBuilder().append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode()).append("\r\n")
+                        .append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n").append("Connection:")
+                        .append(" ").append("keep-alive").append("\r\n")
 
-                .append(Header.processOutgoingHeader(headers))
-                .append(Cookie.processOutgoingCookies(cookies))
-                .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
-                        contentSecurityPolicyReportOnly))
-                .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
-                .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
-                .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
-                .append(CacheControl.processOutgoingCacheControl(cacheControl));
+                        .append(Header.processOutgoingHeader(headers)).append(Cookie.processOutgoingCookies(cookies))
+                        .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
+                                contentSecurityPolicyReportOnly))
+                        .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
+                        .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
+                        .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
+                        .append(CacheControl.processOutgoingCacheControl(cacheControl));
 
         if (xContentTypeOptionsNoSniff) {
             output.append("X-Content-Type-Options: nosniff").append("\r\n");

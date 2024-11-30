@@ -18,6 +18,7 @@ package io.github.lycoriscafe.nexus.http.helper.configuration;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
+import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
@@ -53,33 +54,34 @@ public final class HttpServerConfiguration {
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
     private ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly = null;
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
+    private CacheControl defaultCacheControl = null;
     private boolean xContentTypeOptionsNoSniff;
 
-    public HttpServerConfiguration(String basePackage) {
+    public HttpServerConfiguration(final String basePackage) {
         this.basePackage = basePackage;
     }
 
-    public HttpServerConfiguration port(int port) {
+    public HttpServerConfiguration port(final int port) {
         this.port = port;
         return this;
     }
 
-    public HttpServerConfiguration backlog(int backlog) {
+    public HttpServerConfiguration backlog(final int backlog) {
         this.backlog = backlog;
         return this;
     }
 
-    public HttpServerConfiguration inetAddress(InetAddress inetAddress) {
+    public HttpServerConfiguration inetAddress(final InetAddress inetAddress) {
         this.inetAddress = inetAddress;
         return this;
     }
 
-    public HttpServerConfiguration connectionTimeout(int connectionTimeout) {
+    public HttpServerConfiguration connectionTimeout(final int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
 
-    public HttpServerConfiguration threadType(ThreadType threadType)
+    public HttpServerConfiguration threadType(final ThreadType threadType)
             throws HttpServerConfigurationException {
         if (threadType == null) {
             throw new HttpServerConfigurationException("thread type cannot be null");
@@ -88,29 +90,29 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration tempDirectory(String tempDirectory) {
+    public HttpServerConfiguration tempDirectory(final String tempDirectory) {
         if (tempDirectory != null) {
             this.tempDirectory = tempDirectory;
         }
         return this;
     }
 
-    public HttpServerConfiguration staticFilesDirectory(String staticFilesDirectory) {
+    public HttpServerConfiguration staticFilesDirectory(final String staticFilesDirectory) {
         this.staticFilesDirectory = staticFilesDirectory;
         return this;
     }
 
-    public HttpServerConfiguration databaseLocation(String databaseLocation) {
+    public HttpServerConfiguration databaseLocation(final String databaseLocation) {
         this.databaseLocation = databaseLocation;
         return this;
     }
 
-    public HttpServerConfiguration ignoreEndpointCases(boolean ignoreEndpointCases) {
+    public HttpServerConfiguration ignoreEndpointCases(final boolean ignoreEndpointCases) {
         this.ignoreEndpointCases = ignoreEndpointCases;
         return this;
     }
 
-    public HttpServerConfiguration maxHeadersPerRequest(int maxHeadersPerRequest)
+    public HttpServerConfiguration maxHeadersPerRequest(final int maxHeadersPerRequest)
             throws HttpServerConfigurationException {
         if (maxHeadersPerRequest < 2) {
             throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
@@ -119,7 +121,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxIncomingConnections(int maxIncomingConnections)
+    public HttpServerConfiguration maxIncomingConnections(final int maxIncomingConnections)
             throws HttpServerConfigurationException {
         if (maxIncomingConnections < 1) {
             throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
@@ -128,7 +130,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration pipelineParallelProcesses(int pipelineParallelProcesses)
+    public HttpServerConfiguration pipelineParallelProcesses(final int pipelineParallelProcesses)
             throws HttpServerConfigurationException {
         if (pipelineParallelProcesses < 1) {
             throw new HttpServerConfigurationException("pipeline processes count cannot be less than 1");
@@ -137,7 +139,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxContentLength(int maxContentLength)
+    public HttpServerConfiguration maxContentLength(final int maxContentLength)
             throws HttpServerConfigurationException {
         if (maxContentLength < 1) {
             throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
@@ -146,7 +148,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxChunkedContentLength(int maxChunkedContentLength)
+    public HttpServerConfiguration maxChunkedContentLength(final int maxChunkedContentLength)
             throws HttpServerConfigurationException {
         if (maxChunkedContentLength < 1) {
             throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
@@ -155,40 +157,47 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultHeaders(HashSet<Header> defaultHeaders) {
+    public HttpServerConfiguration defaultHeaders(final HashSet<Header> defaultHeaders) {
         this.defaultHeaders = defaultHeaders;
         return this;
     }
 
-    public HttpServerConfiguration defaultAuthentications(HashSet<WWWAuthentication> defaultAuthentications) {
+    public HttpServerConfiguration defaultAuthentications(final HashSet<WWWAuthentication> defaultAuthentications) {
         this.defaultAuthentications = defaultAuthentications;
         return this;
     }
 
-    public HttpServerConfiguration defaultCookies(HashSet<Cookie> defaultCookies) {
+    public HttpServerConfiguration defaultCookies(final HashSet<Cookie> defaultCookies) {
         this.defaultCookies = defaultCookies;
         return this;
     }
 
     public HttpServerConfiguration defaultCrossOriginResourceSharing(
-            CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
+            final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
         this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
         return this;
     }
 
-    public HttpServerConfiguration defaultContentSecurityPolicy(ContentSecurityPolicy defaultContentSecurityPolicy) {
+    public HttpServerConfiguration defaultContentSecurityPolicy(
+            final ContentSecurityPolicy defaultContentSecurityPolicy) {
         this.defaultContentSecurityPolicy = defaultContentSecurityPolicy;
         return this;
     }
 
     public HttpServerConfiguration defaultContentSecurityPolicyReportOnly(
-            ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
+            final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
         this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
         return this;
     }
 
-    public HttpServerConfiguration defaultStrictTransportSecurity(StrictTransportSecurity defaultStrictTransportSecurity) {
+    public HttpServerConfiguration defaultStrictTransportSecurity(
+            final StrictTransportSecurity defaultStrictTransportSecurity) {
         this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
+        return this;
+    }
+
+    public HttpServerConfiguration defaultCacheControl(final CacheControl cacheControl) {
+        this.defaultCacheControl = cacheControl;
         return this;
     }
 
@@ -283,6 +292,10 @@ public final class HttpServerConfiguration {
 
     public StrictTransportSecurity getDefaultStrictTransportSecurity() {
         return defaultStrictTransportSecurity;
+    }
+
+    public CacheControl getDefaultCacheControl() {
+        return defaultCacheControl;
     }
 
     public boolean isxContentTypeOptionsNoSniff() {
