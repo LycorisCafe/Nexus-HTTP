@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.cors;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 
 import java.util.HashSet;
+import java.util.List;
 
 public final class CrossOriginResourceSharing {
     private String accessControlAllowOrigin;
@@ -83,11 +84,11 @@ public final class CrossOriginResourceSharing {
         return accessControlAllowCredentials;
     }
 
-    public HashSet<HttpRequestMethod> getAccessControlAllowMethods() {
-        return accessControlAllowMethods;
+    public List<HttpRequestMethod> getAccessControlAllowMethods() {
+        return accessControlAllowMethods.stream().toList();
     }
 
-    public HashSet<String> getAccessControlAllowHeaders() {
-        return accessControlAllowHeaders;
+    public List<String> getAccessControlAllowHeaders() {
+        return accessControlAllowHeaders.stream().toList();
     }
 }

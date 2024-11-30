@@ -141,13 +141,27 @@ public final class Cookie {
         }
 
         List<Cookie> cookieList = cookies.stream().toList();
-        StringBuilder output = new StringBuilder("Set-Cookie: ");
+        StringBuilder output = new StringBuilder();
         for (int i = 0; i < cookies.size(); i++) {
-            output.append(cookieList.get(i).getName()).append("=").append(cookieList.get(i).getValue());
-            if (i != cookies.size() - 1) {
-                output.append("; ");
+            Cookie cookie = cookieList.get(i);
+            if (cookie.getPrefix() != null) {
+                output.append(cookie.getPrefix());
+                cookie.secure(true);
+                if (cookie.getPrefix() == CookiePrefix.HOST) {
+                    cookie.path("/");
+                }
             }
+
+            output.append("Set-Cookie: ").append(cookie.getName()).append("=").append(cookie.getValue())
+                    .append(cookie.getExpires() != null ? "; Expires=" + cookie.getExpires() : "")
+                    .append(cookie.getMaxAge() > 0 ? "; Max-Age=" + cookie.getMaxAge() : "")
+                    .append(cookie.isSecure() ? "; Secure" : "")
+                    .append(cookie.isHttpOnly() ? "; HttpOnly" : "")
+                    .append(cookie.getDomain() != null ? "; Domain=" + cookie.getDomain() : "")
+                    .append(cookie.getPath() != null ? "; Path=" + cookie.getPath() : "")
+                    .append(cookie.getSameSite() != null ? "; SameSite=" + cookie.getSameSite() : "")
+                    .append("\r\n");
         }
-        return output.append("\r\n").toString();
+        return output.toString();
     }
 }
