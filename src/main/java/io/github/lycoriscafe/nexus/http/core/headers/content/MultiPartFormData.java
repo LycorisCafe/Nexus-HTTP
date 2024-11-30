@@ -65,8 +65,9 @@ public final class MultiPartFormData {
             return null;
         }
 
-        Content content = Content.processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
-                contentLength, "multipart/form-data");
+        Content content =
+                Content.ReadOperations.processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
+                        contentLength, "multipart/form-data");
         if (content == null) return null;
 
         HashSet<MultiPartFormData> data = new HashSet<>();

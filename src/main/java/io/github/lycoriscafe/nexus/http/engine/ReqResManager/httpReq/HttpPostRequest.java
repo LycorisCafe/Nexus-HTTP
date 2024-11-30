@@ -59,17 +59,16 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                     case String x when x.startsWith("multipart/form-data") ->
                             MultiPartFormData.process(getRequestConsumer(), transferEncoding, contentEncoding,
                                     contentLength, value.split(";")[1].trim().split("=")[1]);
-                    case String x when x.startsWith("text/") ->
-                            Content.processText(getRequestConsumer(), transferEncoding, contentEncoding,
-                                    contentLength, value);
+                    case String x when x.startsWith("text/") -> Content.ReadOperations.processText(getRequestConsumer(),
+                            transferEncoding, contentEncoding, contentLength, value);
                     case "application/json", "application/xml" ->
-                            Content.processText(getRequestConsumer(), transferEncoding, contentEncoding,
+                            Content.ReadOperations.processText(getRequestConsumer(), transferEncoding, contentEncoding,
                                     contentLength, value);
                     case "application/x-www-form-urlencoded" ->
-                            Content.processXWWWFormUrlencoded(getRequestConsumer(), transferEncoding, contentEncoding,
-                                    contentLength);
-                    default -> Content.processCommonContentType(getRequestConsumer(), transferEncoding, contentEncoding,
-                            contentLength, value);
+                            Content.ReadOperations.processXWWWFormUrlencoded(getRequestConsumer(), transferEncoding,
+                                    contentEncoding, contentLength);
+                    default -> Content.ReadOperations.processCommonContentType(getRequestConsumer(), transferEncoding,
+                            contentEncoding, contentLength, value);
                 };
 
                 if (content == null) return;

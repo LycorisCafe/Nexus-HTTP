@@ -24,6 +24,7 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfigura
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -112,7 +113,14 @@ public final class RequestConsumer implements Runnable {
         // TODO Handle response and drop connection
     }
 
-    public void send(final HttpResponse response) {
+    public void send(final HttpResponse httpResponse) {
+        try {
+            OutputStream outputStream = socket.getOutputStream();
+            outputStream.write(httpResponse.finalizeResponse().getBytes(StandardCharsets.UTF_8));
 
+            // TODO process content
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
