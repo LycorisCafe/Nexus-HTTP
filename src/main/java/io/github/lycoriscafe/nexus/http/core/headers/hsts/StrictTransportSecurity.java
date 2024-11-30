@@ -50,4 +50,20 @@ public final class StrictTransportSecurity {
     public boolean isPreload() {
         return preload;
     }
+
+    public static String processOutgoingHSTS(final StrictTransportSecurity hsts) {
+        if (hsts == null) {
+            return "";
+        }
+
+        StringBuilder output = new StringBuilder();
+        output.append(hsts.maxAge);
+        if (hsts.preload) {
+            return output.append("; includeSubDomains").append("; preload").append("\r\n").toString();
+        }
+        if (hsts.includeSubdomains) {
+            return output.append("; includeSubDomains").append("\r\n").toString();
+        }
+        return output.append("\r\n").toString();
+    }
 }

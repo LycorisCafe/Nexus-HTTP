@@ -208,16 +208,21 @@ public final class HttpResponse {
     }
 
     public String finalizeResponse() {
+        StringBuilder output = new StringBuilder()
+                .append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode()).append("\r\n")
+                .append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
+                .append("Connection:").append(" ").append("keep-alive").append("\r\n")
 
-        String stringBuilder = "HTTP/1.1" + " " + httpStatusCode.getStatusCode() + "\r\n" +
-                "Server:" + " " + "nexus-http/1.0.0" + "\r\n" +
-                "Connection:" + " " + "keep-alive" + "\r\n" +
-                Header.processOutgoingHeader(headers) +
-                Cookie.processOutgoingCookies(cookies) +
-                ContentSecurityPolicy
-                        .processOutgoingCsp(contentSecurityPolicy, contentSecurityPolicyReportOnly);
+                .append(Header.processOutgoingHeader(headers))
+                .append(Cookie.processOutgoingCookies(cookies))
+                .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
+                        contentSecurityPolicyReportOnly))
+                .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity));
 
+        if (xContentTypeOptionsNoSniff) {
+            output.append("X-Content-Type-Options: nosniff").append("\r\n");
+        }
 
-        return stringBuilder;
+        return output.toString();
     }
 }
