@@ -46,6 +46,7 @@ public final class HttpServerConfiguration {
     private int pipelineParallelProcesses = 1;
     private int maxContentLength = 5_242_880;
     private int maxChunkedContentLength = 104_857_600;
+    private int maxChunkSize = 5_242_880;
 
     private HashSet<Header> defaultHeaders = null;
     private HashSet<WWWAuthentication> defaultAuthentications = null;
@@ -157,6 +158,14 @@ public final class HttpServerConfiguration {
         return this;
     }
 
+    public HttpServerConfiguration maxChunkSize(final int maxChunkSize) throws HttpServerConfigurationException {
+        if (maxChunkSize < 1) {
+            throw new HttpServerConfigurationException("max chunk size cannot be less than 1 (bytes)");
+        }
+        this.maxChunkSize = maxChunkSize;
+        return this;
+    }
+
     public HttpServerConfiguration defaultHeaders(final HashSet<Header> defaultHeaders) {
         this.defaultHeaders = defaultHeaders;
         return this;
@@ -264,6 +273,10 @@ public final class HttpServerConfiguration {
 
     public int getMaxChunkedContentLength() {
         return maxChunkedContentLength;
+    }
+
+    public int getMaxChunkSize() {
+        return maxChunkSize;
     }
 
     public HashSet<Header> getDefaultHeaders() {

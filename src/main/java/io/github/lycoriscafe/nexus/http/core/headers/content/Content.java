@@ -31,6 +31,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public final class Content {
     private final String contentType;
@@ -63,13 +64,19 @@ public final class Content {
         return this;
     }
 
-    public Content setTransferEncodings(HashSet<TransferEncoding> transferEncodings) {
-        this.transferEncodings = transferEncodings;
+    public Content setTransferEncoding(TransferEncoding transferEncoding) {
+        if (transferEncodings == null) {
+            transferEncodings = new HashSet<>();
+        }
+        transferEncodings.add(transferEncoding);
         return this;
     }
 
-    public Content setContentEncodings(HashSet<ContentEncoding> contentEncodings) {
-        this.contentEncodings = contentEncodings;
+    public Content setContentEncoding(ContentEncoding contentEncoding) {
+        if (contentEncodings == null) {
+            contentEncodings = new HashSet<>();
+        }
+        contentEncodings.add(contentEncoding);
         return this;
     }
 
@@ -128,6 +135,8 @@ public final class Content {
                     output.append("Content-Length:").append(" ").append(Files.size(path)).append("\r\n");
                 } else if (content.getData() instanceof byte[] array) {
                     output.append("Content-Length:").append(" ").append(array.length).append("\r\n");
+                } else {
+                    content.setTransferEncoding(TransferEncoding.CHUNKED);
                 }
             }
         }
@@ -183,7 +192,7 @@ public final class Content {
                 }
 
                 if (chunkSize == 0) break;
-                if (chunkSize > requestConsumer.getServerConfiguration().getMaxContentLength()) {
+                if (chunkSize > requestConsumer.getServerConfiguration().getMaxChunkSize()) {
                     requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
@@ -307,6 +316,57 @@ public final class Content {
             }
 
             return content;
+        }
+    }
+
+    public static class WriteOperations {
+        public static void writeContent(final RequestConsumer requestConsumer,
+                                        final Content content) throws IOException {
+            InputStream inputStream = null;
+            try {
+                boolean chunked = false;
+                OutputStream outputStream = requestConsumer.getSocket().getOutputStream();
+
+                switch (content.getData()) {
+                    case Path path -> inputStream = new BufferedInputStream(new FileInputStream(path.toFile()));
+                    case byte[] bytes -> inputStream = new ByteArrayInputStream(bytes);
+                    case InputStream stream -> inputStream = stream;
+                    case null, default -> {
+                        return;
+                    }
+                }
+
+                if (content.getContentEncodings() != null &&
+                        content.getContentEncodings().contains(ContentEncoding.GZIP)) {
+                    outputStream = new GZIPOutputStream(outputStream);
+                }
+
+                if (content.getTransferEncodings() != null &&
+                        content.getTransferEncodings().contains(TransferEncoding.GZIP)) {
+                    outputStream = new GZIPOutputStream(outputStream);
+                }
+
+                if (content.getTransferEncodings() != null &&
+                        content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
+                    chunked = true;
+                }
+
+                byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
+                int i;
+                while ((i = inputStream.read(buffer)) != -1) {
+                    if (chunked) outputStream.write((Integer.toHexString(i) + "\r\n").getBytes(StandardCharsets.UTF_8));
+                    outputStream.write(buffer, 0, i);
+                    if (chunked) outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
+                }
+                if (chunked) outputStream.write("0".getBytes(StandardCharsets.UTF_8));
+                outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
+                outputStream.flush();
+            } finally {
+                if (inputStream != null) {
+                    inputStream.close();
+                }
+            }
         }
     }
 }

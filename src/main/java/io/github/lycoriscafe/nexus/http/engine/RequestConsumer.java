@@ -137,7 +137,7 @@ public final class RequestConsumer implements Runnable {
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
 
                     if (response.getContent() != null) {
-                        // TODO implement
+
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
