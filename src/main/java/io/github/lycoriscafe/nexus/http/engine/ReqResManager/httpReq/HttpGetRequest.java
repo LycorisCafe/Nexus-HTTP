@@ -36,7 +36,7 @@ public sealed class HttpGetRequest extends HttpRequest
     public void finalizeRequest() {
         for (Header header : getHeaders()) {
             if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                getRequestConsumer().dropConnection(HttpStatusCode.BAD_REQUEST);
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
                 return;
             }
         }

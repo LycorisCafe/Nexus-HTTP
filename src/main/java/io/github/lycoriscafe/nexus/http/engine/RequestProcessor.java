@@ -40,13 +40,13 @@ public final class RequestProcessor {
         String[] request = requestLine.split(" ");
 
         if (!request[2].trim().equals("HTTP/1.1")) {
-            requestConsumer.dropConnection(HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED);
             return;
         }
 
         HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
             case CONNECT, TRACE -> {
-                requestConsumer.dropConnection(HttpStatusCode.NOT_IMPLEMENTED);
+                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED);
                 yield null;
             }
             case DELETE -> new HttpDeleteRequest(requestConsumer,
@@ -64,7 +64,7 @@ public final class RequestProcessor {
             case PUT -> new HttpPutRequest(requestConsumer,
                     requestId, HttpRequestMethod.PUT, uriDecoder(request[1]));
             case null -> {
-                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 yield null;
             }
         };

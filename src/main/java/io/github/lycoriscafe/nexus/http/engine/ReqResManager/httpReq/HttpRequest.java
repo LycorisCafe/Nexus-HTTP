@@ -116,7 +116,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         try {
             ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
             if (endpointDetails == null) {
-                requestConsumer.dropConnection(HttpStatusCode.NOT_FOUND);
+                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_FOUND);
                 return;
             }
 
@@ -125,11 +125,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 return;
             }
 
-            // TODO make finalizer
             requestConsumer.send((HttpResponse) endpointDetails.getMethod().invoke(null, this));
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
-            requestConsumer.dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
     }

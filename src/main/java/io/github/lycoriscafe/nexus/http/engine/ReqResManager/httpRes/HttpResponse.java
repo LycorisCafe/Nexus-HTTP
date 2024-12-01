@@ -26,7 +26,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +35,8 @@ import java.util.List;
 
 public final class HttpResponse {
     private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private final HttpRequest httpRequest;
+    private final long responseId;
+    private final RequestConsumer requestConsumer;
 
     private final HttpStatusCode httpStatusCode;
     private HashSet<Header> headers;
@@ -47,34 +48,35 @@ public final class HttpResponse {
     private CrossOriginResourceSharing crossOriginResourceSharing;
     private HashSet<WWWAuthentication> wwwAuthentications;
     private CacheControl cacheControl;
-    private Content content = null;
+    private Content content;
 
-    public HttpResponse(final HttpRequest httpRequest,
+    public HttpResponse(final long responseId,
+                        final RequestConsumer requestConsumer,
                         final HttpStatusCode httpStatusCode) {
-        if (httpRequest == null) {
-            throw new NullPointerException("invalid http request passed");
+        if (responseId < 0) {
+            throw new NullPointerException("invalid response id passed");
+        }
+        if (requestConsumer == null) {
+            throw new NullPointerException("invalid request consumer passed");
         }
         if (httpStatusCode == null) {
             throw new NullPointerException("invalid httpStatusCode passed");
         }
 
-        this.httpRequest = httpRequest;
+        this.responseId = responseId;
+        this.requestConsumer = requestConsumer;
         this.httpStatusCode = httpStatusCode;
 
-        headers = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultHeaders();
-        cookies = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCookies();
-        contentSecurityPolicy =
-                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultContentSecurityPolicy();
+        headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
+        cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
+        contentSecurityPolicy = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicy();
         contentSecurityPolicyReportOnly =
-                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
-        strictTransportSecurity =
-                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultStrictTransportSecurity();
-        xContentTypeOptionsNoSniff =
-                httpRequest.getRequestConsumer().getServerConfiguration().isxContentTypeOptionsNoSniff();
-        crossOriginResourceSharing =
-                httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCrossOriginResourceSharing();
-        wwwAuthentications = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultAuthentications();
-        cacheControl = httpRequest.getRequestConsumer().getServerConfiguration().getDefaultCacheControl();
+                requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
+        strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
+        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isxContentTypeOptionsNoSniff();
+        crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
+        wwwAuthentications = requestConsumer.getServerConfiguration().getDefaultAuthentications();
+        cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
     }
 
     public HttpResponse header(final Header header) {
@@ -181,8 +183,12 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpRequest getHttpRequest() {
-        return httpRequest;
+    public long getResponseId() {
+        return responseId;
+    }
+
+    public RequestConsumer getRequestConsumer() {
+        return requestConsumer;
     }
 
     public HttpStatusCode getHttpStatusCode() {
@@ -230,28 +236,30 @@ public final class HttpResponse {
     }
 
     public String finalizeResponse() {
-        StringBuilder output = new StringBuilder();
         try {
-            output.append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode()).append("\r\n")
-                    .append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
-                    .append("Connection:").append(" ").append("keep-alive").append("\r\n")
+            StringBuilder output =
+                    new StringBuilder().append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode())
+                            .append("\r\n").append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
+                            .append("Connection:").append(" ").append("keep-alive").append("\r\n")
 
-                    .append(Header.processOutgoingHeader(headers)).append(Cookie.processOutgoingCookies(cookies))
-                    .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
-                            contentSecurityPolicyReportOnly))
-                    .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
-                    .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
-                    .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
-                    .append(CacheControl.processOutgoingCacheControl(cacheControl))
-                    .append(Content.processOutgoingContent(content));
+                            .append(Header.processOutgoingHeader(headers))
+                            .append(Cookie.processOutgoingCookies(cookies))
+                            .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
+                                    contentSecurityPolicyReportOnly))
+                            .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
+                            .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
+                            .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
+                            .append(CacheControl.processOutgoingCacheControl(cacheControl))
+                            .append(Content.processOutgoingContent(content));
 
             if (xContentTypeOptionsNoSniff) {
                 output.append("X-Content-Type-Options: nosniff").append("\r\n");
             }
+
+            return output.append("\r\n").toString();
         } catch (Exception e) {
-            getHttpRequest().getRequestConsumer().dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
+            requestConsumer.dropConnection(responseId, HttpStatusCode.INTERNAL_SERVER_ERROR);
             return null;
         }
-        return output.append("\r\n").toString();
     }
 }

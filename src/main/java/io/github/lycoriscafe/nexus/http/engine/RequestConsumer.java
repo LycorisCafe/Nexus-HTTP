@@ -40,7 +40,7 @@ public final class RequestConsumer implements Runnable {
     private final BufferedReader reader;
 
     private long requestId = 0L;
-    private final long responseId = 0L;
+    private long responseId = 0L;
 
     public RequestConsumer(final HttpServerConfiguration serverConfiguration,
                            final Database database,
@@ -80,7 +80,7 @@ public final class RequestConsumer implements Runnable {
                 String line = reader.readLine().trim();
                 if (line.length() > 8000) {
                     // Handle length exceeded
-                    dropConnection(HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
+                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
                     return;
                 }
 
@@ -98,7 +98,7 @@ public final class RequestConsumer implements Runnable {
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
                     // Handle max headers count exceeded
-                    dropConnection(HttpStatusCode.BAD_REQUEST);
+                    dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return;
                 }
 
@@ -109,18 +109,42 @@ public final class RequestConsumer implements Runnable {
         }
     }
 
-    public void dropConnection(HttpStatusCode httpStatusCode) {
-        // TODO Handle response and drop connection
-    }
-
-    public void send(final HttpResponse httpResponse) {
+    public void dropConnection(final long requestId,
+                               final HttpStatusCode httpStatusCode) {
+        send(new HttpResponse(requestId, this, httpStatusCode));
         try {
-            OutputStream outputStream = socket.getOutputStream();
-            outputStream.write(httpResponse.finalizeResponse().getBytes(StandardCharsets.UTF_8));
-
-            // TODO process content
+            if (!socket.isClosed()) socket.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private final List<HttpResponse> responseQue = new ArrayList<>();
+
+    public void send(final HttpResponse httpResponse) {
+        if (socket.isClosed()) {
+            return;
+        }
+        responseQue.add(httpResponse);
+
+        for (HttpResponse response : responseQue) {
+            if (response.getResponseId() == responseId) {
+                try {
+                    OutputStream outputStream = socket.getOutputStream();
+
+                    String headers = response.finalizeResponse();
+                    if (headers == null) return;
+                    outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
+
+                    if (response.getContent() != null) {
+                        // TODO implement
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+                responseQue.remove(response);
+                responseId++;
+            }
         }
     }
 }

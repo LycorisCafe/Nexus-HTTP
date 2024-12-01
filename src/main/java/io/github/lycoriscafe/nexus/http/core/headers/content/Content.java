@@ -157,7 +157,8 @@ public final class Content {
             return byteArrayOutputStream;
         }
 
-        private static Path readTransfer(final RequestConsumer requestConsumer,
+        private static Path readTransfer(final long requestId,
+                                         final RequestConsumer requestConsumer,
                                          final boolean gzipped) throws IOException {
             Path filePath = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
                     "ChunkedContent-", null);
@@ -177,31 +178,31 @@ public final class Content {
                 try {
                     chunkSize = Integer.parseInt(bufferedReader.readLine(), 16);
                 } catch (NumberFormatException e) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
                 if (chunkSize == 0) break;
                 if (chunkSize > requestConsumer.getServerConfiguration().getMaxContentLength()) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
                 totalSize += chunkSize;
                 if (totalSize > requestConsumer.getServerConfiguration().getMaxChunkedContentLength()) {
-                    requestConsumer.dropConnection(HttpStatusCode.CONTENT_TOO_LARGE);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE);
                     return null;
                 }
 
                 byte[] buffer = new byte[chunkSize];
                 int count = inputStream.read(buffer, 0, chunkSize);
                 if (count != chunkSize) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
                 if (!bufferedReader.readLine().isEmpty()) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
@@ -210,12 +211,13 @@ public final class Content {
             return filePath;
         }
 
-        public static Content processText(final RequestConsumer requestConsumer,
+        public static Content processText(final long requestId,
+                                          final RequestConsumer requestConsumer,
                                           final HashSet<TransferEncoding> transferEncoding,
                                           final HashSet<ContentEncoding> contentEncoding,
                                           final int contentLength,
                                           final String contentType) {
-            Content content = processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
+            Content content = processCommonContentType(requestId, requestConsumer, transferEncoding, contentEncoding,
                     contentLength, contentType);
             if (content != null) {
                 content.data = (((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8));
@@ -223,16 +225,17 @@ public final class Content {
             return content;
         }
 
-        public static Content processXWWWFormUrlencoded(final RequestConsumer requestConsumer,
+        public static Content processXWWWFormUrlencoded(final long requestId,
+                                                        final RequestConsumer requestConsumer,
                                                         final HashSet<TransferEncoding> transferEncoding,
                                                         final HashSet<ContentEncoding> contentEncoding,
                                                         final int contentLength) {
             if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
-                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 return null;
             }
 
-            Content content = processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
+            Content content = processCommonContentType(requestId, requestConsumer, transferEncoding, contentEncoding,
                     contentLength, "application/x-www-form-urlencoded");
             if (content == null) return null;
 
@@ -249,7 +252,8 @@ public final class Content {
             return content;
         }
 
-        public static Content processCommonContentType(final RequestConsumer requestConsumer,
+        public static Content processCommonContentType(final long requestId,
+                                                       final RequestConsumer requestConsumer,
                                                        final HashSet<TransferEncoding> transferEncoding,
                                                        final HashSet<ContentEncoding> contentEncoding,
                                                        final int contentLength,
@@ -259,7 +263,8 @@ public final class Content {
             try {
                 if (transferEncoding != null) {
                     if (transferEncoding.contains(TransferEncoding.CHUNKED)) {
-                        Path filePath = readTransfer(requestConsumer, transferEncoding.contains(TransferEncoding.GZIP));
+                        Path filePath = readTransfer(requestId, requestConsumer,
+                                transferEncoding.contains(TransferEncoding.GZIP));
                         content = new Content(contentType, filePath);
                         content.contentLength = contentLength;
                         content.transferEncodings = transferEncoding;
@@ -288,7 +293,7 @@ public final class Content {
                 }
 
                 if (byteArrayOutputStream == null) {
-                    requestConsumer.dropConnection(HttpStatusCode.INTERNAL_SERVER_ERROR);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
                     return null;
                 }
 
@@ -297,7 +302,7 @@ public final class Content {
                 content.transferEncodings = transferEncoding;
                 content.contentEncodings = contentEncoding;
             } catch (IOException e) {
-                requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 return null;
             }
 

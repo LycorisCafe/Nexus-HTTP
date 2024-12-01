@@ -55,18 +55,20 @@ public final class MultiPartFormData {
     }
 
 
-    public static Content process(final RequestConsumer requestConsumer,
+    public static Content process(final long requestId,
+                                  final RequestConsumer requestConsumer,
                                   final HashSet<TransferEncoding> transferEncoding,
                                   final HashSet<ContentEncoding> contentEncoding,
                                   final int contentLength,
                                   final String boundary) {
         if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
-            requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
             return null;
         }
 
         Content content =
-                Content.ReadOperations.processCommonContentType(requestConsumer, transferEncoding, contentEncoding,
+                Content.ReadOperations.processCommonContentType(requestId, requestConsumer, transferEncoding,
+                        contentEncoding,
                         contentLength, "multipart/form-data");
         if (content == null) return null;
 
@@ -85,7 +87,7 @@ public final class MultiPartFormData {
                     if (b.equals(boundary + "--")) {
                         len += 2;
                         if (contentLength != len) {
-                            requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                             return null;
                         }
                         break;
@@ -96,7 +98,7 @@ public final class MultiPartFormData {
                 String[] dispositionHeader = bufferedReader.readLine().split(":", 0);
                 if (!(dispositionHeader.length > 1) ||
                         !dispositionHeader[0].equalsIgnoreCase("content-disposition")) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
@@ -104,7 +106,7 @@ public final class MultiPartFormData {
                 if (!(params.length > 2) ||
                         !params[1].trim().equalsIgnoreCase("form-data") ||
                         !params[2].trim().startsWith("name=")) {
-                    requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                     return null;
                 }
 
@@ -136,7 +138,7 @@ public final class MultiPartFormData {
                 while ((n = byteArrayInputStream.read()) != -1) {
                     len++;
                     if (len > contentLength) {
-                        requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+                        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                         return null;
                     }
 
@@ -159,7 +161,7 @@ public final class MultiPartFormData {
                 data.add(multiPartFormData);
             }
         } catch (Exception e) {
-            requestConsumer.dropConnection(HttpStatusCode.BAD_REQUEST);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
             return null;
         }
 
