@@ -37,8 +37,7 @@ import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public final class EndpointScanner {
     public static void scan(final HttpServerConfiguration serverConfiguration,
-                            final Database database)
-            throws SQLException, ScannerException {
+                            final Database database) throws SQLException, ScannerException {
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
@@ -90,13 +89,9 @@ public final class EndpointScanner {
                         statusAnnotationValue = m.getAnnotation(MovedPermanently.class).value();
                         yield HttpStatusCode.MOVED_PERMANENTLY;
                     }
-                    case Method m when m.isAnnotationPresent(MovedTemporarily.class) -> {
-                        statusAnnotationValue = m.getAnnotation(MovedTemporarily.class).value();
+                    case Method m when m.isAnnotationPresent(Found.class) -> {
+                        statusAnnotationValue = m.getAnnotation(Found.class).value();
                         yield HttpStatusCode.FOUND;
-                    }
-                    case Method m when m.isAnnotationPresent(NotImplemented.class) -> {
-                        statusAnnotationValue = m.getAnnotation(NotImplemented.class).value();
-                        yield HttpStatusCode.NOT_IMPLEMENTED;
                     }
                     case Method m when m.isAnnotationPresent(PermanentRedirect.class) -> {
                         statusAnnotationValue = m.getAnnotation(PermanentRedirect.class).value();

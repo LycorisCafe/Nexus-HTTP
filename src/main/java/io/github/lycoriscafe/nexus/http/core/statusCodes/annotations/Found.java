@@ -21,6 +21,6 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface NotImplemented {
-    String value() default "3600";
+public @interface Found {
+    String value();
 }

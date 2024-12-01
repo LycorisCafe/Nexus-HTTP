@@ -66,7 +66,7 @@ public enum HttpStatusCode {
     PRECONDITION_REQUIRED("428 Precondition Required"),
     TOO_MANY_REQUESTS("429 Too Many Requests"),
     REQUEST_HEADER_FIELDS_TOO_LARGE("431 Request Header Fields Too Large"),
-    UNAVAILABLE_FOR_LEGAL_REASONS("422 Unavailable For Legal Reasons"),
+    UNAVAILABLE_FOR_LEGAL_REASONS("451 Unavailable For Legal Reasons"),
     INTERNAL_SERVER_ERROR("500 Internal Server Error"),
     NOT_IMPLEMENTED("501 Not Implemented"),
     BAD_GATEWAY("502 Bad Gateway"),

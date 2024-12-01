@@ -35,7 +35,7 @@ import java.util.List;
 
 public final class HttpResponse {
     private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
-    private final long responseId;
+    private final long requestId;
     private final RequestConsumer requestConsumer;
 
     private final HttpStatusCode httpStatusCode;
@@ -50,10 +50,10 @@ public final class HttpResponse {
     private CacheControl cacheControl;
     private Content content;
 
-    public HttpResponse(final long responseId,
+    public HttpResponse(final long requestId,
                         final RequestConsumer requestConsumer,
                         final HttpStatusCode httpStatusCode) {
-        if (responseId < 0) {
+        if (requestId < 0) {
             throw new NullPointerException("invalid response id passed");
         }
         if (requestConsumer == null) {
@@ -63,7 +63,7 @@ public final class HttpResponse {
             throw new NullPointerException("invalid httpStatusCode passed");
         }
 
-        this.responseId = responseId;
+        this.requestId = requestId;
         this.requestConsumer = requestConsumer;
         this.httpStatusCode = httpStatusCode;
 
@@ -183,8 +183,8 @@ public final class HttpResponse {
         return this;
     }
 
-    public long getResponseId() {
-        return responseId;
+    public long getRequestId() {
+        return requestId;
     }
 
     public RequestConsumer getRequestConsumer() {
@@ -258,7 +258,7 @@ public final class HttpResponse {
 
             return output.append("\r\n").toString();
         } catch (Exception e) {
-            requestConsumer.dropConnection(responseId, HttpStatusCode.INTERNAL_SERVER_ERROR);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
             return null;
         }
     }

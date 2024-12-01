@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
+import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
@@ -39,6 +40,7 @@ public final class RequestConsumer implements Runnable {
 
     private final BufferedReader reader;
 
+    private final List<HttpResponse> responseQue = new ArrayList<>();
     private long requestId = 0L;
     private long responseId = 0L;
 
@@ -119,8 +121,6 @@ public final class RequestConsumer implements Runnable {
         }
     }
 
-    private final List<HttpResponse> responseQue = new ArrayList<>();
-
     public void send(final HttpResponse httpResponse) {
         if (socket.isClosed()) {
             return;
@@ -128,7 +128,7 @@ public final class RequestConsumer implements Runnable {
         responseQue.add(httpResponse);
 
         for (HttpResponse response : responseQue) {
-            if (response.getResponseId() == responseId) {
+            if (response.getRequestId() == responseId) {
                 try {
                     OutputStream outputStream = socket.getOutputStream();
 
@@ -137,7 +137,7 @@ public final class RequestConsumer implements Runnable {
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
 
                     if (response.getContent() != null) {
-
+                        Content.WriteOperations.writeContent(this, response.getContent());
                     }
                 } catch (IOException e) {
                     throw new RuntimeException(e);

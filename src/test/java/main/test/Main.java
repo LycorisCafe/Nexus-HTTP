@@ -17,6 +17,7 @@
 package main.test;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
+import io.github.lycoriscafe.nexus.http.HttpServerException;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
@@ -24,7 +25,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 public class Main {
-    public static void main(String[] args) throws ScannerException, SQLException, IOException {
+    public static void main(String[] args) throws ScannerException, SQLException, IOException, HttpServerException {
         HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration("main.test")
                 .port(2004)
                 .staticFilesDirectory(null);

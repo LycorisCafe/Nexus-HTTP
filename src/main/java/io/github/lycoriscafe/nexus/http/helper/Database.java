@@ -113,7 +113,7 @@ public final class Database {
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, ((ReqEndpoint) m).getClassName());
                 subQuery.setString(3, ((ReqEndpoint) m).getMethodName());
-                subQuery.setString(4, ((ReqEndpoint) m).getStatusAnnotation());
+                subQuery.setString(4, ((ReqEndpoint) m).getStatusAnnotation().toString());
                 subQuery.setString(5, ((ReqEndpoint) m).getStatusAnnotationValue());
                 subQuery.executeUpdate();
                 subQuery.close();
@@ -144,22 +144,24 @@ public final class Database {
                     .prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
             subQuery.setInt(1, rs.getInt(2));
             ResultSet rs2 = subQuery.executeQuery();
+            ReqEndpoint endpoint;
 
-            Class<?> clazz = Class.forName(rs2.getString(2));
-
-            ReqEndpoint endpoint = new ReqEndpoint(
-                    httpRequest.getEndpoint(),
-                    httpRequest.getRequestMethod(),
-                    clazz,
-                    clazz.getMethod(rs2.getString(3), HttpRequest.class),
-                    HttpStatusCode.valueOf(rs2.getString(4)),
-                    rs2.getString(5)
-            );
-
-            rs2.close();
-            subQuery.close();
-            rs.close();
-            masterQuery.close();
+            try {
+                Class<?> clazz = Class.forName(rs2.getString(2));
+                endpoint = new ReqEndpoint(
+                        httpRequest.getEndpoint(),
+                        httpRequest.getRequestMethod(),
+                        clazz,
+                        clazz.getMethod(rs2.getString(3), HttpRequest.class),
+                        HttpStatusCode.valueOf(rs2.getString(4)),
+                        rs2.getString(5)
+                );
+            } finally {
+                rs2.close();
+                subQuery.close();
+                rs.close();
+                masterQuery.close();
+            }
 
             return endpoint;
         }

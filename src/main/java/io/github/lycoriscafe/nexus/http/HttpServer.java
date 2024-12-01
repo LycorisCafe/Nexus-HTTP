@@ -39,7 +39,11 @@ public final class HttpServer {
     private final Database database;
 
     public HttpServer(final HttpServerConfiguration httpServerConfiguration)
-            throws SQLException, IOException, ScannerException {
+            throws SQLException, IOException, ScannerException, HttpServerException {
+        if (httpServerConfiguration == null) {
+            throw new HttpServerException("http server configuration cannot be null");
+        }
+
         serverConfiguration = httpServerConfiguration;
         database = new Database(serverConfiguration);
 
@@ -77,7 +81,9 @@ public final class HttpServer {
     }
 
     public void shutdown() throws IOException, InterruptedException {
-        executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MICROSECONDS);
+        if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) {
+            executorService.shutdownNow();
+        }
         serverSocket.close();
         if (serverThread.isAlive()) {
             serverThread.interrupt();

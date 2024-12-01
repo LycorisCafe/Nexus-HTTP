@@ -72,19 +72,17 @@ public final class FileScanner {
         }
     }
 
-    private static String calculateETag(Path path)
-            throws NoSuchAlgorithmException, IOException {
+    private static String calculateETag(Path path) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
-        BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()));
-        byte[] buffer = new byte[1024];
+        try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()))) {
+            byte[] buffer = new byte[1024];
+            while (reader.read(buffer) > 0) {
+                messageDigest.update(buffer);
+            }
 
-        while (reader.read(buffer) > 0) {
-            messageDigest.update(buffer);
+            // TODO implement
+
+            return "";
         }
-
-        reader.close();
-//        return messageDigest.digest();
-        // TODO implement this to return string
-        return "";
     }
 }
