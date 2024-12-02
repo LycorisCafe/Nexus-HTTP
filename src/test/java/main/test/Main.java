@@ -28,7 +28,7 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfigura
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 
 @HttpEndpoint
@@ -43,9 +43,10 @@ public class Main {
 
     @GET("/")
     public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
+        System.out.println("Method called!");
         return new HttpResponse(httpGetRequest.getRequestId(),
                 httpGetRequest.getRequestConsumer(),
                 HttpStatusCode.OK)
-                .content(new Content("text/plain", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
+                .content(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
     }
 }

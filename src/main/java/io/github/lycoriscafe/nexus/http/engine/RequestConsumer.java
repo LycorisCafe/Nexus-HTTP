@@ -61,6 +61,10 @@ public final class RequestConsumer implements Runnable {
         responseQue = new ArrayList<>();
     }
 
+    private long getRequestId() {
+        return requestId == Long.MAX_VALUE ? (requestId = 0L) : requestId++;
+    }
+
     public HttpServerConfiguration getServerConfiguration() {
         return serverConfiguration;
     }
@@ -79,6 +83,7 @@ public final class RequestConsumer implements Runnable {
 
     @Override
     public void run() {
+        logger.atTrace().log("client connection received");
         Thread.currentThread().setName("RequestConsumer");
         try {
             String requestLine = null;
@@ -88,9 +93,6 @@ public final class RequestConsumer implements Runnable {
                 String line = reader.readLine();
                 if (line == null) break;
                 line = line.trim();
-
-                logger.atDebug().log(line);
-                logger.atDebug().log(String.valueOf(line.isEmpty()));
 
                 if (line.length() > 8000) {
                     // Handle length exceeded
@@ -104,7 +106,7 @@ public final class RequestConsumer implements Runnable {
                 }
 
                 if (line.isEmpty()) {
-                    requestProcessor.process(requestId++, requestLine, headers);
+                    requestProcessor.process(getRequestId(), requestLine, headers);
                     requestLine = null;
                     headers.clear();
                     continue;
@@ -121,24 +123,23 @@ public final class RequestConsumer implements Runnable {
         } catch (IOException e) {
             logger.atDebug().log(e.getMessage());
         }
+        logger.atTrace().log("client connection terminated");
     }
 
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode) {
-        send(new HttpResponse(requestId, this, httpStatusCode));
-        try {
-            if (!socket.isClosed()) socket.close();
-        } catch (IOException e) {
-            logger.atDebug().log(e.getMessage());
-        }
+        logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode);
+        send(new HttpResponse(requestId, this, httpStatusCode).dropConnection(true));
     }
 
-    public void send(final HttpResponse httpResponse) {
+    public synchronized void send(final HttpResponse httpResponse) {
         if (socket.isClosed()) {
             return;
         }
+        responseQue.add(httpResponse);
 
-        for (HttpResponse response : responseQue) {
+        for (int i = 0; i < responseQue.size(); i++) {
+            HttpResponse response = responseQue.get(i);
             if (response.getRequestId() == responseId) {
                 try {
                     OutputStream outputStream = socket.getOutputStream();
@@ -146,6 +147,7 @@ public final class RequestConsumer implements Runnable {
                     String headers = response.finalizeResponse();
                     if (headers == null) return;
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
+                    outputStream.flush();
 
                     if (response.getContent() != null) {
                         Content.WriteOperations.writeContent(this, response.getContent());

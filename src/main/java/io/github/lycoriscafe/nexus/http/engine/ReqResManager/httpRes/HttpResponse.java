@@ -261,7 +261,7 @@ public final class HttpResponse {
                             .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
                             .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
                             .append(CacheControl.processOutgoingCacheControl(cacheControl))
-                            .append(Content.processOutgoingContent(content));
+                            .append(Content.WriteOperations.processOutgoingContent(content));
 
             if (xContentTypeOptionsNoSniff) {
                 output.append("X-Content-Type-Options: nosniff").append("\r\n");
@@ -272,5 +272,22 @@ public final class HttpResponse {
             requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
             return null;
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder output = new StringBuilder()
+                .append("Request Id : ").append(requestId).append("\n")
+                .append("HttpStatusCode : ").append(httpStatusCode.getStatusCode()).append("\n")
+                .append("Headers :").append(headers == null ? "no headers" : "").append("\n");
+        if (headers != null) {
+            for (Header header : headers) {
+                output.append("\t").append(header.getName()).append(" = ").append(header.getValue()).append("\n");
+            }
+        }
+        if (content != null) {
+            output.append("content : ").append(content.getContentType());
+        }
+        return output.toString();
     }
 }

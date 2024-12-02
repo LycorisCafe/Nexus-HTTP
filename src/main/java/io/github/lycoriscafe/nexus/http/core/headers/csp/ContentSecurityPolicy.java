@@ -64,7 +64,7 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
 
     public static String processOutgoingCsp(ContentSecurityPolicy contentSecurityPolicy,
                                             final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
-        StringBuilder output = new StringBuilder();
+        StringBuilder output = null;
         StringBuilder reportEndpoint = null;
         StringBuilder tempOutput = null;
 
@@ -115,9 +115,10 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
 
             if (j == 1) {
                 if (reportEndpoint != null) {
+                    output = new StringBuilder();
                     output.append(reportEndpoint).append("\r\n");
                 }
-                return output.append(tempOutput).append("\r\n")
+                return output == null ? "" : output.append(tempOutput).append("\r\n")
                         .append(csp).append("\r\n").toString();
             }
 

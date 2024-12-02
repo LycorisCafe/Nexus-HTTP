@@ -92,68 +92,16 @@ public final class Content {
         return downloadName;
     }
 
-    public HashSet<TransferEncoding> getTransferEncodings() {
-        return transferEncodings;
+    public List<TransferEncoding> getTransferEncodings() {
+        return transferEncodings == null ? null : transferEncodings.stream().toList();
     }
 
-    public HashSet<ContentEncoding> getContentEncodings() {
-        return contentEncodings;
+    public List<ContentEncoding> getContentEncodings() {
+        return contentEncodings == null ? null : contentEncodings.stream().toList();
     }
 
     public Object getData() {
         return data;
-    }
-
-    public static String processOutgoingContent(final Content content) throws IOException {
-        if (content == null) {
-            return "";
-        }
-
-        StringBuilder output = new StringBuilder()
-                .append("Content-Type:").append(" ").append(content.getContentType()).append("\r\n");
-
-        if (content.getDownloadName() != null) {
-            output.append("Content-Disposition:").append(" ").append("attachment;").append(" ").append("filename=")
-                    .append("\"").append(content.getDownloadName()).append("\"").append("\r\n");
-        }
-
-        if (content.getTransferEncodings() != null) {
-            List<TransferEncoding> transferEncodingList = content.getTransferEncodings().stream().toList();
-            output.append("Transfer-Encoding:");
-            boolean chunked = false;
-            for (int i = 0; i < transferEncodingList.size(); i++) {
-                output.append(" ").append(transferEncodingList.get(i).getValue());
-                if (transferEncodingList.get(i) == TransferEncoding.CHUNKED) chunked = true;
-                if (i != transferEncodingList.size() - 1) {
-                    output.append(",");
-                }
-            }
-            output.append("\r\n");
-
-            if (!chunked) {
-                if (content.getData() instanceof Path path) {
-                    output.append("Content-Length:").append(" ").append(Files.size(path)).append("\r\n");
-                } else if (content.getData() instanceof byte[] array) {
-                    output.append("Content-Length:").append(" ").append(array.length).append("\r\n");
-                } else {
-                    content.setTransferEncoding(TransferEncoding.CHUNKED);
-                }
-            }
-        }
-
-        if (content.getContentEncodings() != null) {
-            List<ContentEncoding> contentEncodingList = content.getContentEncodings().stream().toList();
-            output.append("Content-Encoding:");
-            for (int i = 0; i < contentEncodingList.size(); i++) {
-                output.append(" ").append(contentEncodingList.get(i).getValue());
-                if (i != contentEncodingList.size() - 1) {
-                    output.append(",");
-                }
-            }
-            output.append("\r\n");
-        }
-
-        return output.toString();
     }
 
     public static class ReadOperations {
@@ -249,8 +197,8 @@ public final class Content {
             if (content == null) return null;
 
             Map<String, String> data = new HashMap<>();
-            String[] values = ((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8)
-                    .split("&", 0);
+            String[] values =
+                    ((ByteArrayOutputStream) content.getData()).toString(StandardCharsets.UTF_8).split("&", 0);
             for (String value : values) {
                 String[] keyVal = value.split("=", 0);
                 data.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
@@ -280,25 +228,26 @@ public final class Content {
                         content.contentEncodings = contentEncoding;
                         return content;
                     } else {
-                        byteArrayOutputStream = readContent(requestConsumer.getSocket().getInputStream(),
-                                contentLength, true);
+                        byteArrayOutputStream =
+                                readContent(requestConsumer.getSocket().getInputStream(), contentLength, true);
                     }
                 }
 
                 if (contentEncoding != null) {
                     if (contentEncoding.contains(ContentEncoding.GZIP)) {
                         if (byteArrayOutputStream == null) {
-                            byteArrayOutputStream = readContent(requestConsumer.getSocket().getInputStream(),
-                                    contentLength, true);
+                            byteArrayOutputStream =
+                                    readContent(requestConsumer.getSocket().getInputStream(), contentLength, true);
                         } else {
-                            byteArrayOutputStream = readContent(new ByteArrayInputStream(byteArrayOutputStream
-                                    .toByteArray()), contentLength, true);
+                            byteArrayOutputStream =
+                                    readContent(new ByteArrayInputStream(byteArrayOutputStream.toByteArray()),
+                                            contentLength, true);
                         }
 
                     }
                 } else {
-                    byteArrayOutputStream = readContent(requestConsumer.getSocket().getInputStream(),
-                            contentLength, false);
+                    byteArrayOutputStream =
+                            readContent(requestConsumer.getSocket().getInputStream(), contentLength, false);
                 }
 
                 if (byteArrayOutputStream == null) {
@@ -320,6 +269,59 @@ public final class Content {
     }
 
     public static class WriteOperations {
+        public static String processOutgoingContent(final Content content) throws IOException {
+            if (content == null) {
+                return "";
+            }
+
+            StringBuilder output =
+                    new StringBuilder().append("Content-Type:").append(" ").append(content.getContentType())
+                            .append("\r\n");
+
+            if (content.getDownloadName() != null) {
+                output.append("Content-Disposition:").append(" ").append("attachment;").append(" ").append("filename=")
+                        .append("\"").append(content.getDownloadName()).append("\"").append("\r\n");
+            }
+
+            boolean chunked = false;
+            if (content.getTransferEncodings() != null) {
+                List<TransferEncoding> transferEncodingList = content.getTransferEncodings();
+                output.append("Transfer-Encoding:");
+                for (int i = 0; i < transferEncodingList.size(); i++) {
+                    output.append(" ").append(transferEncodingList.get(i).getValue());
+                    if (transferEncodingList.get(i) == TransferEncoding.CHUNKED) chunked = true;
+                    if (i != transferEncodingList.size() - 1) {
+                        output.append(",");
+                    }
+                }
+                output.append("\r\n");
+            }
+
+            if (!chunked) {
+                if (content.getData() instanceof Path path) {
+                    output.append("Content-Length:").append(" ").append(Files.size(path)).append("\r\n");
+                } else if (content.getData() instanceof byte[] array) {
+                    output.append("Content-Length:").append(" ").append(array.length).append("\r\n");
+                } else {
+                    content.setTransferEncoding(TransferEncoding.CHUNKED);
+                }
+            }
+
+            if (content.getContentEncodings() != null) {
+                List<ContentEncoding> contentEncodingList = content.getContentEncodings();
+                output.append("Content-Encoding:");
+                for (int i = 0; i < contentEncodingList.size(); i++) {
+                    output.append(" ").append(contentEncodingList.get(i).getValue());
+                    if (i != contentEncodingList.size() - 1) {
+                        output.append(",");
+                    }
+                }
+                output.append("\r\n");
+            }
+
+            return output.toString();
+        }
+
         public static void writeContent(final RequestConsumer requestConsumer,
                                         final Content content) throws IOException {
             InputStream inputStream = null;
@@ -351,17 +353,20 @@ public final class Content {
                     chunked = true;
                 }
 
+                System.out.println("writting data");
                 byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
                 int i;
                 while ((i = inputStream.read(buffer)) != -1) {
                     if (chunked) outputStream.write((Integer.toHexString(i) + "\r\n").getBytes(StandardCharsets.UTF_8));
                     outputStream.write(buffer, 0, i);
+                    System.out.println(new String(buffer, 0, i));
                     if (chunked) outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                 }
                 if (chunked) outputStream.write("0".getBytes(StandardCharsets.UTF_8));
                 outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
+                System.out.println("done");
             } finally {
                 if (inputStream != null) {
                     inputStream.close();
