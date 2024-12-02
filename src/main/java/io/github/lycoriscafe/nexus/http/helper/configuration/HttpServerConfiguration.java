@@ -40,8 +40,8 @@ public final class HttpServerConfiguration {
     private String staticFilesDirectory = "NexusStatics";
     private String databaseLocation = null;
 
-    private boolean ignoreEndpointCases;
-    private int maxHeadersPerRequest = 10;
+    private boolean ignoreEndpointCases = true;
+    private int maxHeadersPerRequest = 50;
     private int maxIncomingConnections = 100;
     private int pipelineParallelProcesses = 1;
     private int maxContentLength = 5_242_880;

@@ -21,6 +21,8 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -32,6 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class RequestConsumer implements Runnable {
+    private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
     private final RequestProcessor requestProcessor;
 
     private final HttpServerConfiguration serverConfiguration;
@@ -40,7 +43,7 @@ public final class RequestConsumer implements Runnable {
 
     private final BufferedReader reader;
 
-    private final List<HttpResponse> responseQue = new ArrayList<>();
+    private final List<HttpResponse> responseQue;
     private long requestId = 0L;
     private long responseId = 0L;
 
@@ -53,7 +56,9 @@ public final class RequestConsumer implements Runnable {
         this.database = database;
         this.socket = socket;
 
+        this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
+        responseQue = new ArrayList<>();
     }
 
     public HttpServerConfiguration getServerConfiguration() {
@@ -74,12 +79,19 @@ public final class RequestConsumer implements Runnable {
 
     @Override
     public void run() {
+        Thread.currentThread().setName("RequestConsumer");
         try {
             String requestLine = null;
             List<String> headers = new ArrayList<>();
 
             while (true) {
-                String line = reader.readLine().trim();
+                String line = reader.readLine();
+                if (line == null) break;
+                line = line.trim();
+
+                logger.atDebug().log(line);
+                logger.atDebug().log(String.valueOf(line.isEmpty()));
+
                 if (line.length() > 8000) {
                     // Handle length exceeded
                     dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
@@ -107,7 +119,7 @@ public final class RequestConsumer implements Runnable {
                 headers.add(line);
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.atDebug().log(e.getMessage());
         }
     }
 
@@ -117,7 +129,7 @@ public final class RequestConsumer implements Runnable {
         try {
             if (!socket.isClosed()) socket.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            logger.atDebug().log(e.getMessage());
         }
     }
 
@@ -125,7 +137,6 @@ public final class RequestConsumer implements Runnable {
         if (socket.isClosed()) {
             return;
         }
-        responseQue.add(httpResponse);
 
         for (HttpResponse response : responseQue) {
             if (response.getRequestId() == responseId) {
@@ -139,9 +150,14 @@ public final class RequestConsumer implements Runnable {
                     if (response.getContent() != null) {
                         Content.WriteOperations.writeContent(this, response.getContent());
                     }
+
+                    if (response.isDropConnection()) {
+                        socket.close();
+                    }
                 } catch (IOException e) {
-                    throw new RuntimeException(e);
+                    logger.atDebug().log(e.getMessage());
                 }
+
                 responseQue.remove(response);
                 responseId++;
             }

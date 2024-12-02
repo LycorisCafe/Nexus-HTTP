@@ -25,6 +25,8 @@ import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import org.reflections.Reflections;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -36,8 +38,11 @@ import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
 public final class EndpointScanner {
+    private static final Logger logger = LoggerFactory.getLogger(EndpointScanner.class);
+
     public static void scan(final HttpServerConfiguration serverConfiguration,
                             final Database database) throws SQLException, ScannerException {
+        logger.atTrace().log("beginning endpoints scanning...");
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
@@ -108,6 +113,8 @@ public final class EndpointScanner {
                     default -> null;
                 };
 
+                logger.atTrace().log(reqMethod.name() + " endpoint found @ " + clazz.getPackageName() + " - " +
+                        clazz.getSimpleName() + method.getName());
                 database.addEndpointData(new ReqEndpoint(
                                 (serverConfiguration.isIgnoreEndpointCases() ?
                                         clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
@@ -123,5 +130,6 @@ public final class EndpointScanner {
                                         );
             }
         }
+        logger.atTrace().log("endpoint scanning done.");
     }
 }

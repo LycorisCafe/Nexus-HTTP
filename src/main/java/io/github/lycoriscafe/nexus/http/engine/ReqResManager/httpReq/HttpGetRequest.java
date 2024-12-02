@@ -34,10 +34,12 @@ public sealed class HttpGetRequest extends HttpRequest
 
     @Override
     public void finalizeRequest() {
-        for (Header header : getHeaders()) {
-            if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
-                return;
+        if (getHeaders() != null) {
+            for (Header header : getHeaders()) {
+                if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
             }
         }
         super.finalizeRequest();

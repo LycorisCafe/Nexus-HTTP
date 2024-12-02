@@ -50,6 +50,8 @@ public final class HttpResponse {
     private CacheControl cacheControl;
     private Content content;
 
+    private boolean dropConnection;
+
     public HttpResponse(final long requestId,
                         final RequestConsumer requestConsumer,
                         final HttpStatusCode httpStatusCode) {
@@ -183,6 +185,11 @@ public final class HttpResponse {
         return this;
     }
 
+    public HttpResponse dropConnection(final boolean dropConnection) {
+        this.dropConnection = dropConnection;
+        return this;
+    }
+
     public long getRequestId() {
         return requestId;
     }
@@ -233,6 +240,10 @@ public final class HttpResponse {
 
     public Content getContent() {
         return content;
+    }
+
+    public boolean isDropConnection() {
+        return dropConnection;
     }
 
     public String finalizeResponse() {

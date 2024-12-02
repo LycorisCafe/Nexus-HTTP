@@ -18,12 +18,20 @@ package main.test;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
 import io.github.lycoriscafe.nexus.http.HttpServerException;
+import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
+import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.SQLException;
 
+@HttpEndpoint
 public class Main {
     public static void main(String[] args) throws ScannerException, SQLException, IOException, HttpServerException {
         HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration("main.test")
@@ -31,5 +39,13 @@ public class Main {
                 .staticFilesDirectory(null);
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
+    }
+
+    @GET("/")
+    public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
+        return new HttpResponse(httpGetRequest.getRequestId(),
+                httpGetRequest.getRequestConsumer(),
+                HttpStatusCode.OK)
+                .content(new Content("text/plain", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
     }
 }

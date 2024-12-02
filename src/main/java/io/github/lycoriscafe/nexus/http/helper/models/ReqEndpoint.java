@@ -52,10 +52,6 @@ public final class ReqEndpoint extends ReqMaster {
         return methodName;
     }
 
-    public String getMethodName() {
-        return methodName.getName();
-    }
-
     public HttpStatusCode getStatusAnnotation() {
         return statusAnnotation;
     }

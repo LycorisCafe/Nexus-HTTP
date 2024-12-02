@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-public abstract class Authorization {
+public final class Authorization {
     private final AuthScheme authScheme;
 
     public Authorization(final AuthScheme authScheme) {
@@ -27,5 +27,7 @@ public abstract class Authorization {
         return authScheme;
     }
 
-    public abstract String processHeader();
+    public String processIncomingHeader() {
+        return "";
+    }
 }

@@ -16,7 +16,8 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cache;
 
-public class CacheControl {
+public final class CacheControl {
+    
 
     public static String processOutgoingCacheControl(final CacheControl cacheControl) {
         if (cacheControl == null) return "";

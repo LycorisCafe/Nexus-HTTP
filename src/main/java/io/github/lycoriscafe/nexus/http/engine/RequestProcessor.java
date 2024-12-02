@@ -85,7 +85,7 @@ public final class RequestProcessor {
         httpRequest.finalizeRequest();
     }
 
-    private String uriDecoder(final String uri) {
+    private static String uriDecoder(final String uri) {
         return URLDecoder.decode(uri.trim(), StandardCharsets.UTF_8);
     }
 }

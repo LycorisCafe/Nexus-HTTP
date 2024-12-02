@@ -23,6 +23,8 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -32,6 +34,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public final class HttpServer {
+    private final Logger logger = LoggerFactory.getLogger(HttpServer.class);
+
     private final HttpServerConfiguration serverConfiguration;
     private Thread serverThread;
     private ServerSocket serverSocket;
@@ -57,7 +61,12 @@ public final class HttpServer {
                         Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
     }
 
-    public void initialize() {
+    public void initialize() throws HttpServerException {
+        if (serverThread != null && serverThread.isAlive()) {
+            throw new HttpServerException("http server already running");
+        }
+
+        logger.atTrace().log("http server initializing...");
         executorService = initializeExecutorService(serverConfiguration);
         serverThread = Thread.ofPlatform().start(() -> {
             try {
@@ -65,7 +74,7 @@ public final class HttpServer {
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(),
                                 serverConfiguration.getInetAddress());
-                serverSocket.setSoTimeout(serverConfiguration.getConnectionTimeout());
+                logger.atTrace().log("http server initialized!");
 
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(
@@ -80,7 +89,12 @@ public final class HttpServer {
         });
     }
 
-    public void shutdown() throws IOException, InterruptedException {
+    public void shutdown() throws IOException, InterruptedException, HttpServerException {
+        if (!serverThread.isAlive()) {
+            throw new HttpServerException("http server already shutdown");
+        }
+
+        logger.atTrace().log("http server shutting down...");
         if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) {
             executorService.shutdownNow();
         }
@@ -88,5 +102,6 @@ public final class HttpServer {
         if (serverThread.isAlive()) {
             serverThread.interrupt();
         }
+        logger.atTrace().log("http server shutdown!");
     }
 }
