@@ -22,8 +22,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 public final class HttpHeadRequest extends HttpGetRequest {
     public HttpHeadRequest(final RequestConsumer requestConsumer,
                            final long requestId,
-                           final HttpRequestMethod requestMethod,
-                           final String endpoint) {
-        super(requestConsumer, requestId, requestMethod, endpoint);
+                           final HttpRequestMethod requestMethod) {
+        super(requestConsumer, requestId, requestMethod);
     }
 }

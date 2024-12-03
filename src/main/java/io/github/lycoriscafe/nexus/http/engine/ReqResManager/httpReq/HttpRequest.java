@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -27,43 +28,38 @@ import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 
 public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final RequestConsumer requestConsumer;
-
     private final long requestId;
     private final HttpRequestMethod requestMethod;
-    private final String endpoint;
+    private String endpoint;
     private Map<String, String> parameters;
     private HashSet<Header> headers;
     private HashSet<Cookie> cookies;
+    private Authorization authorization;
 
     public HttpRequest(final RequestConsumer requestConsumer,
                        final long requestId,
-                       final HttpRequestMethod requestMethod,
-                       final String endpoint) {
+                       final HttpRequestMethod requestMethod) {
         this.requestConsumer = requestConsumer;
-
         this.requestId = requestId;
         this.requestMethod = requestMethod;
-
-        String[] endpointParts = endpoint.split("\\?", 2);
-        this.endpoint = endpointParts[0];
-
-        if (endpointParts.length > 1) {
-            parameters = new HashMap<>();
-            for (String param : endpointParts[1].split("&", 0)) {
-                String[] keyValue = param.split("=");
-                parameters.put(keyValue[0], keyValue[1]);
-            }
-        }
     }
 
     public RequestConsumer getRequestConsumer() {
         return requestConsumer;
+    }
+
+    public void setEndpoint(final String endpoint) {
+        this.endpoint = endpoint;
+    }
+
+    public void setParameters(final Map<String, String> parameters) {
+        this.parameters = parameters;
     }
 
     public void setHeaders(final Header... headers) {
@@ -88,6 +84,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         this.cookies.addAll(Arrays.asList(cookies));
     }
 
+    public void setAuthentication(final Authorization authorization) {
+        this.authorization = authorization;
+    }
+
     public long getRequestId() {
         return requestId;
     }
@@ -104,12 +104,16 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return parameters;
     }
 
-    public HashSet<Header> getHeaders() {
-        return headers;
+    public List<Header> getHeaders() {
+        return headers.stream().toList();
     }
 
-    public HashSet<Cookie> getCookies() {
-        return cookies;
+    public List<Cookie> getCookies() {
+        return cookies.stream().toList();
+    }
+
+    public Authorization getAuthorization() {
+        return authorization;
     }
 
     public void finalizeRequest() {
@@ -122,6 +126,11 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
             if (endpointDetails.getStatusAnnotation() != null) {
                 processStatusAnnotation(endpointDetails);
+                return;
+            }
+
+            if (endpointDetails.isAuthenticated() && authorization == null) {
+                processUnauthorized();
                 return;
             }
 
@@ -153,5 +162,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                                     reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
             default -> throw new IllegalStateException("Unexpected value: " + reqEndpoint.getStatusAnnotation());
         });
+    }
+
+    private void processUnauthorized() {
+        requestConsumer.send(new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.UNAUTHORIZED)
+                .authentication(getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
     }
 }

@@ -27,16 +27,15 @@ public sealed class HttpGetRequest extends HttpRequest
         permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
     public HttpGetRequest(final RequestConsumer requestConsumer,
                           final long requestId,
-                          final HttpRequestMethod requestMethod,
-                          final String endpoint) {
-        super(requestConsumer, requestId, requestMethod, endpoint);
+                          final HttpRequestMethod requestMethod) {
+        super(requestConsumer, requestId, requestMethod);
     }
 
     @Override
     public void finalizeRequest() {
         if (getHeaders() != null) {
             for (Header header : getHeaders()) {
-                if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
+                if (header.name().toLowerCase(Locale.US).startsWith("content-")) {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
                     return;
                 }

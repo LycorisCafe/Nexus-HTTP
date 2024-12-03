@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -24,8 +25,10 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 public final class RequestProcessor {
     private final RequestConsumer requestConsumer;
@@ -49,20 +52,13 @@ public final class RequestProcessor {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED);
                 yield null;
             }
-            case DELETE -> new HttpDeleteRequest(requestConsumer,
-                    requestId, HttpRequestMethod.DELETE, uriDecoder(request[1]));
-            case GET -> new HttpGetRequest(requestConsumer,
-                    requestId, HttpRequestMethod.GET, uriDecoder(request[1]));
-            case HEAD -> new HttpHeadRequest(requestConsumer,
-                    requestId, HttpRequestMethod.HEAD, uriDecoder(request[1]));
-            case OPTIONS -> new HttpOptionsRequest(requestConsumer,
-                    requestId, HttpRequestMethod.OPTIONS, uriDecoder(request[1]));
-            case PATCH -> new HttpPatchRequest(requestConsumer,
-                    requestId, HttpRequestMethod.PATCH, uriDecoder(request[1]));
-            case POST -> new HttpPostRequest(requestConsumer,
-                    requestId, HttpRequestMethod.POST, uriDecoder(request[1]));
-            case PUT -> new HttpPutRequest(requestConsumer,
-                    requestId, HttpRequestMethod.PUT, uriDecoder(request[1]));
+            case DELETE -> new HttpDeleteRequest(requestConsumer, requestId, HttpRequestMethod.DELETE);
+            case GET -> new HttpGetRequest(requestConsumer, requestId, HttpRequestMethod.GET);
+            case HEAD -> new HttpHeadRequest(requestConsumer, requestId, HttpRequestMethod.HEAD);
+            case OPTIONS -> new HttpOptionsRequest(requestConsumer, requestId, HttpRequestMethod.OPTIONS);
+            case PATCH -> new HttpPatchRequest(requestConsumer, requestId, HttpRequestMethod.PATCH);
+            case POST -> new HttpPostRequest(requestConsumer, requestId, HttpRequestMethod.POST);
+            case PUT -> new HttpPutRequest(requestConsumer, requestId, HttpRequestMethod.PUT);
             case null -> {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 yield null;
@@ -73,10 +69,26 @@ public final class RequestProcessor {
             return;
         }
 
+        String[] uriParts = request[1].split("\\\\?", 0);
+        switch (uriParts.length) {
+            case 1 -> httpRequest.setEndpoint(decodeUri(uriParts[0]));
+            case 2 -> {
+                httpRequest.setEndpoint(decodeUri(uriParts[0]));
+                httpRequest.setParameters(decodeParams(uriParts[1]));
+            }
+            default -> {
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
+                return;
+            }
+        }
+
         for (String header : headers) {
             String[] parts = header.split(":", 2);
-            if (parts[0].toLowerCase(Locale.US).trim().equals("cookie")) {
+            String headerName = parts[0].toLowerCase(Locale.US).trim();
+            if (headerName.equals("cookie")) {
                 httpRequest.setCookies(Cookie.processIncomingCookies(parts[1]));
+            } else if (headerName.equals("authorization")) {
+                httpRequest.setAuthentication(Authorization.processIncomingAuth(parts[1]));
             } else {
                 httpRequest.setHeaders(Header.processIncomingHeader(parts));
             }
@@ -85,7 +97,17 @@ public final class RequestProcessor {
         httpRequest.finalizeRequest();
     }
 
-    private static String uriDecoder(final String uri) {
+    private static Map<String, String> decodeParams(final String params) {
+        Map<String, String> decodedParams = new HashMap<>();
+        String[] parts = params.split("&", 0);
+        for (String part : parts) {
+            String[] keyValue = part.split("=", 2);
+            decodedParams.put(decodeUri(keyValue[0]), decodeUri(keyValue[1]));
+        }
+        return decodedParams;
+    }
+
+    private static String decodeUri(final String uri) {
         return URLDecoder.decode(uri.trim(), StandardCharsets.UTF_8);
     }
 }

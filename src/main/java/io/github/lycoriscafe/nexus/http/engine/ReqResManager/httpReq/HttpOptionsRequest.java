@@ -27,9 +27,8 @@ public final class HttpOptionsRequest extends HttpGetRequest {
 
     public HttpOptionsRequest(final RequestConsumer requestConsumer,
                               final long requestId,
-                              final HttpRequestMethod requestMethod,
-                              final String endpoint) {
-        super(requestConsumer, requestId, requestMethod, endpoint);
+                              final HttpRequestMethod requestMethod) {
+        super(requestConsumer, requestId, requestMethod);
     }
 
     public void setAccessControlRequestMethod(final HttpRequestMethod accessControlRequestMethod) {

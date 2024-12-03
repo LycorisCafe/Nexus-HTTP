@@ -22,8 +22,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 public final class HttpDeleteRequest extends HttpGetRequest {
     public HttpDeleteRequest(final RequestConsumer requestConsumer,
                              final long requestId,
-                             final HttpRequestMethod requestMethod,
-                             final String endpoint) {
-        super(requestConsumer, requestId, requestMethod, endpoint);
+                             final HttpRequestMethod requestMethod) {
+        super(requestConsumer, requestId, requestMethod);
     }
 }
