@@ -353,20 +353,17 @@ public final class Content {
                     chunked = true;
                 }
 
-                System.out.println("writting data");
                 byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
                 int i;
                 while ((i = inputStream.read(buffer)) != -1) {
                     if (chunked) outputStream.write((Integer.toHexString(i) + "\r\n").getBytes(StandardCharsets.UTF_8));
                     outputStream.write(buffer, 0, i);
-                    System.out.println(new String(buffer, 0, i));
                     if (chunked) outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
                 }
                 if (chunked) outputStream.write("0".getBytes(StandardCharsets.UTF_8));
                 outputStream.write("\r\n".getBytes(StandardCharsets.UTF_8));
                 outputStream.flush();
-                System.out.println("done");
             } finally {
                 if (inputStream != null) {
                     inputStream.close();

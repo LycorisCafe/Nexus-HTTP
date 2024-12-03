@@ -46,7 +46,7 @@ public final class HttpResponse {
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private HashSet<WWWAuthentication> wwwAuthentications;
+    private WWWAuthentication wwwAuthentications;
     private CacheControl cacheControl;
     private Content content;
 
@@ -159,10 +159,7 @@ public final class HttpResponse {
             this.wwwAuthentications = null;
             return this;
         }
-        if (wwwAuthentications == null) {
-            wwwAuthentications = new HashSet<>();
-        }
-        wwwAuthentications.add(wwwAuthentication);
+        this.wwwAuthentications = wwwAuthentication;
         return this;
     }
 
@@ -230,8 +227,8 @@ public final class HttpResponse {
         return crossOriginResourceSharing;
     }
 
-    public List<WWWAuthentication> getWWWAuthentications() {
-        return wwwAuthentications.stream().toList();
+    public WWWAuthentication getWWWAuthentications() {
+        return wwwAuthentications;
     }
 
     public CacheControl getCacheControl() {
@@ -259,7 +256,6 @@ public final class HttpResponse {
                                     contentSecurityPolicyReportOnly))
                             .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
                             .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
-                            .append(WWWAuthentication.processOutgoingAuth(wwwAuthentications))
                             .append(CacheControl.processOutgoingCacheControl(cacheControl))
                             .append(Content.WriteOperations.processOutgoingContent(content));
 

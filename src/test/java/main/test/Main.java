@@ -47,6 +47,7 @@ public class Main {
         return new HttpResponse(httpGetRequest.getRequestId(),
                 httpGetRequest.getRequestConsumer(),
                 HttpStatusCode.OK)
-                .content(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
+                .content(new Content("image/jpg",
+                        Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
     }
 }

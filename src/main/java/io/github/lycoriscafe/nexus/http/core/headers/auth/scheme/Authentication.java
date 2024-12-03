@@ -16,5 +16,6 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme;
 
-public class Basic {
+public interface Authentication {
+    String processOutgoingAuth();
 }

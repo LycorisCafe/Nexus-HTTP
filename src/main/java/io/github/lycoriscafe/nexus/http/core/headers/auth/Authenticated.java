@@ -16,20 +16,10 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-public final class Authorization {
-    private final AuthScheme authScheme;
-    private String username;
-    private char[] password;
+import java.lang.annotation.*;
 
-    public Authorization(final AuthScheme authScheme) {
-        this.authScheme = authScheme;
-    }
-
-    public AuthScheme getAuthScheme() {
-        return authScheme;
-    }
-
-    public String processIncomingHeader() {
-        return "";
-    }
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.METHOD})
+public @interface Authenticated {
 }
