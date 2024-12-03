@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
@@ -46,7 +46,7 @@ public final class HttpResponse {
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private WWWAuthentication wwwAuthentications;
+    private Authentication authentications;
     private CacheControl cacheControl;
     private Content content;
 
@@ -77,7 +77,6 @@ public final class HttpResponse {
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
         xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isxContentTypeOptionsNoSniff();
         crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
-        wwwAuthentications = requestConsumer.getServerConfiguration().getDefaultAuthentications();
         cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
     }
 
@@ -153,13 +152,8 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpResponse wwwAuthentication(final WWWAuthentication wwwAuthentication) {
-        if (wwwAuthentication == null) {
-            logger.atDebug().log("www authentication with null value detected, resetting global settings");
-            this.wwwAuthentications = null;
-            return this;
-        }
-        this.wwwAuthentications = wwwAuthentication;
+    public HttpResponse authentication(final Authentication authentication) {
+        this.authentications = authentication;
         return this;
     }
 
@@ -227,8 +221,8 @@ public final class HttpResponse {
         return crossOriginResourceSharing;
     }
 
-    public WWWAuthentication getWWWAuthentications() {
-        return wwwAuthentications;
+    public Authentication getWWWAuthentications() {
+        return authentications;
     }
 
     public CacheControl getCacheControl() {
@@ -256,6 +250,7 @@ public final class HttpResponse {
                                     contentSecurityPolicyReportOnly))
                             .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
                             .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
+                            .append(Authentication.processOutgoingAuth(authentications))
                             .append(CacheControl.processOutgoingCacheControl(cacheControl))
                             .append(Content.WriteOperations.processOutgoingContent(content));
 
@@ -268,22 +263,5 @@ public final class HttpResponse {
             requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
             return null;
         }
-    }
-
-    @Override
-    public String toString() {
-        StringBuilder output = new StringBuilder()
-                .append("Request Id : ").append(requestId).append("\n")
-                .append("HttpStatusCode : ").append(httpStatusCode.getStatusCode()).append("\n")
-                .append("Headers :").append(headers == null ? "no headers" : "").append("\n");
-        if (headers != null) {
-            for (Header header : headers) {
-                output.append("\t").append(header.getName()).append(" = ").append(header.getValue()).append("\n");
-            }
-        }
-        if (content != null) {
-            output.append("content : ").append(content.getContentType());
-        }
-        return output.toString();
     }
 }

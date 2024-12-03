@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.helper.scanners;
 
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -46,31 +47,29 @@ public final class EndpointScanner {
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
+            boolean authenticated = clazz.isAnnotationPresent(Authenticated.class);
             for (Method method : clazz.getMethods()) {
+                if (!authenticated) authenticated = method.isAnnotationPresent(Authenticated.class);
+
                 String endpointValue = null;
                 HttpRequestMethod reqMethod = switch (method) {
-                    case Method m when m.isAnnotationPresent(GET.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(GET.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(GET.class).value();
                         yield HttpRequestMethod.GET;
                     }
-                    case Method m when m.isAnnotationPresent(POST.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(POST.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(POST.class).value();
                         yield HttpRequestMethod.POST;
                     }
-                    case Method m when m.isAnnotationPresent(PUT.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(PUT.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(PUT.class).value();
                         yield HttpRequestMethod.PUT;
                     }
-                    case Method m when m.isAnnotationPresent(DELETE.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(DELETE.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(DELETE.class).value();
                         yield HttpRequestMethod.DELETE;
                     }
-                    case Method m when m.isAnnotationPresent(PATCH.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(PATCH.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(PATCH.class).value();
                         yield HttpRequestMethod.PATCH;
                     }
@@ -81,9 +80,9 @@ public final class EndpointScanner {
                     continue;
                 } else {
                     if (endpointValue == null) {
-                        throw new ScannerException("null endpoint at : " +
-                                "class - " + clazz.getName() + " , " +
-                                "method - " + method.getName());
+                        throw new ScannerException(
+                                "null endpoint at : " + "class - " + clazz.getName() + " , " + "method - " +
+                                        method.getName());
                     }
                 }
 
@@ -115,19 +114,14 @@ public final class EndpointScanner {
 
                 logger.atTrace().log(reqMethod.name() + " endpoint found @ " + clazz.getPackageName() + " - " +
                         clazz.getSimpleName() + method.getName());
-                database.addEndpointData(new ReqEndpoint(
-                                (serverConfiguration.isIgnoreEndpointCases() ?
-                                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
-                                        clazz.getAnnotation(HttpEndpoint.class).value()) +
-                                        (serverConfiguration.isIgnoreEndpointCases() ?
-                                                endpointValue.toLowerCase(Locale.US) : endpointValue),
-                                reqMethod, clazz, method, statusAnnotation,
-                                serverConfiguration.isIgnoreEndpointCases() ?
-                                        statusAnnotationValue == null ?
-                                                null : statusAnnotationValue.toLowerCase(Locale.US) :
-                                        statusAnnotationValue
-                        )
-                                        );
+                database.addEndpointData(new ReqEndpoint((serverConfiguration.isIgnoreEndpointCases() ?
+                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
+                        clazz.getAnnotation(HttpEndpoint.class).value()) +
+                        (serverConfiguration.isIgnoreEndpointCases() ? endpointValue.toLowerCase(Locale.US) :
+                                endpointValue), reqMethod, authenticated, clazz, method, statusAnnotation,
+                        serverConfiguration.isIgnoreEndpointCases() ?
+                                statusAnnotationValue == null ? null : statusAnnotationValue.toLowerCase(Locale.US) :
+                                statusAnnotationValue));
             }
         }
         logger.atTrace().log("endpoint scanning done.");

@@ -57,15 +57,13 @@ public final class FileScanner {
                     continue;
                 }
 
-                String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path)
-                        .toString().replaceAll("\\\\", "/");
+                String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path).toString()
+                        .replaceAll("\\\\", "/");
                 database.addEndpointData(new ReqFile(
-                                serverConfiguration.isIgnoreEndpointCases() ?
-                                        endpointName.toLowerCase(Locale.US) : endpointName,
-                                // TODO http date format
-                                Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(),
-                                calculateETag(path))
-                                        );
+                        serverConfiguration.isIgnoreEndpointCases() ? endpointName.toLowerCase(Locale.US) :
+                                endpointName, false,
+                        // TODO http date format
+                        Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(), calculateETag(path)));
             }
         } catch (Exception e) {
             throw new RuntimeException(e);

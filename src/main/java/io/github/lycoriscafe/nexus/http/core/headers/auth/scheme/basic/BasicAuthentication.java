@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme;
+package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic;
 
-public class BasicAuthentication implements Authentication {
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
+
+public final class BasicAuthentication extends Authentication {
     private final String realm;
     private String charset = "UTF-8";
 

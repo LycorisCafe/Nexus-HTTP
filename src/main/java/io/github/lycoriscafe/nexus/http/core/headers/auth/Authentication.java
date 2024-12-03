@@ -16,20 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.Authentication;
-
 import java.util.HashSet;
 import java.util.List;
 
-public final class WWWAuthentication {
-    private final HashSet<Authentication> authentications;
+public abstract class Authentication {
+    private HashSet<Authentication> authentications;
 
-    public WWWAuthentication(Authentication authentication) {
-        authentications = new HashSet<>();
-        authentications.add(authentication);
-    }
-
-    public WWWAuthentication addAuthentications(Authentication authentication) {
+    public Authentication addAuthentications(final Authentication authentication) {
+        if (authentications == null) authentications = new HashSet<>();
         authentications.add(authentication);
         return this;
     }
@@ -38,12 +32,14 @@ public final class WWWAuthentication {
         return authentications.stream().toList();
     }
 
-    public static String processOutgoingAuth(final WWWAuthentication wwwAuthentications) {
-        if (wwwAuthentications == null) return "";
+    public static String processOutgoingAuth(final Authentication authentications) {
+        if (authentications == null) return "";
         StringBuilder output = new StringBuilder();
-        for (Authentication authentication : wwwAuthentications.getAuthentications()) {
+        for (Authentication authentication : authentications.getAuthentications()) {
             output.append("WWW-Authenticate:").append(" ").append(authentication.processOutgoingAuth()).append("\r\n");
         }
         return output.toString();
     }
+
+    public abstract String processOutgoingAuth();
 }

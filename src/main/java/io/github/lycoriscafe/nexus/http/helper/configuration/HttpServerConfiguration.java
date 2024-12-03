@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.helper.configuration;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.WWWAuthentication;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
@@ -49,7 +49,7 @@ public final class HttpServerConfiguration {
     private int maxChunkSize = 5_242_880;
 
     private HashSet<Header> defaultHeaders = null;
-    private WWWAuthentication defaultAuthentications = null;
+    private Authentication defaultAuthentications = null;
     private HashSet<Cookie> defaultCookies = null;
     private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
@@ -171,7 +171,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultAuthentications(final WWWAuthentication defaultAuthentications) {
+    public HttpServerConfiguration defaultAuthentications(final Authentication defaultAuthentications) {
         this.defaultAuthentications = defaultAuthentications;
         return this;
     }
@@ -283,7 +283,7 @@ public final class HttpServerConfiguration {
         return defaultHeaders;
     }
 
-    public WWWAuthentication getDefaultAuthentications() {
+    public Authentication getDefaultAuthentications() {
         return defaultAuthentications;
     }
 

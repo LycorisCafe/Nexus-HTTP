@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.helper;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
@@ -60,17 +61,32 @@ public final class Database {
     }
 
     private static void buildDatabase(final Connection conn) throws SQLException {
-        String[] queries = {"PRAGMA foreign_keys = ON;",
+        String[] queries = {
+                "PRAGMA foreign_keys = ON;",
                 // Mater table
-                "CREATE TABLE ReqMaster(" + "ROWID INTEGER PRIMARY KEY," + "endpoint TEXT NOT NULL," +
-                        "reqMethod TEXT NOT NULL" + ");",
+                "CREATE TABLE ReqMaster(" +
+                        "ROWID INTEGER PRIMARY KEY," +
+                        "endpoint TEXT NOT NULL," +
+                        "reqMethod TEXT NOT NULL," +
+                        "authenticated TEXT NOT NULL" +
+                        ");",
                 // Handle GET, POST, PUT, PATCH, DELETE
-                "CREATE TABLE ReqEndpoint(" + "ROWID INTEGER," + "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," + "statusAnnotation TEXT," + "statusAnnotationValue TEXT," +
-                        "FOREIGN KEY(ROWID) REFERENCES ReqMaster(ROWID)" + ");",
+                "CREATE TABLE ReqEndpoint(" +
+                        "ROWID INTEGER," +
+                        "className TEXT NOT NULL," +
+                        "methodName TEXT NOT NULL," +
+                        "statusAnnotation TEXT," +
+                        "statusAnnotationValue TEXT," +
+                        "FOREIGN KEY(ROWID) REFERENCES ReqMaster(ROWID)" +
+                        ");",
                 // Handle static files GET
-                "CREATE TABLE ReqFile(" + "ROWID INTEGER," + "lastModified TEXT NOT NULL," + "eTag TEXT NOT NULL," +
-                        "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" + ");"};
+                "CREATE TABLE ReqFile(" +
+                        "ROWID INTEGER," +
+                        "lastModified TEXT NOT NULL," +
+                        "eTag TEXT NOT NULL," +
+                        "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
+                        ");"
+        };
 
         for (String query : queries) {
             try (Statement stmt = conn.createStatement()) {
@@ -80,10 +96,11 @@ public final class Database {
     }
 
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException {
-        PreparedStatement masterQuery =
-                databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod) VALUES (?, ?)");
+        PreparedStatement masterQuery = databaseConnection.prepareStatement(
+                "INSERT INTO ReqMaster (endpoint, reqMethod, authenticated) VALUES (?, ?, ?)");
         masterQuery.setString(1, model.getRequestEndpoint());
         masterQuery.setString(2, model.getReqMethod().name());
+        masterQuery.setBoolean(3, model.isAuthenticated());
         masterQuery.executeUpdate();
         masterQuery.close();
 
@@ -97,7 +114,7 @@ public final class Database {
                         "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue) " +
                         "VALUES (?, ?, ?, ?, ?)");
                 subQuery.setInt(1, rowId);
-                subQuery.setString(2, endpoint.getClassName());
+                subQuery.setString(2, endpoint.getClazz().getName());
                 subQuery.setString(3, endpoint.getMethod().getName());
                 subQuery.setString(4,
                         endpoint.getStatusAnnotation() == null ? null : endpoint.getStatusAnnotation().toString());
@@ -135,7 +152,8 @@ public final class Database {
 
             try {
                 Class<?> clazz = Class.forName(rs2.getString(2));
-                endpoint = new ReqEndpoint(httpRequest.getEndpoint(), httpRequest.getRequestMethod(), clazz,
+                endpoint = new ReqEndpoint(rs.getString(2), HttpRequestMethod.valueOf(rs.getString(3)),
+                        rs.getBoolean(4), clazz,
                         clazz.getMethod(rs2.getString(3), switch (httpRequest.getRequestMethod()) {
                             case CONNECT, TRACE -> null;
                             case DELETE -> HttpDeleteRequest.class;

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme;
+package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic;
 
-public interface Authentication {
-    String processOutgoingAuth();
+public record BasicAuthorization(String username, String password) {
 }

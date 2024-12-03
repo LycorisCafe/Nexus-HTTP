@@ -17,11 +17,9 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 public final class Authorization {
-    private final AuthScheme authScheme;
-    private String username;
-    private char[] password;
+    private AuthScheme authScheme;
 
-    public Authorization(final AuthScheme authScheme) {
+    public void setAuthScheme(final AuthScheme authScheme) {
         this.authScheme = authScheme;
     }
 
@@ -29,7 +27,8 @@ public final class Authorization {
         return authScheme;
     }
 
-    public String processIncomingHeader() {
-        return "";
+    public static Authorization processIncomingAuth(final String auth) {
+        String[] parts = auth.split(" ");
+        return null;
     }
 }

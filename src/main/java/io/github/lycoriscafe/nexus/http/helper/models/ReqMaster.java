@@ -21,11 +21,14 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     private final String requestEndpoint;
     private final HttpRequestMethod reqMethod;
+    private final boolean authenticated;
 
     public ReqMaster(final String requestEndpoint,
-                     final HttpRequestMethod reqMethod) {
+                     final HttpRequestMethod reqMethod,
+                     final boolean authenticated) {
         this.requestEndpoint = requestEndpoint;
         this.reqMethod = reqMethod;
+        this.authenticated = authenticated;
     }
 
     public String getRequestEndpoint() {
@@ -34,5 +37,9 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
 
     public HttpRequestMethod getReqMethod() {
         return reqMethod;
+    }
+
+    public boolean isAuthenticated() {
+        return authenticated;
     }
 }

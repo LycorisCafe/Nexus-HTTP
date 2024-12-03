@@ -29,11 +29,12 @@ public final class ReqEndpoint extends ReqMaster {
 
     public ReqEndpoint(final String requestEndpoint,
                        final HttpRequestMethod reqMethod,
+                       final boolean authenticated,
                        final Class<?> className,
                        final Method methodName,
                        final HttpStatusCode statusAnnotation,
                        final String statusAnnotationValue) {
-        super(requestEndpoint, reqMethod);
+        super(requestEndpoint, reqMethod, authenticated);
         this.className = className;
         this.methodName = methodName;
         this.statusAnnotation = statusAnnotation;
@@ -42,10 +43,6 @@ public final class ReqEndpoint extends ReqMaster {
 
     public Class<?> getClazz() {
         return className;
-    }
-
-    public String getClassName() {
-        return className.getName();
     }
 
     public Method getMethod() {

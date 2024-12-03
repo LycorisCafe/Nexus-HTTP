@@ -18,24 +18,7 @@ package io.github.lycoriscafe.nexus.http.core.headers;
 
 import java.util.HashSet;
 
-public final class Header {
-    private final String name;
-    private final String value;
-
-    public Header(final String name,
-                  final String value) {
-        this.name = name;
-        this.value = value;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
+public record Header(String name, String value) {
     public static Header processIncomingHeader(final String[] headerParts) {
         return new Header(headerParts[0].trim(), headerParts[1].trim());
     }
@@ -47,7 +30,7 @@ public final class Header {
 
         StringBuilder output = new StringBuilder();
         for (final Header header : headers) {
-            output.append(header.getName()).append(": ").append(header.getValue()).append("\r\n");
+            output.append(header.name()).append(": ").append(header.value()).append("\r\n");
         }
         return output.toString();
     }
