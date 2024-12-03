@@ -216,7 +216,12 @@ public final class CacheControl {
         if (cacheControl.getStaleIfError() > -1L) {
             if (anyDirectives) output.append(",");
             output.append(" ").append("stale-if-error").append("=").append(cacheControl.getStaleIfError());
+            anyDirectives = true;
         }
-        return output.toString();
+
+        if (anyDirectives) {
+            return output.append("\r\n").toString();
+        }
+        return "";
     }
 }
