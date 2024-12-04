@@ -88,7 +88,7 @@ public final class RequestProcessor {
             if (headerName.equals("cookie")) {
                 httpRequest.setCookies(Cookie.processIncomingCookies(parts[1]));
             } else if (headerName.equals("authorization")) {
-                httpRequest.setAuthentication(Authorization.processIncomingAuth(parts[1]));
+                httpRequest.setAuthorization(Authorization.processIncomingAuth(parts[1]));
             } else {
                 httpRequest.setHeaders(Header.processIncomingHeader(parts));
             }

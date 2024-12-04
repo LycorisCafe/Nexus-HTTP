@@ -94,7 +94,7 @@ public final class HttpResponse {
         return httpStatusCode;
     }
 
-    public HttpResponse setHeaders(final Header header) {
+    public HttpResponse setHeader(final Header header) {
         if (header == null) {
             headers = null;
             return this;
@@ -102,6 +102,11 @@ public final class HttpResponse {
 
         if (headers == null) headers = new HashSet<>();
         headers.add(header);
+        return this;
+    }
+
+    public HttpResponse setHeaders(final HashSet<Header> headers) {
+        this.headers = headers;
         return this;
     }
 
@@ -121,6 +126,11 @@ public final class HttpResponse {
         return this;
     }
 
+    public HttpResponse setCookies(final HashSet<Cookie> cookies) {
+        this.cookies = cookies;
+        return this;
+    }
+
     public List<Cookie> getCookies() {
         if (cookies == null) return null;
         return cookies.stream().toList();
@@ -134,6 +144,11 @@ public final class HttpResponse {
 
         if (reportingEndpoints == null) reportingEndpoints = new HashSet<>();
         reportingEndpoints.add(reportingEndpoint);
+        return this;
+    }
+
+    public HttpResponse setReportingEndpoints(final HashSet<ReportingEndpoint> reportingEndpoints) {
+        this.reportingEndpoints = reportingEndpoints;
         return this;
     }
 
@@ -153,6 +168,11 @@ public final class HttpResponse {
         return this;
     }
 
+    public HttpResponse setContentSecurityPolicies(final HashSet<ContentSecurityPolicy> contentSecurityPolicies) {
+        this.contentSecurityPolicies = contentSecurityPolicies;
+        return this;
+    }
+
     public List<ContentSecurityPolicy> getContentSecurityPolicies() {
         if (contentSecurityPolicies == null) return null;
         return contentSecurityPolicies.stream().toList();
@@ -166,6 +186,11 @@ public final class HttpResponse {
 
         if (this.contentSecurityPolicyReportOnly == null) this.contentSecurityPolicyReportOnly = new HashSet<>();
         this.contentSecurityPolicyReportOnly.add(contentSecurityPolicyReportOnly);
+        return this;
+    }
+
+    public HttpResponse setContentSecurityPolicyReportOnly(final HashSet<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly) {
+        this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
         return this;
     }
 
@@ -209,6 +234,11 @@ public final class HttpResponse {
 
         if (authentications == null) authentications = new HashSet<>();
         authentications.add(authentication);
+        return this;
+    }
+
+    public HttpResponse setAuthentications(final HashSet<Authentication> authentications) {
+        this.authentications = authentications;
         return this;
     }
 

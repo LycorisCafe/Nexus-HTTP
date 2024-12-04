@@ -48,13 +48,13 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     @Override
     public void finalizeRequest() {
         for (Header header : getHeaders()) {
-            if (header.name().equalsIgnoreCase("content-type")) {
+            if (header.getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
                 if (getContentLength(transferEncoding == null || transferEncoding.contains(TransferEncoding.CHUNKED))) {
                     return;
                 }
 
-                String value = header.value().toLowerCase(Locale.US);
+                String value = header.getValue().toLowerCase(Locale.US);
                 Content content = switch (value) {
                     case String x when x.startsWith("multipart/form-data") ->
                             MultiPartFormData.process(getRequestId(), getRequestConsumer(), transferEncoding,
@@ -84,9 +84,9 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
     private boolean getEncodings() {
         for (Header header : getHeaders()) {
-            String headerName = header.name().toLowerCase(Locale.US);
+            String headerName = header.getName().toLowerCase(Locale.US);
             if (headerName.equals("transfer-encoding") || headerName.equals("content-encoding")) {
-                String[] values = header.value().toLowerCase(Locale.US).split(",", 0);
+                String[] values = header.getValue().toLowerCase(Locale.US).split(",", 0);
                 getHeaders().remove(header);
 
                 return switch (headerName) {
@@ -123,9 +123,9 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
     private boolean getContentLength(final boolean optional) {
         for (Header header : getHeaders()) {
-            if (header.name().equalsIgnoreCase("content-length")) {
+            if (header.getName().equalsIgnoreCase("content-length")) {
                 try {
-                    contentLength = Integer.parseInt(header.value());
+                    contentLength = Integer.parseInt(header.getValue());
 
                     if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
                         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE);
