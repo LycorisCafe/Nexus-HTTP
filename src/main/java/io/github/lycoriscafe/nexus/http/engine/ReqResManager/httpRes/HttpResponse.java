@@ -24,6 +24,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
+import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
@@ -39,14 +40,15 @@ public final class HttpResponse {
     private final RequestConsumer requestConsumer;
 
     private final HttpStatusCode httpStatusCode;
-    private Header headers;
+    private HashSet<Header> headers;
     private HashSet<Cookie> cookies;
-    private ContentSecurityPolicy contentSecurityPolicies;
-    private ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly;
+    private HashSet<ReportingEndpoint> reportingEndpoints;
+    private HashSet<ContentSecurityPolicy> contentSecurityPolicies;
+    private HashSet<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly;
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private Authentication authentications;
+    private HashSet<Authentication> authentications;
     private CacheControl cacheControl;
     private Content content;
 
@@ -71,7 +73,7 @@ public final class HttpResponse {
 
         headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
         cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
-        contentSecurityPolicies = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicy();
+        contentSecurityPolicies = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicies();
         contentSecurityPolicyReportOnly =
                 requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
@@ -92,13 +94,20 @@ public final class HttpResponse {
         return httpStatusCode;
     }
 
-    public HttpResponse setHeaders(final Header headers) {
-        this.headers = headers;
+    public HttpResponse setHeaders(final Header header) {
+        if (header == null) {
+            headers = null;
+            return this;
+        }
+
+        if (headers == null) headers = new HashSet<>();
+        headers.add(header);
         return this;
     }
 
-    public Header getHeaders() {
-        return headers;
+    public List<Header> getHeaders() {
+        if (headers == null) return null;
+        return headers.stream().toList();
     }
 
     public HttpResponse setCookie(final Cookie cookie) {
@@ -106,33 +115,63 @@ public final class HttpResponse {
             this.cookies = null;
             return this;
         }
-        if (cookies == null) {
-            cookies = new HashSet<>();
-        }
+
+        if (cookies == null) cookies = new HashSet<>();
         cookies.add(cookie);
         return this;
     }
 
     public List<Cookie> getCookies() {
+        if (cookies == null) return null;
         return cookies.stream().toList();
     }
 
-    public HttpResponse setContentSecurityPolicies(final ContentSecurityPolicy contentSecurityPolicies) {
-        this.contentSecurityPolicies = contentSecurityPolicies;
+    public HttpResponse setReportingEndpoint(final ReportingEndpoint reportingEndpoint) {
+        if (reportingEndpoint == null) {
+            reportingEndpoints = null;
+            return this;
+        }
+
+        if (reportingEndpoints == null) reportingEndpoints = new HashSet<>();
+        reportingEndpoints.add(reportingEndpoint);
         return this;
     }
 
-    public ContentSecurityPolicy getContentSecurityPolicies() {
-        return contentSecurityPolicies;
+    public List<ReportingEndpoint> getReportingEndpoints() {
+        if (reportingEndpoints == null) return null;
+        return reportingEndpoints.stream().toList();
+    }
+
+    public HttpResponse setContentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
+        if (contentSecurityPolicy == null) {
+            contentSecurityPolicies = null;
+            return this;
+        }
+
+        if (contentSecurityPolicies == null) contentSecurityPolicies = new HashSet<>();
+        contentSecurityPolicies.add(contentSecurityPolicy);
+        return this;
+    }
+
+    public List<ContentSecurityPolicy> getContentSecurityPolicies() {
+        if (contentSecurityPolicies == null) return null;
+        return contentSecurityPolicies.stream().toList();
     }
 
     public HttpResponse setContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
-        this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
+        if (contentSecurityPolicyReportOnly == null) {
+            this.contentSecurityPolicyReportOnly = null;
+            return this;
+        }
+
+        if (this.contentSecurityPolicyReportOnly == null) this.contentSecurityPolicyReportOnly = new HashSet<>();
+        this.contentSecurityPolicyReportOnly.add(contentSecurityPolicyReportOnly);
         return this;
     }
 
-    public ContentSecurityPolicyReportOnly getContentSecurityPolicyReportOnly() {
-        return contentSecurityPolicyReportOnly;
+    public List<ContentSecurityPolicyReportOnly> getContentSecurityPolicyReportOnly() {
+        if (contentSecurityPolicyReportOnly == null) return null;
+        return contentSecurityPolicyReportOnly.stream().toList();
     }
 
     public HttpResponse setStrictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
@@ -163,12 +202,19 @@ public final class HttpResponse {
     }
 
     public HttpResponse setAuthentication(final Authentication authentication) {
-        this.authentications = authentication;
+        if (authentication == null) {
+            authentications = null;
+            return this;
+        }
+
+        if (authentications == null) authentications = new HashSet<>();
+        authentications.add(authentication);
         return this;
     }
 
-    public Authentication getAuthentications() {
-        return authentications;
+    public List<Authentication> getAuthentications() {
+        if (authentications == null) return null;
+        return authentications.stream().toList();
     }
 
     public HttpResponse setCashControl(final CacheControl cacheControl) {
@@ -205,17 +251,20 @@ public final class HttpResponse {
                             .append("\r\n").append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
                             .append("Connection:").append(" ").append("keep-alive").append("\r\n")
 
-                            .append(Header.processOutgoingHeader(headers))
-                            .append(Cookie.processOutgoingCookies(cookies))
-                            .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicies,
-                                    contentSecurityPolicyReportOnly))
-                            .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
-                            .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
-                            .append(Authentication.processOutgoingAuthentication(authentications))
-                            .append(CacheControl.processOutgoingCacheControl(cacheControl))
-                            .append(Content.WriteOperations.processOutgoingContent(content));
+                            .append(Header.processOutgoingHeaders(getHeaders()))
+                            .append(Cookie.processOutgoingCookies(getCookies()))
+                            .append(ReportingEndpoint.processOutgoingReportingEndpoints(getReportingEndpoints()))
+                            .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(),
+                                    false))
+                            .append(ContentSecurityPolicyReportOnly.processOutgoingCsp(
+                                    getContentSecurityPolicyReportOnly(), true))
+                            .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
+                            .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
+                            .append(Authentication.processOutgoingAuthentication(getAuthentications()))
+                            .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
+                            .append(Content.WriteOperations.processOutgoingContent(getContent()));
 
-            if (xContentTypeOptionsNoSniff) {
+            if (isXContentTypeOptionsNoSniff()) {
                 output.append("X-Content-Type-Options: nosniff").append("\r\n");
             }
 

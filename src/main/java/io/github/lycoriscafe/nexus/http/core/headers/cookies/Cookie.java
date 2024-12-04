@@ -16,7 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
-import java.util.HashSet;
+import java.util.List;
 
 public final class Cookie {
     private final String name;
@@ -134,7 +134,7 @@ public final class Cookie {
         return cookies;
     }
 
-    public static String processOutgoingCookies(final HashSet<Cookie> cookies) {
+    public static String processOutgoingCookies(final List<Cookie> cookies) {
         if (cookies == null || cookies.isEmpty()) return "";
 
         StringBuilder output = new StringBuilder();

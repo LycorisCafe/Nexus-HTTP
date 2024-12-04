@@ -16,5 +16,11 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
+import java.util.HashSet;
+
 public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
+    public ContentSecurityPolicyReportOnly(final CSPDirective directive,
+                                           final HashSet<String> values) {
+        super(directive, values);
+    }
 }

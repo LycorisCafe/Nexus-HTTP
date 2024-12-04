@@ -16,31 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-import java.util.HashSet;
 import java.util.List;
 
-public class Authentication {
-    private final HashSet<Authentication> authentications;
-
-    public Authentication() {
-        authentications = new HashSet<>();
-    }
-
-    public Authentication addAuthentication(final Authentication authentication) {
-        if (authentication == null) throw new NullPointerException("authentication cannot be null");
-        authentications.add(authentication);
-        return this;
-    }
-
-    public List<Authentication> getAuthentications() {
-        return authentications.stream().toList();
-    }
-
-    public static String processOutgoingAuthentication(final Authentication authentications) {
-        if (authentications == null) return "";
+public abstract class Authentication {
+    public static String processOutgoingAuthentication(final List<Authentication> authentications) {
+        if (authentications == null || authentications.isEmpty()) return "";
 
         StringBuilder output = new StringBuilder();
-        for (Authentication authentication : authentications.getAuthentications()) {
+        for (Authentication authentication : authentications) {
             output.append("WWW-Authenticate:").append(" ").append(authentication.processOutgoingAuth()).append("\r\n");
         }
         return output.toString();
@@ -51,7 +34,5 @@ public class Authentication {
      *
      * @return
      */
-    public String processOutgoingAuth() {
-        return null;
-    }
+    public abstract String processOutgoingAuth();
 }

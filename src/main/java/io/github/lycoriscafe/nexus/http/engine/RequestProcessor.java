@@ -77,7 +77,6 @@ public final class RequestProcessor {
                 httpRequest.setParameters(decodeParams(uriParts[1]));
             }
             default -> {
-                System.out.println("x");
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 return;
             }

@@ -59,17 +59,17 @@ public final class Content {
         this.data = data;
     }
 
+    public Content(final String contentType,
+                   final String data) {
+        this(contentType, data.getBytes(StandardCharsets.UTF_8));
+    }
+
     public String getContentType() {
         return contentType;
     }
 
     public long getContentLength() {
         return contentLength;
-    }
-
-    public Content(final String contentType,
-                   final String data) {
-        this(contentType, data.getBytes(StandardCharsets.UTF_8));
     }
 
     public Content setDownloadName(final String downloadName) {
@@ -281,7 +281,7 @@ public final class Content {
     public static class WriteOperations {
         public static String processOutgoingContent(final Content content) throws IOException {
             if (content == null) {
-                return "";
+                return "Content-Length: 0\r\n";
             }
 
             StringBuilder output =

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers;
+package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 import java.util.List;
 
-public class Header {
+public final class ReportingEndpoint {
     private final String name;
     private final String value;
 
-    public Header(final String name,
-                  final String value) {
+    public ReportingEndpoint(final String name,
+                             final String value) {
         if (name == null || value == null) {
-            throw new NullPointerException("name and value cannot be null");
+            throw new NullPointerException("name/value cannot be null");
         }
         this.name = name;
         this.value = value;
@@ -39,15 +39,13 @@ public class Header {
         return value;
     }
 
-    public static Header processIncomingHeader(final String[] headerParts) {
-        return new Header(headerParts[0].trim(), headerParts[1].trim());
-    }
-
-    public static String processOutgoingHeaders(final List<Header> headers) {
-        if (headers == null || headers.isEmpty()) return "";
-        StringBuilder output = new StringBuilder();
-        for (Header header : headers) {
-            output.append(header.getName()).append(": ").append(header.getValue()).append("\r\n");
+    public static String processOutgoingReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {
+        if (reportingEndpoints == null || reportingEndpoints.isEmpty()) return "";
+        StringBuilder output = new StringBuilder().append("Reporting-Endpoints:");
+        for (int i = 0; i < reportingEndpoints.size(); i++) {
+            output.append(" ").append(reportingEndpoints.get(i).getName()).append("=").append("\"")
+                    .append(reportingEndpoints.get(i).getValue()).append("\"");
+            if (i != reportingEndpoints.size() - 1) output.append(",");
         }
         return output.toString();
     }
