@@ -46,8 +46,7 @@ public class Main {
         HttpServerConfiguration httpServerConfiguration =
                 new HttpServerConfiguration("main.test").setPort(2004).setStaticFilesDirectory(null)
                         .setDatabaseLocation("")
-                        .setDefaultAuthentications(
-                                new Authentication().addAuthentication(new BasicAuthentication("Hello!")))
+                        .setDefaultAuthentications(hs)
                         .setDefaultCacheControl(new CacheControl().setNoCache(true).setNoStore(true));
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
