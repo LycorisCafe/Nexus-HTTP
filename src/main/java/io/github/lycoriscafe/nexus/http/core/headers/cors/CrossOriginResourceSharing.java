@@ -29,7 +29,7 @@ public final class CrossOriginResourceSharing {
     private HashSet<HttpRequestMethod> accessControlAllowMethods;
     private HashSet<String> accessControlAllowHeaders;
 
-    private CrossOriginResourceSharing accessControlAllowOrigin(final String accessControlAllowOrigin) {
+    public CrossOriginResourceSharing accessControlAllowOrigin(final String accessControlAllowOrigin) {
         this.accessControlAllowOrigin = accessControlAllowOrigin;
         return this;
     }
@@ -94,8 +94,8 @@ public final class CrossOriginResourceSharing {
 
     public static String processOutgoingCORS(final CrossOriginResourceSharing crossOriginResourceSharing) {
         if (crossOriginResourceSharing == null) return "";
-        StringBuilder output = new StringBuilder().append("Access-Control-Allow-Origin: ");
 
+        StringBuilder output = new StringBuilder().append("Access-Control-Allow-Origin: ");
         if (crossOriginResourceSharing.getAccessControlAllowOrigin() != null) {
             output.append(crossOriginResourceSharing.getAccessControlAllowOrigin());
         } else {
@@ -121,7 +121,7 @@ public final class CrossOriginResourceSharing {
         }
 
         if (crossOriginResourceSharing.isAccessControlAllowCredentials()) {
-            output.append("Access-Control-Allow-Credentials: ").append("true");
+            output.append("Access-Control-Allow-Credentials: ").append("true").append("\r\n");
         }
 
         if (crossOriginResourceSharing.getAccessControlAllowMethods() != null) {

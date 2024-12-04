@@ -20,32 +20,17 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 
 public final class BasicAuthentication extends Authentication {
     private final String realm;
-    private String charset = "UTF-8";
 
     public BasicAuthentication(String realm) {
         this.realm = realm;
-    }
-
-    public BasicAuthentication setCharset(final String charset) {
-        this.charset = charset;
-        return this;
     }
 
     public String getRealm() {
         return realm;
     }
 
-    public String getCharset() {
-        return charset;
-    }
-
     @Override
     public String processOutgoingAuth() {
-        StringBuilder output = new StringBuilder().append("Basic").append(" ")
-                .append("realm=\"").append(realm).append("\"");
-        if (charset != null) {
-            output.append(", ").append("charset=\"").append(charset).append("\"");
-        }
-        return output.toString();
+        return "Basic realm=\"" + realm + "\", charset=\"UTF-8\"";
     }
 }

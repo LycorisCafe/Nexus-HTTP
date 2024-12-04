@@ -23,6 +23,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
+import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -42,11 +43,10 @@ public class Main {
     public static void main(String[] args) throws ScannerException, SQLException, IOException, HttpServerException {
         HashSet<Authentication> hs = new HashSet<>();
         hs.add(new BasicAuthentication("Hello, world!"));
-        HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration("main.test")
-                .port(2004)
-                .staticFilesDirectory(null)
-                .databaseLocation("")
-                .defaultAuthentications(hs);
+        HttpServerConfiguration httpServerConfiguration =
+                new HttpServerConfiguration("main.test").port(2004).staticFilesDirectory(null).databaseLocation("")
+                        .defaultAuthentications(hs)
+                        .defaultCacheControl(new CacheControl().setNoCache(true).setNoStore(true));
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
     }
@@ -54,18 +54,16 @@ public class Main {
     @GET("/")
     public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
         System.out.println("Method called!");
-        return new HttpResponse(httpGetRequest.getRequestId(),
-                httpGetRequest.getRequestConsumer(),
-                HttpStatusCode.OK)
-                .content(new Content("text/plan", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
+        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
+                HttpStatusCode.OK).content(new Content("text/plan", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
     }
 
     @GET("/test")
     @Authenticated
     public static HttpResponse authTestEndpoint(final HttpGetRequest httpGetRequest) {
+        System.out.println("method called @ " + httpGetRequest.getRequestId());
         System.out.println(((BasicAuthorization) httpGetRequest.getAuthorization()).getUsername());
-        return new HttpResponse(httpGetRequest.getRequestId(),
-                httpGetRequest.getRequestConsumer(),
+        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
                 HttpStatusCode.OK)
                 .content(new Content("text/plan", "Test Endpoint!".getBytes(StandardCharsets.UTF_8)));
     }
@@ -74,10 +72,9 @@ public class Main {
     @Authenticated
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         System.out.println("Method called!");
-        return new HttpResponse(httpGetRequest.getRequestId(),
-                httpGetRequest.getRequestConsumer(),
-                HttpStatusCode.OK)
-                .content(new Content("image/jpg",
+        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
+                HttpStatusCode.OK).content(
+                new Content("image/jpg",
                         Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
     }
 }

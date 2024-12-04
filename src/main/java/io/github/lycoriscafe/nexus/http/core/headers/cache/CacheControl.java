@@ -151,6 +151,7 @@ public final class CacheControl {
 
     public static String processOutgoingCacheControl(final CacheControl cacheControl) {
         if (cacheControl == null) return "";
+
         StringBuilder output = new StringBuilder().append("Cache-Control:");
         boolean anyDirectives = false;
         if (cacheControl.getMaxAge() > -1L) {

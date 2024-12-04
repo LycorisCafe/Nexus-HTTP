@@ -32,7 +32,7 @@ public class Authorization {
     }
 
     public static Authorization processIncomingAuth(final String auth) {
-        String[] parts = auth.split(" ", 2);
+        String[] parts = auth.trim().split(" ", 2);
         return switch (parts[0].trim().toLowerCase(Locale.US)) {
             case "basic" -> BasicAuthorization.processIncomingAuth(parts[1]);
             default -> null;

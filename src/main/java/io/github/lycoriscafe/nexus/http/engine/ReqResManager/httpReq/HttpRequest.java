@@ -175,6 +175,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private void processUnauthorized() {
         requestConsumer.send(
                 new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.UNAUTHORIZED).authentication(
-                        getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
+                                getRequestConsumer().getServerConfiguration().getDefaultAuthentications())
+                        .header(new Header("Content-Length", "0")));
     }
 }

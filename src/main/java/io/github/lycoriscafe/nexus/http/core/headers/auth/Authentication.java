@@ -21,10 +21,12 @@ import java.util.HashSet;
 public abstract class Authentication {
     public static String processOutgoingAuth(final HashSet<Authentication> authentications) {
         if (authentications == null) return "";
+
         StringBuilder output = new StringBuilder();
         for (Authentication authentication : authentications) {
             output.append("WWW-Authenticate:").append(" ").append(authentication.processOutgoingAuth()).append("\r\n");
         }
+
         return output.toString();
     }
 

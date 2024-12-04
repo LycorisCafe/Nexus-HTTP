@@ -21,8 +21,7 @@ public final class StrictTransportSecurity {
     private boolean includeSubdomains;
     private boolean preload;
 
-    private StrictTransportSecurity(final long maxAge)
-            throws StrictTransportSecurityException {
+    private StrictTransportSecurity(final long maxAge) throws StrictTransportSecurityException {
         if (maxAge < 1) {
             throw new StrictTransportSecurityException("max-age cannot be less than 1");
         }
@@ -52,12 +51,9 @@ public final class StrictTransportSecurity {
     }
 
     public static String processOutgoingHSTS(final StrictTransportSecurity hsts) {
-        if (hsts == null) {
-            return "";
-        }
+        if (hsts == null) return "";
 
-        StringBuilder output = new StringBuilder();
-        output.append(hsts.maxAge);
+        StringBuilder output = new StringBuilder().append("Strict-Transport-Security:").append(" ").append(hsts.maxAge);
         if (hsts.preload) {
             return output.append("; includeSubDomains").append("; preload").append("\r\n").toString();
         }

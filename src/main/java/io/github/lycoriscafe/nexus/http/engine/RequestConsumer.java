@@ -145,6 +145,7 @@ public final class RequestConsumer implements Runnable {
                     OutputStream outputStream = socket.getOutputStream();
 
                     String headers = response.finalizeResponse();
+                    System.out.println(headers);
                     if (headers == null) return;
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
@@ -152,6 +153,7 @@ public final class RequestConsumer implements Runnable {
                     if (response.getContent() != null) {
                         Content.WriteOperations.writeContent(this, response.getContent());
                     }
+
 
                     if (response.isDropConnection()) {
                         socket.close();
