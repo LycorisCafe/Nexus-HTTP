@@ -39,14 +39,14 @@ public final class HttpResponse {
     private final RequestConsumer requestConsumer;
 
     private final HttpStatusCode httpStatusCode;
-    private HashSet<Header> headers;
+    private Header headers;
     private HashSet<Cookie> cookies;
-    private ContentSecurityPolicy contentSecurityPolicy;
+    private ContentSecurityPolicy contentSecurityPolicies;
     private ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly;
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private HashSet<Authentication> authentications;
+    private Authentication authentications;
     private CacheControl cacheControl;
     private Content content;
 
@@ -56,7 +56,7 @@ public final class HttpResponse {
                         final RequestConsumer requestConsumer,
                         final HttpStatusCode httpStatusCode) {
         if (requestId < 0) {
-            throw new NullPointerException("invalid response id passed");
+            throw new IllegalStateException("invalid response id passed");
         }
         if (requestConsumer == null) {
             throw new NullPointerException("invalid request consumer passed");
@@ -71,114 +71,13 @@ public final class HttpResponse {
 
         headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
         cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
-        contentSecurityPolicy = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicy();
+        contentSecurityPolicies = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicy();
         contentSecurityPolicyReportOnly =
                 requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
-        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isxContentTypeOptionsNoSniff();
+        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isXContentTypeOptionsNoSniff();
         crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
         cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
-    }
-
-    public HttpResponse header(final Header header) {
-        if (header == null) {
-            logger.atDebug().log("header with null value detected, resetting global settings");
-            headers = null;
-            return this;
-        }
-        if (headers == null) {
-            headers = new HashSet<>();
-        }
-        headers.add(header);
-        return this;
-    }
-
-    public HttpResponse cookie(final Cookie cookie) {
-        if (cookie == null) {
-            logger.atDebug().log("cookie with null value detected, resetting global settings");
-            cookies = null;
-            return this;
-        }
-        if (cookies == null) {
-            cookies = new HashSet<>();
-        }
-        cookies.add(cookie);
-        return this;
-    }
-
-    public HttpResponse contentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
-        if (contentSecurityPolicy == null) {
-            logger.atDebug().log("content security policy with null value detected, resetting global settings");
-            this.contentSecurityPolicy = null;
-            return this;
-        }
-        this.contentSecurityPolicy = contentSecurityPolicy;
-        return this;
-    }
-
-    public HttpResponse contentSecurityPolicy(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
-        if (contentSecurityPolicyReportOnly == null) {
-            logger.atDebug()
-                    .log("content security policy report only with null value detected, resetting global settings");
-            this.contentSecurityPolicyReportOnly = null;
-            return this;
-        }
-        this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
-        return this;
-    }
-
-    public HttpResponse strictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
-        if (strictTransportSecurity == null) {
-            logger.atDebug().log("strict transport security with null value detected, resetting global settings");
-            this.strictTransportSecurity = null;
-            return this;
-        }
-        this.strictTransportSecurity = strictTransportSecurity;
-        return this;
-    }
-
-    public HttpResponse xContentTypeOptionsNoSniff(final boolean xContentTypeOptionsNoSniff) {
-        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
-        return this;
-    }
-
-    public HttpResponse crossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
-        if (crossOriginResourceSharing == null) {
-            logger.atDebug().log("cross origin resource sharing with null value detected, resetting global settings");
-            this.crossOriginResourceSharing = null;
-            return this;
-        }
-        this.crossOriginResourceSharing = crossOriginResourceSharing;
-        return this;
-    }
-
-    public HttpResponse authentication(final HashSet<Authentication> authentication) {
-        this.authentications = authentication;
-        return this;
-    }
-
-    public HttpResponse cashControl(final CacheControl cacheControl) {
-        if (cacheControl == null) {
-            logger.atDebug().log("cache control with null value detected, resetting global settings");
-            this.cacheControl = null;
-            return this;
-        }
-        this.cacheControl = cacheControl;
-        return this;
-    }
-
-    public HttpResponse content(final Content content) {
-        if (content == null) {
-            logger.atDebug().log("content with null value detected, resetting global settings");
-            return this;
-        }
-        this.content = content;
-        return this;
-    }
-
-    public HttpResponse dropConnection(final boolean dropConnection) {
-        this.dropConnection = dropConnection;
-        return this;
     }
 
     public long getRequestId() {
@@ -193,44 +92,106 @@ public final class HttpResponse {
         return httpStatusCode;
     }
 
-    public List<Header> getHeaders() {
-        return headers.stream().toList();
+    public HttpResponse setHeaders(final Header headers) {
+        this.headers = headers;
+        return this;
+    }
+
+    public Header getHeaders() {
+        return headers;
+    }
+
+    public HttpResponse setCookie(final Cookie cookie) {
+        if (cookie == null) {
+            this.cookies = null;
+            return this;
+        }
+        if (cookies == null) {
+            cookies = new HashSet<>();
+        }
+        cookies.add(cookie);
+        return this;
     }
 
     public List<Cookie> getCookies() {
         return cookies.stream().toList();
     }
 
-    public ContentSecurityPolicy getContentSecurityPolicy() {
-        return contentSecurityPolicy;
+    public HttpResponse setContentSecurityPolicies(final ContentSecurityPolicy contentSecurityPolicies) {
+        this.contentSecurityPolicies = contentSecurityPolicies;
+        return this;
+    }
+
+    public ContentSecurityPolicy getContentSecurityPolicies() {
+        return contentSecurityPolicies;
+    }
+
+    public HttpResponse setContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
+        this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
+        return this;
     }
 
     public ContentSecurityPolicyReportOnly getContentSecurityPolicyReportOnly() {
         return contentSecurityPolicyReportOnly;
     }
 
+    public HttpResponse setStrictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
+        this.strictTransportSecurity = strictTransportSecurity;
+        return this;
+    }
+
     public StrictTransportSecurity getStrictTransportSecurity() {
         return strictTransportSecurity;
+    }
+
+    public HttpResponse setXContentTypeOptionsNoSniff(final boolean xContentTypeOptionsNoSniff) {
+        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
+        return this;
     }
 
     public boolean isXContentTypeOptionsNoSniff() {
         return xContentTypeOptionsNoSniff;
     }
 
+    public HttpResponse setCrossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
+        this.crossOriginResourceSharing = crossOriginResourceSharing;
+        return this;
+    }
+
     public CrossOriginResourceSharing getCrossOriginResourceSharing() {
         return crossOriginResourceSharing;
     }
 
-    public HashSet<Authentication> getWWWAuthentications() {
+    public HttpResponse setAuthentication(final Authentication authentication) {
+        this.authentications = authentication;
+        return this;
+    }
+
+    public Authentication getAuthentications() {
         return authentications;
+    }
+
+    public HttpResponse setCashControl(final CacheControl cacheControl) {
+        this.cacheControl = cacheControl;
+        return this;
     }
 
     public CacheControl getCacheControl() {
         return cacheControl;
     }
 
+    public HttpResponse setContent(final Content content) {
+        this.content = content;
+        return this;
+    }
+
     public Content getContent() {
         return content;
+    }
+
+    public HttpResponse setDropConnection(final boolean dropConnection) {
+        this.dropConnection = dropConnection;
+        return this;
     }
 
     public boolean isDropConnection() {
@@ -246,11 +207,11 @@ public final class HttpResponse {
 
                             .append(Header.processOutgoingHeader(headers))
                             .append(Cookie.processOutgoingCookies(cookies))
-                            .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicy,
+                            .append(ContentSecurityPolicy.processOutgoingCsp(contentSecurityPolicies,
                                     contentSecurityPolicyReportOnly))
                             .append(StrictTransportSecurity.processOutgoingHSTS(strictTransportSecurity))
                             .append(CrossOriginResourceSharing.processOutgoingCORS(crossOriginResourceSharing))
-                            .append(Authentication.processOutgoingAuth(authentications))
+                            .append(Authentication.processOutgoingAuthentication(authentications))
                             .append(CacheControl.processOutgoingCacheControl(cacheControl))
                             .append(Content.WriteOperations.processOutgoingContent(content));
 

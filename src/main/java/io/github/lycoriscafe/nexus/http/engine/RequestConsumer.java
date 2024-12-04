@@ -129,7 +129,7 @@ public final class RequestConsumer implements Runnable {
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode) {
         logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode);
-        send(new HttpResponse(requestId, this, httpStatusCode).dropConnection(true));
+        send(new HttpResponse(requestId, this, httpStatusCode).setDropConnection(true));
     }
 
     public synchronized void send(final HttpResponse httpResponse) {

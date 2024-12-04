@@ -43,13 +43,12 @@ public final class HttpServerConfiguration {
     private boolean ignoreEndpointCases = true;
     private int maxHeadersPerRequest = 50;
     private int maxIncomingConnections = 100;
-    private int pipelineParallelProcesses = 1;
     private int maxContentLength = 5_242_880;
     private int maxChunkedContentLength = 104_857_600;
     private int maxChunkSize = 5_242_880;
 
-    private HashSet<Header> defaultHeaders = null;
-    private HashSet<Authentication> defaultAuthentications = null;
+    private Header defaultHeaders = null;
+    private Authentication defaultAuthentications = null;
     private HashSet<Cookie> defaultCookies = null;
     private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
@@ -62,27 +61,47 @@ public final class HttpServerConfiguration {
         this.basePackage = basePackage;
     }
 
-    public HttpServerConfiguration port(final int port) {
+    public String getBasePackage() {
+        return basePackage;
+    }
+
+    public HttpServerConfiguration setPort(final int port) {
         this.port = port;
         return this;
     }
 
-    public HttpServerConfiguration backlog(final int backlog) {
+    public int getPort() {
+        return port;
+    }
+
+    public HttpServerConfiguration setBacklog(final int backlog) {
         this.backlog = backlog;
         return this;
     }
 
-    public HttpServerConfiguration inetAddress(final InetAddress inetAddress) {
+    public int getBacklog() {
+        return backlog;
+    }
+
+    public HttpServerConfiguration setInetAddress(final InetAddress inetAddress) {
         this.inetAddress = inetAddress;
         return this;
     }
 
-    public HttpServerConfiguration connectionTimeout(final int connectionTimeout) {
+    public InetAddress getInetAddress() {
+        return inetAddress;
+    }
+
+    public HttpServerConfiguration setConnectionTimeout(final int connectionTimeout) {
         this.connectionTimeout = connectionTimeout;
         return this;
     }
 
-    public HttpServerConfiguration threadType(final ThreadType threadType)
+    public int getConnectionTimeout() {
+        return connectionTimeout;
+    }
+
+    public HttpServerConfiguration setThreadType(final ThreadType threadType)
             throws HttpServerConfigurationException {
         if (threadType == null) {
             throw new HttpServerConfigurationException("thread type cannot be null");
@@ -91,29 +110,49 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration tempDirectory(final String tempDirectory) {
+    public ThreadType getThreadType() {
+        return threadType;
+    }
+
+    public HttpServerConfiguration setTempDirectory(final String tempDirectory) {
         if (tempDirectory != null) {
             this.tempDirectory = tempDirectory;
         }
         return this;
     }
 
-    public HttpServerConfiguration staticFilesDirectory(final String staticFilesDirectory) {
+    public String getTempDirectory() {
+        return tempDirectory;
+    }
+
+    public HttpServerConfiguration setStaticFilesDirectory(final String staticFilesDirectory) {
         this.staticFilesDirectory = staticFilesDirectory;
         return this;
     }
 
-    public HttpServerConfiguration databaseLocation(final String databaseLocation) {
+    public String getStaticFilesDirectory() {
+        return staticFilesDirectory;
+    }
+
+    public HttpServerConfiguration setDatabaseLocation(final String databaseLocation) {
         this.databaseLocation = databaseLocation;
         return this;
     }
 
-    public HttpServerConfiguration ignoreEndpointCases(final boolean ignoreEndpointCases) {
+    public String getDatabaseLocation() {
+        return databaseLocation;
+    }
+
+    public HttpServerConfiguration setIgnoreEndpointCases(final boolean ignoreEndpointCases) {
         this.ignoreEndpointCases = ignoreEndpointCases;
         return this;
     }
 
-    public HttpServerConfiguration maxHeadersPerRequest(final int maxHeadersPerRequest)
+    public boolean isIgnoreEndpointCases() {
+        return ignoreEndpointCases;
+    }
+
+    public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest)
             throws HttpServerConfigurationException {
         if (maxHeadersPerRequest < 2) {
             throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
@@ -122,7 +161,11 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxIncomingConnections(final int maxIncomingConnections)
+    public int getMaxHeadersPerRequest() {
+        return maxHeadersPerRequest;
+    }
+
+    public HttpServerConfiguration setMaxIncomingConnections(final int maxIncomingConnections)
             throws HttpServerConfigurationException {
         if (maxIncomingConnections < 1) {
             throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
@@ -131,16 +174,11 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration pipelineParallelProcesses(final int pipelineParallelProcesses)
-            throws HttpServerConfigurationException {
-        if (pipelineParallelProcesses < 1) {
-            throw new HttpServerConfigurationException("pipeline processes count cannot be less than 1");
-        }
-        this.pipelineParallelProcesses = pipelineParallelProcesses;
-        return this;
+    public int getMaxIncomingConnections() {
+        return maxIncomingConnections;
     }
 
-    public HttpServerConfiguration maxContentLength(final int maxContentLength)
+    public HttpServerConfiguration setMaxContentLength(final int maxContentLength)
             throws HttpServerConfigurationException {
         if (maxContentLength < 1) {
             throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
@@ -149,7 +187,11 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxChunkedContentLength(final int maxChunkedContentLength)
+    public int getMaxContentLength() {
+        return maxContentLength;
+    }
+
+    public HttpServerConfiguration setMaxChunkedContentLength(final int maxChunkedContentLength)
             throws HttpServerConfigurationException {
         if (maxChunkedContentLength < 1) {
             throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
@@ -158,7 +200,11 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration maxChunkSize(final int maxChunkSize) throws HttpServerConfigurationException {
+    public int getMaxChunkedContentLength() {
+        return maxChunkedContentLength;
+    }
+
+    public HttpServerConfiguration setMaxChunkSize(final int maxChunkSize) throws HttpServerConfigurationException {
         if (maxChunkSize < 1) {
             throw new HttpServerConfigurationException("max chunk size cannot be less than 1 (bytes)");
         }
@@ -166,152 +212,92 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultHeaders(final HashSet<Header> defaultHeaders) {
-        this.defaultHeaders = defaultHeaders;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultAuthentications(final HashSet<Authentication> defaultAuthentications) {
-        this.defaultAuthentications = defaultAuthentications;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultCookies(final HashSet<Cookie> defaultCookies) {
-        this.defaultCookies = defaultCookies;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultCrossOriginResourceSharing(
-            final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
-        this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultContentSecurityPolicy(
-            final ContentSecurityPolicy defaultContentSecurityPolicy) {
-        this.defaultContentSecurityPolicy = defaultContentSecurityPolicy;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultContentSecurityPolicyReportOnly(
-            final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
-        this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultStrictTransportSecurity(
-            final StrictTransportSecurity defaultStrictTransportSecurity) {
-        this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
-        return this;
-    }
-
-    public HttpServerConfiguration defaultCacheControl(final CacheControl cacheControl) {
-        this.defaultCacheControl = cacheControl;
-        return this;
-    }
-
-    public HttpServerConfiguration xContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
-        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
-        return this;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public int getBacklog() {
-        return backlog;
-    }
-
-    public InetAddress getInetAddress() {
-        return inetAddress;
-    }
-
-    public int getConnectionTimeout() {
-        return connectionTimeout;
-    }
-
-    public ThreadType getThreadType() {
-        return threadType;
-    }
-
-    public String getBasePackage() {
-        return basePackage;
-    }
-
-    public String getTempDirectory() {
-        return tempDirectory;
-    }
-
-    public String getStaticFilesDirectory() {
-        return staticFilesDirectory;
-    }
-
-    public String getDatabaseLocation() {
-        return databaseLocation;
-    }
-
-    public boolean isIgnoreEndpointCases() {
-        return ignoreEndpointCases;
-    }
-
-    public int getMaxHeadersPerRequest() {
-        return maxHeadersPerRequest;
-    }
-
-    public int getMaxIncomingConnections() {
-        return maxIncomingConnections;
-    }
-
-    public int getPipelineParallelProcesses() {
-        return pipelineParallelProcesses;
-    }
-
-    public int getMaxContentLength() {
-        return maxContentLength;
-    }
-
-    public int getMaxChunkedContentLength() {
-        return maxChunkedContentLength;
-    }
-
     public int getMaxChunkSize() {
         return maxChunkSize;
     }
 
-    public HashSet<Header> getDefaultHeaders() {
+    public HttpServerConfiguration setDefaultHeaders(final Header defaultHeaders) {
+        this.defaultHeaders = defaultHeaders;
+        return this;
+    }
+
+    public Header getDefaultHeaders() {
         return defaultHeaders;
     }
 
-    public HashSet<Authentication> getDefaultAuthentications() {
+    public HttpServerConfiguration setDefaultAuthentications(final Authentication defaultAuthentications) {
+        this.defaultAuthentications = defaultAuthentications;
+        return this;
+    }
+
+    public Authentication getDefaultAuthentications() {
         return defaultAuthentications;
+    }
+
+    public HttpServerConfiguration setDefaultCookies(final HashSet<Cookie> defaultCookies) {
+        this.defaultCookies = defaultCookies;
+        return this;
     }
 
     public HashSet<Cookie> getDefaultCookies() {
         return defaultCookies;
     }
 
+    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(
+            final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
+        this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
+        return this;
+    }
+
     public CrossOriginResourceSharing getDefaultCrossOriginResourceSharing() {
         return defaultCrossOriginResourceSharing;
+    }
+
+    public HttpServerConfiguration setDefaultContentSecurityPolicy(
+            final ContentSecurityPolicy defaultContentSecurityPolicy) {
+        this.defaultContentSecurityPolicy = defaultContentSecurityPolicy;
+        return this;
     }
 
     public ContentSecurityPolicy getDefaultContentSecurityPolicy() {
         return defaultContentSecurityPolicy;
     }
 
+    public HttpServerConfiguration setDefaultContentSecurityPolicyReportOnly(
+            final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
+        this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
+        return this;
+    }
+
     public ContentSecurityPolicyReportOnly getDefaultContentSecurityPolicyReportOnly() {
         return defaultContentSecurityPolicyReportOnly;
+    }
+
+    public HttpServerConfiguration setDefaultStrictTransportSecurity(
+            final StrictTransportSecurity defaultStrictTransportSecurity) {
+        this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
+        return this;
     }
 
     public StrictTransportSecurity getDefaultStrictTransportSecurity() {
         return defaultStrictTransportSecurity;
     }
 
+    public HttpServerConfiguration setDefaultCacheControl(final CacheControl cacheControl) {
+        this.defaultCacheControl = cacheControl;
+        return this;
+    }
+
     public CacheControl getDefaultCacheControl() {
         return defaultCacheControl;
     }
 
-    public boolean isxContentTypeOptionsNoSniff() {
+    public HttpServerConfiguration setXContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
+        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
+        return this;
+    }
+
+    public boolean isXContentTypeOptionsNoSniff() {
         return xContentTypeOptionsNoSniff;
     }
 }

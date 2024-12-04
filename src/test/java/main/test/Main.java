@@ -44,9 +44,11 @@ public class Main {
         HashSet<Authentication> hs = new HashSet<>();
         hs.add(new BasicAuthentication("Hello, world!"));
         HttpServerConfiguration httpServerConfiguration =
-                new HttpServerConfiguration("main.test").port(2004).staticFilesDirectory(null).databaseLocation("")
-                        .defaultAuthentications(hs)
-                        .defaultCacheControl(new CacheControl().setNoCache(true).setNoStore(true));
+                new HttpServerConfiguration("main.test").setPort(2004).setStaticFilesDirectory(null)
+                        .setDatabaseLocation("")
+                        .setDefaultAuthentications(
+                                new Authentication().addAuthentication(new BasicAuthentication("Hello!")))
+                        .setDefaultCacheControl(new CacheControl().setNoCache(true).setNoStore(true));
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
     }
@@ -55,7 +57,8 @@ public class Main {
     public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
         System.out.println("Method called!");
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
-                HttpStatusCode.OK).content(new Content("text/plan", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
+                HttpStatusCode.OK).setContent(
+                new Content("text/plan", "Hello, world!".getBytes(StandardCharsets.UTF_8)));
     }
 
     @GET("/test")
@@ -65,7 +68,7 @@ public class Main {
         System.out.println(((BasicAuthorization) httpGetRequest.getAuthorization()).getUsername());
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
                 HttpStatusCode.OK)
-                .content(new Content("text/plan", "Test Endpoint!".getBytes(StandardCharsets.UTF_8)));
+                .setContent(new Content("text/plan", "Test Endpoint!".getBytes(StandardCharsets.UTF_8)));
     }
 
     @GET("/img")
@@ -73,7 +76,7 @@ public class Main {
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         System.out.println("Method called!");
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(),
-                HttpStatusCode.OK).content(
+                HttpStatusCode.OK).setContent(
                 new Content("image/jpg",
                         Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
     }

@@ -153,29 +153,29 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     private void processStatusAnnotation(final ReqEndpoint reqEndpoint) {
         requestConsumer.send(switch (reqEndpoint.getStatusAnnotation()) {
-            case FOUND -> new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.FOUND).header(
-                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case FOUND -> new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.FOUND).setHeaders(
+                    new Header().addHeader("Location", reqEndpoint.getStatusAnnotationValue()));
             case GONE -> new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.GONE);
             case MOVED_PERMANENTLY ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).header(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeaders(
+                            new Header().addHeader("Location", reqEndpoint.getStatusAnnotationValue()));
             case PERMANENT_REDIRECT ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).header(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeaders(
+                            new Header().addHeader("Location", reqEndpoint.getStatusAnnotationValue()));
             case TEMPORARY_REDIRECT ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).header(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeaders(
+                            new Header().addHeader("Location", reqEndpoint.getStatusAnnotationValue()));
             case UNAVAILABLE_FOR_LEGAL_REASONS -> new HttpResponse(requestId, getRequestConsumer(),
-                    HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).header(
-                    new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
+                    HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).setHeaders(
+                    new Header().addHeader("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
             default -> throw new IllegalStateException("Unexpected value: " + reqEndpoint.getStatusAnnotation());
         });
     }
 
     private void processUnauthorized() {
         requestConsumer.send(
-                new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.UNAUTHORIZED).authentication(
+                new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.UNAUTHORIZED).setAuthentication(
                                 getRequestConsumer().getServerConfiguration().getDefaultAuthentications())
-                        .header(new Header("Content-Length", "0")));
+                        .setHeaders(new Header().addHeader("Content-Length", "0")));
     }
 }
