@@ -17,7 +17,6 @@
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
 import java.util.HashSet;
-import java.util.List;
 
 public final class Cookie {
     private final String name;
@@ -140,10 +139,10 @@ public final class Cookie {
             return "";
         }
 
-        List<Cookie> cookieList = cookies.stream().toList();
         StringBuilder output = new StringBuilder();
-        for (int i = 0; i < cookies.size(); i++) {
-            Cookie cookie = cookieList.get(i);
+        for (Cookie cookie : cookies) {
+            output.append("Set-Cookie: ");
+
             if (cookie.getPrefix() != null) {
                 output.append(cookie.getPrefix());
                 cookie.secure(true);
@@ -152,7 +151,7 @@ public final class Cookie {
                 }
             }
 
-            output.append("Set-Cookie: ").append(cookie.getName()).append("=").append(cookie.getValue())
+            output.append(cookie.getName()).append("=").append(cookie.getValue())
                     .append(cookie.getExpires() != null ? "; Expires=" + cookie.getExpires() : "")
                     .append(cookie.getMaxAge() > 0 ? "; Max-Age=" + cookie.getMaxAge() : "")
                     .append(cookie.isSecure() ? "; Secure" : "")
