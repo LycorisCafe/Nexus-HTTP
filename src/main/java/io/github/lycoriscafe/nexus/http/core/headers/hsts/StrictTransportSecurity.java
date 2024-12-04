@@ -28,22 +28,22 @@ public final class StrictTransportSecurity {
         this.maxAge = maxAge;
     }
 
-    public StrictTransportSecurity includeSubdomains(final boolean includeSubdomains) {
-        this.includeSubdomains = includeSubdomains;
-        return this;
-    }
-
-    public StrictTransportSecurity preload(final boolean preload) {
-        this.preload = preload;
-        return this;
-    }
-
     public long getMaxAge() {
         return maxAge;
     }
 
+    public StrictTransportSecurity setIncludeSubdomains(final boolean includeSubdomains) {
+        this.includeSubdomains = includeSubdomains;
+        return this;
+    }
+
     public boolean isIncludeSubdomains() {
         return includeSubdomains;
+    }
+
+    public StrictTransportSecurity setPreload(final boolean preload) {
+        this.preload = preload;
+        return this;
     }
 
     public boolean isPreload() {
@@ -53,11 +53,12 @@ public final class StrictTransportSecurity {
     public static String processOutgoingHSTS(final StrictTransportSecurity hsts) {
         if (hsts == null) return "";
 
-        StringBuilder output = new StringBuilder().append("Strict-Transport-Security:").append(" ").append(hsts.maxAge);
-        if (hsts.preload) {
+        StringBuilder output = new StringBuilder().append("Strict-Transport-Security:")
+                .append(" ").append(hsts.getMaxAge());
+        if (hsts.isPreload()) {
             return output.append("; includeSubDomains").append("; preload").append("\r\n").toString();
         }
-        if (hsts.includeSubdomains) {
+        if (hsts.isIncludeSubdomains()) {
             return output.append("; includeSubDomains").append("\r\n").toString();
         }
         return output.append("\r\n").toString();

@@ -16,21 +16,39 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers;
 
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 
-public record Header(String name, String value) {
-    public static Header processIncomingHeader(final String[] headerParts) {
-        return new Header(headerParts[0].trim(), headerParts[1].trim());
+public class Header {
+    private final Map<String, String> headers;
+
+    public Header() {
+        headers = new HashMap<>();
     }
 
-    public static String processOutgoingHeader(final HashSet<Header> headers) {
-        if (headers == null || headers.isEmpty()) {
-            return "";
+    public Header addHeader(final String name,
+                            final String value) {
+        if (name == null || value == null) {
+            throw new NullPointerException("name and value cannot be null");
         }
+        headers.put(name, value);
+        return this;
+    }
+
+    public Map<String, String> getHeaders() {
+        return headers;
+    }
+
+    public static Header processIncomingHeader(final String[] headerParts) {
+        return new Header().addHeader(headerParts[0].trim(), headerParts[1].trim());
+    }
+
+    public static String processOutgoingHeader(final Header header) {
+        if (header == null) return "";
 
         StringBuilder output = new StringBuilder();
-        for (final Header header : headers) {
-            output.append(header.name()).append(": ").append(header.value()).append("\r\n");
+        for (String key : header.getHeaders().keySet()) {
+            output.append(key).append(": ").append(header.getHeaders().get(key)).append("\r\n");
         }
         return output.toString();
     }

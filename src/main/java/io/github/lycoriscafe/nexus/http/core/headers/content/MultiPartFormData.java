@@ -165,7 +165,7 @@ public final class MultiPartFormData {
             return null;
         }
 
-        content.data = data;
+        content.setData(data);
 
         return content;
     }

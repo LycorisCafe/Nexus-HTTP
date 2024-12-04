@@ -40,11 +40,11 @@ public final class CacheControl {
         return this;
     }
 
-    public long getsMaxAge() {
+    public long getSMaxAge() {
         return sMaxAge;
     }
 
-    public CacheControl setsMaxAge(final long sMaxAge) {
+    public CacheControl setSMaxAge(final long sMaxAge) {
         this.sMaxAge = sMaxAge;
         return this;
     }
@@ -158,9 +158,9 @@ public final class CacheControl {
             output.append(" ").append("max-age=").append(cacheControl.getMaxAge());
             anyDirectives = true;
         }
-        if (cacheControl.getsMaxAge() > -1L) {
+        if (cacheControl.getSMaxAge() > -1L) {
             if (anyDirectives) output.append(",");
-            output.append(" ").append("s-max-age=").append(cacheControl.getsMaxAge());
+            output.append(" ").append("s-max-age=").append(cacheControl.getSMaxAge());
             anyDirectives = true;
         }
         if (cacheControl.isNoCache()) {

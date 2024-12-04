@@ -24,47 +24,13 @@ import java.util.List;
 public final class CrossOriginResourceSharing {
     private String accessControlAllowOrigin;
     private HashSet<String> accessControlExposeHeaders;
-    private long accessControlMaxAge;
+    private long accessControlMaxAge = -1L;
     private boolean accessControlAllowCredentials;
     private HashSet<HttpRequestMethod> accessControlAllowMethods;
     private HashSet<String> accessControlAllowHeaders;
 
-    public CrossOriginResourceSharing accessControlAllowOrigin(final String accessControlAllowOrigin) {
+    public CrossOriginResourceSharing setAccessControlAllowOrigin(final String accessControlAllowOrigin) {
         this.accessControlAllowOrigin = accessControlAllowOrigin;
-        return this;
-    }
-
-    public CrossOriginResourceSharing accessControlExposeHeader(final String accessControlExposeHeader) {
-        if (this.accessControlExposeHeaders == null) {
-            this.accessControlExposeHeaders = new HashSet<>();
-        }
-        accessControlExposeHeaders.add(accessControlExposeHeader);
-        return this;
-    }
-
-    public CrossOriginResourceSharing accessControlMaxAge(final long accessControlMaxAge) {
-        this.accessControlMaxAge = accessControlMaxAge;
-        return this;
-    }
-
-    public CrossOriginResourceSharing accessControlAllowCredentials(final boolean accessControlAllowCredentials) {
-        this.accessControlAllowCredentials = accessControlAllowCredentials;
-        return this;
-    }
-
-    public CrossOriginResourceSharing accessControlAllowMethod(final HttpRequestMethod accessControlAllowMethod) {
-        if (this.accessControlAllowMethods == null) {
-            this.accessControlAllowMethods = new HashSet<>();
-        }
-        accessControlAllowMethods.add(accessControlAllowMethod);
-        return this;
-    }
-
-    public CrossOriginResourceSharing accessControlAllowHeader(final String accessControlAllowHeader) {
-        if (this.accessControlAllowHeaders == null) {
-            this.accessControlAllowHeaders = new HashSet<>();
-        }
-        accessControlAllowHeaders.add(accessControlAllowHeader);
         return this;
     }
 
@@ -72,65 +38,88 @@ public final class CrossOriginResourceSharing {
         return accessControlAllowOrigin;
     }
 
-    public HashSet<String> getAccessControlExposeHeaders() {
-        return accessControlExposeHeaders;
+    public CrossOriginResourceSharing addAccessControlExposeHeader(final String accessControlExposeHeader) {
+        if (this.accessControlExposeHeaders == null) accessControlExposeHeaders = new HashSet<>();
+        accessControlExposeHeaders.add(accessControlExposeHeader);
+        return this;
+    }
+
+    public List<String> getAccessControlExposeHeaders() {
+        return accessControlAllowHeaders == null ? null : accessControlExposeHeaders.stream().toList();
+    }
+
+    public CrossOriginResourceSharing setAccessControlMaxAge(final long accessControlMaxAge) {
+        this.accessControlMaxAge = accessControlMaxAge;
+        return this;
     }
 
     public long getAccessControlMaxAge() {
         return accessControlMaxAge;
     }
 
+    public CrossOriginResourceSharing setAccessControlAllowCredentials(final boolean accessControlAllowCredentials) {
+        this.accessControlAllowCredentials = accessControlAllowCredentials;
+        return this;
+    }
+
     public boolean isAccessControlAllowCredentials() {
         return accessControlAllowCredentials;
     }
 
+    public CrossOriginResourceSharing addAccessControlAllowMethod(final HttpRequestMethod accessControlAllowMethod) {
+        if (this.accessControlAllowMethods == null) accessControlAllowMethods = new HashSet<>();
+        accessControlAllowMethods.add(accessControlAllowMethod);
+        return this;
+    }
+
     public List<HttpRequestMethod> getAccessControlAllowMethods() {
-        return accessControlAllowMethods.stream().toList();
+        return accessControlAllowMethods == null ? null : accessControlAllowMethods.stream().toList();
+    }
+
+    public CrossOriginResourceSharing addAccessControlAllowHeader(final String accessControlAllowHeader) {
+        if (accessControlAllowHeaders == null) accessControlAllowHeaders = new HashSet<>();
+        accessControlAllowHeaders.add(accessControlAllowHeader);
+        return this;
     }
 
     public List<String> getAccessControlAllowHeaders() {
-        return accessControlAllowHeaders.stream().toList();
+        return accessControlAllowHeaders == null ? null : accessControlAllowHeaders.stream().toList();
     }
 
     public static String processOutgoingCORS(final CrossOriginResourceSharing crossOriginResourceSharing) {
         if (crossOriginResourceSharing == null) return "";
 
-        StringBuilder output = new StringBuilder().append("Access-Control-Allow-Origin: ");
+        StringBuilder output = new StringBuilder();
         if (crossOriginResourceSharing.getAccessControlAllowOrigin() != null) {
-            output.append(crossOriginResourceSharing.getAccessControlAllowOrigin());
-        } else {
-            output.append("*");
+            output.append("Access-Control-Allow-Origin:").append(" ")
+                    .append(crossOriginResourceSharing.getAccessControlAllowOrigin()).append("\r\n");
         }
-        output.append("\r\n");
 
         if (crossOriginResourceSharing.getAccessControlExposeHeaders() != null) {
             output.append("Access-Control-Expose-Headers:");
-            List<String> exposeHeaders = crossOriginResourceSharing.getAccessControlExposeHeaders().stream().toList();
-            for (int i = 0; i < exposeHeaders.size(); i++) {
-                output.append(" ").append(exposeHeaders.get(i));
-                if (i != exposeHeaders.size() - 1) {
+            for (int i = 0; i < crossOriginResourceSharing.getAccessControlExposeHeaders().size(); i++) {
+                output.append(" ").append(crossOriginResourceSharing.getAccessControlExposeHeaders().get(i));
+                if (i != crossOriginResourceSharing.getAccessControlExposeHeaders().size() - 1) {
                     output.append(",");
                 }
             }
             output.append("\r\n");
         }
 
-        if (crossOriginResourceSharing.getAccessControlMaxAge() > 0) {
-            output.append("Access-Control-Max-Age: ").append(crossOriginResourceSharing.getAccessControlMaxAge())
-                    .append("\r\n");
+        if (crossOriginResourceSharing.getAccessControlMaxAge() > -1L) {
+            output.append("Access-Control-Max-Age:").append(" ")
+                    .append(crossOriginResourceSharing.getAccessControlMaxAge()).append("\r\n");
         }
 
         if (crossOriginResourceSharing.isAccessControlAllowCredentials()) {
-            output.append("Access-Control-Allow-Credentials: ").append("true").append("\r\n");
+            output.append("Access-Control-Allow-Credentials:").append(" ").append("true").append("\r\n");
         }
 
         if (crossOriginResourceSharing.getAccessControlAllowMethods() != null) {
             output.append("Access-Control-Allow-Methods:");
-            List<HttpRequestMethod> allowMethods =
-                    crossOriginResourceSharing.getAccessControlAllowMethods().stream().toList();
-            for (int i = 0; i < allowMethods.size(); i++) {
-                output.append(" ").append(allowMethods.get(i).toString());
-                if (i != allowMethods.size() - 1) {
+            for (int i = 0; i < crossOriginResourceSharing.getAccessControlAllowMethods().size(); i++) {
+                output.append(" ").append(crossOriginResourceSharing.getAccessControlAllowMethods().get(i).toString());
+                if (i != crossOriginResourceSharing.getAccessControlAllowMethods().size() - 1) {
                     output.append(",");
                 }
             }
@@ -139,16 +128,14 @@ public final class CrossOriginResourceSharing {
 
         if (crossOriginResourceSharing.getAccessControlAllowHeaders() != null) {
             output.append("Access-Control-Allow-Headers:");
-            List<String> allowHeaders = crossOriginResourceSharing.getAccessControlExposeHeaders().stream().toList();
-            for (int i = 0; i < allowHeaders.size(); i++) {
-                output.append(" ").append(allowHeaders.get(i));
-                if (i != allowHeaders.size() - 1) {
+            for (int i = 0; i < crossOriginResourceSharing.getAccessControlAllowHeaders().size(); i++) {
+                output.append(" ").append(crossOriginResourceSharing.getAccessControlAllowHeaders().get(i));
+                if (i != crossOriginResourceSharing.getAccessControlAllowHeaders().size() - 1) {
                     output.append(",");
                 }
             }
             output.append("\r\n");
         }
-
         return output.toString();
     }
 }

@@ -22,107 +22,76 @@ import java.util.List;
 import java.util.Map;
 
 public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnly {
-    private final Map<CSPDirective, HashSet<String>> policy = new HashMap<>();
+    private final Map<CSPDirective, HashSet<String>> policies;
     private Map<String, String> reportingEndpoint;
 
-    public ContentSecurityPolicy(final CSPDirective directive,
-                                 final HashSet<String> value) throws ContentSecurityPolicyException {
-        if (directive == null || value == null || value.isEmpty()) {
-            throw new ContentSecurityPolicyException("directive cannot be null");
-        }
-        policy.put(directive, value);
+    public ContentSecurityPolicy() {
+        policies = new HashMap<>();
     }
 
     public ContentSecurityPolicy addPolicy(final CSPDirective directive,
-                                           final HashSet<String> value) throws ContentSecurityPolicyException {
-        if (directive == null || value == null || value.isEmpty()) {
-            throw new ContentSecurityPolicyException("directive cannot be null");
+                                           final String[] values) throws ContentSecurityPolicyException {
+        if (directive == null || values == null || values.length < 1) {
+            throw new ContentSecurityPolicyException("directive/values cannot be null");
         }
-        policy.put(directive, value);
+        policies.put(directive, new HashSet<>(List.of(values)));
         return this;
+    }
+
+    public Map<CSPDirective, HashSet<String>> getPolicies() {
+        return policies;
     }
 
     public ContentSecurityPolicy addReportingEndpoint(final String name,
                                                       final String url) throws ContentSecurityPolicyException {
-        if (name == null || url == null) {
-            throw new ContentSecurityPolicyException("directive cannot be null");
-        }
-        if (reportingEndpoint == null) {
-            reportingEndpoint = new HashMap<>();
-        }
+        if (name == null || url == null) throw new ContentSecurityPolicyException("directive cannot be null");
+        if (reportingEndpoint == null) reportingEndpoint = new HashMap<>();
         reportingEndpoint.put(name, url);
         return this;
     }
 
-    public Map<CSPDirective, HashSet<String>> getPolicy() {
-        return policy;
-    }
-
-    public Map<String, String> getReportingEndpoint() {
+    public Map<String, String> getReportingEndpoints() {
         return reportingEndpoint;
     }
 
-    public static String processOutgoingCsp(ContentSecurityPolicy contentSecurityPolicy,
+    public static String processOutgoingCsp(final ContentSecurityPolicy contentSecurityPolicy,
                                             final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
         StringBuilder output = null;
-        StringBuilder reportEndpoint = null;
-        StringBuilder tempOutput = null;
+        StringBuilder reportingEndpoints = null;
 
-        for (int j = 0; true; j++) {
-            StringBuilder csp = new StringBuilder();
+        for (int i = 0; i < 2; i++) {
+            ContentSecurityPolicy csp = switch (i) {
+                case 0 -> contentSecurityPolicy;
+                case 1 -> contentSecurityPolicyReportOnly;
+                default -> null;
+            };
 
-            if (j == 1) {
-                contentSecurityPolicy = contentSecurityPolicyReportOnly;
-            }
-
-            if (contentSecurityPolicy != null) {
-                csp.append("Content-Security-Policy").append(j == 1 ? "-Report-Only" : "").append(":");
-                for (CSPDirective directive : contentSecurityPolicy.getPolicy().keySet()) {
-                    csp.append(" ").append(directive.getName());
-
-                    List<String> values = contentSecurityPolicy.getPolicy().get(directive).stream().toList();
-                    for (int i = 0; i < values.size(); i++) {
-                        csp.append(" ").append(values.get(i));
-
-                        if (i != values.size() - 1) {
-                            csp.append(";");
-                        }
-                    }
+            if (csp == null) continue;
+            StringBuilder tempBuilder = new StringBuilder().append("Content-Security-Policy")
+                    .append(i == 0 ? "" : "-Report-Only").append(":").append(" ");
+            for (CSPDirective key : csp.getPolicies().keySet()) {
+                tempBuilder.append(key).append(" ");
+                for (String value : csp.getPolicies().get(key)) {
+                    tempBuilder.append(value).append(" ");
                 }
-
-                if (contentSecurityPolicy.getReportingEndpoint() != null) {
-                    if (reportEndpoint == null) {
-                        reportEndpoint = new StringBuilder().append("Reporting-Endpoints:").append(" ");
-                    } else {
-                        reportEndpoint.append(" ");
-                    }
-
-                    csp.append(";").append(" ").append("report-to");
-                    List<String> keys = contentSecurityPolicy.getReportingEndpoint().keySet().stream().toList();
-                    for (int i = 0; i < contentSecurityPolicy.getReportingEndpoint().size(); i++) {
-                        csp.append(" ").append(keys.get(i));
-                        reportEndpoint.append(" ").append(keys.get(i)).append("=").append("\"")
-                                .append(contentSecurityPolicy.getReportingEndpoint().get(keys.get(i))).append("\"");
-
-                        if (i != keys.size() - 1) {
-                            reportEndpoint.append(",");
-                        }
-                    }
-                }
-
-                csp.append("\r\n");
+                tempBuilder.append(";");
             }
+            tempBuilder.append("\r\n");
 
-            if (j == 1) {
-                if (reportEndpoint != null) {
-                    output = new StringBuilder();
-                    output.append(reportEndpoint).append("\r\n");
-                }
-                return output == null ? "" : output.append(tempOutput).append("\r\n")
-                        .append(csp).append("\r\n").toString();
+            if (output == null) output = new StringBuilder();
+            output.append(tempBuilder);
+
+            if (csp.getReportingEndpoints() == null) continue;
+            if (reportingEndpoints == null) reportingEndpoints = new StringBuilder().append("Reporting-Endpoints:");
+            for (String key : csp.getReportingEndpoints().keySet()) {
+                reportingEndpoints.append(" ").append(key).append("=").append("\"")
+                        .append(csp.getReportingEndpoints().get(key)).append("\"");
             }
-
-            tempOutput = csp;
         }
+
+        if (output == null) return "";
+        if (reportingEndpoints != null) reportingEndpoints.append("\r\n");
+
+        return (reportingEndpoints == null ? "" : reportingEndpoints.toString()) + output;
     }
 }

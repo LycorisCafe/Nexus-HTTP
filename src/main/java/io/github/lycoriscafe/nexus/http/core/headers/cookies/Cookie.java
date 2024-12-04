@@ -36,54 +36,6 @@ public final class Cookie {
         value = cookieValue;
     }
 
-    public Cookie expires(final String expires) {
-        this.expires = expires;
-        return this;
-    }
-
-    public Cookie maxAge(final long maxAge) {
-        this.maxAge = maxAge;
-        return this;
-    }
-
-    public Cookie secure(final boolean secure) {
-        this.secure = secure;
-        return this;
-    }
-
-    public Cookie httpOnly(final boolean httpOnly) {
-        this.httpOnly = httpOnly;
-        return this;
-    }
-
-    public Cookie domain(final String domain) {
-        this.domain = domain;
-        return this;
-    }
-
-    public Cookie path(final String path) {
-        this.path = path;
-        return this;
-    }
-
-    public Cookie sameSite(final CookieSameSite sameSite) throws CookieException {
-        if (this.sameSite == null) {
-            throw new CookieException(
-                    "Same Site cannot be null. " + "If you need this to be null, just ignore this method.");
-        }
-        this.sameSite = sameSite;
-        return this;
-    }
-
-    public Cookie prefix(final CookiePrefix prefix) throws CookieException {
-        if (prefix == null) {
-            throw new CookieException(
-                    "Cookie prefix cannot be null. " + "If you need this to be null, just ignore this method.");
-        }
-        this.prefix = prefix;
-        return this;
-    }
-
     public String getName() {
         return name;
     }
@@ -92,32 +44,80 @@ public final class Cookie {
         return value;
     }
 
+    public Cookie setExpires(final String expires) {
+        this.expires = expires;
+        return this;
+    }
+
     public String getExpires() {
         return expires;
+    }
+
+    public Cookie setMaxAge(final long maxAge) {
+        this.maxAge = maxAge;
+        return this;
     }
 
     public long getMaxAge() {
         return maxAge;
     }
 
+    public Cookie setSecure(final boolean secure) {
+        this.secure = secure;
+        return this;
+    }
+
     public boolean isSecure() {
         return secure;
+    }
+
+    public Cookie setHttpOnly(final boolean httpOnly) {
+        this.httpOnly = httpOnly;
+        return this;
     }
 
     public boolean isHttpOnly() {
         return httpOnly;
     }
 
+    public Cookie setDomain(final String domain) {
+        this.domain = domain;
+        return this;
+    }
+
     public String getDomain() {
         return domain;
+    }
+
+    public Cookie setPath(final String path) {
+        this.path = path;
+        return this;
     }
 
     public String getPath() {
         return path;
     }
 
+    public Cookie setSameSite(final CookieSameSite sameSite) throws CookieException {
+        if (this.sameSite == null) {
+            throw new CookieException(
+                    "Same Site cannot be null. If you need this to be null, just ignore this method.");
+        }
+        this.sameSite = sameSite;
+        return this;
+    }
+
     public CookieSameSite getSameSite() {
         return sameSite;
+    }
+
+    public Cookie setPrefix(final CookiePrefix prefix) throws CookieException {
+        if (prefix == null) {
+            throw new CookieException(
+                    "Cookie prefix cannot be null. If you need this to be null, just ignore this method.");
+        }
+        this.prefix = prefix;
+        return this;
     }
 
     public CookiePrefix getPrefix() {
@@ -135,27 +135,24 @@ public final class Cookie {
     }
 
     public static String processOutgoingCookies(final HashSet<Cookie> cookies) {
-        if (cookies == null || cookies.isEmpty()) {
-            return "";
-        }
+        if (cookies == null || cookies.isEmpty()) return "";
 
         StringBuilder output = new StringBuilder();
         for (Cookie cookie : cookies) {
-            output.append("Set-Cookie: ");
+            output.append("Set-Cookie:").append(" ");
 
             if (cookie.getPrefix() != null) {
                 output.append(cookie.getPrefix());
-                cookie.secure(true);
+                cookie.setSecure(true);
                 if (cookie.getPrefix() == CookiePrefix.HOST) {
-                    cookie.path("/");
+                    cookie.setPath("/");
                 }
             }
 
             output.append(cookie.getName()).append("=").append(cookie.getValue())
                     .append(cookie.getExpires() != null ? "; Expires=" + cookie.getExpires() : "")
                     .append(cookie.getMaxAge() > 0 ? "; Max-Age=" + cookie.getMaxAge() : "")
-                    .append(cookie.isSecure() ? "; Secure" : "")
-                    .append(cookie.isHttpOnly() ? "; HttpOnly" : "")
+                    .append(cookie.isSecure() ? "; Secure" : "").append(cookie.isHttpOnly() ? "; HttpOnly" : "")
                     .append(cookie.getDomain() != null ? "; Domain=" + cookie.getDomain() : "")
                     .append(cookie.getPath() != null ? "; Path=" + cookie.getPath() : "")
                     .append(cookie.getSameSite() != null ? "; SameSite=" + cookie.getSameSite().getValue() : "")

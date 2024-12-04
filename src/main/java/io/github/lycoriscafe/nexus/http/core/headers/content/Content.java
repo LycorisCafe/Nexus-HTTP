@@ -39,7 +39,7 @@ public final class Content {
     private String downloadName;
     private HashSet<TransferEncoding> transferEncodings;
     private HashSet<ContentEncoding> contentEncodings;
-    Object data;
+    private Object data;
 
     public Content(final String contentType,
                    final Path data) {
@@ -59,27 +59,6 @@ public final class Content {
         this.data = data;
     }
 
-    public Content setDownloadName(final String downloadName) {
-        this.downloadName = downloadName;
-        return this;
-    }
-
-    public Content setTransferEncoding(TransferEncoding transferEncoding) {
-        if (transferEncodings == null) {
-            transferEncodings = new HashSet<>();
-        }
-        transferEncodings.add(transferEncoding);
-        return this;
-    }
-
-    public Content setContentEncoding(ContentEncoding contentEncoding) {
-        if (contentEncodings == null) {
-            contentEncodings = new HashSet<>();
-        }
-        contentEncodings.add(contentEncoding);
-        return this;
-    }
-
     public String getContentType() {
         return contentType;
     }
@@ -88,16 +67,47 @@ public final class Content {
         return contentLength;
     }
 
+    public Content(final String contentType,
+                   final String data) {
+        this(contentType, data.getBytes(StandardCharsets.UTF_8));
+    }
+
+    public Content setDownloadName(final String downloadName) {
+        this.downloadName = downloadName;
+        return this;
+    }
+
     public String getDownloadName() {
         return downloadName;
+    }
+
+    public Content addTransferEncoding(TransferEncoding transferEncoding) {
+        if (transferEncodings == null) {
+            transferEncodings = new HashSet<>();
+        }
+        transferEncodings.add(transferEncoding);
+        return this;
     }
 
     public List<TransferEncoding> getTransferEncodings() {
         return transferEncodings == null ? null : transferEncodings.stream().toList();
     }
 
+    public Content addontentEncoding(ContentEncoding contentEncoding) {
+        if (contentEncodings == null) {
+            contentEncodings = new HashSet<>();
+        }
+        contentEncodings.add(contentEncoding);
+        return this;
+    }
+
     public List<ContentEncoding> getContentEncodings() {
         return contentEncodings == null ? null : contentEncodings.stream().toList();
+    }
+
+    Content setData(final Object data) {
+        this.data = data;
+        return this;
     }
 
     public Object getData() {
@@ -303,7 +313,7 @@ public final class Content {
                 } else if (content.getData() instanceof byte[] array) {
                     output.append("Content-Length:").append(" ").append(array.length).append("\r\n");
                 } else {
-                    content.setTransferEncoding(TransferEncoding.CHUNKED);
+                    content.addTransferEncoding(TransferEncoding.CHUNKED);
                 }
             }
 

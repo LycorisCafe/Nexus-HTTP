@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 public final class BasicAuthentication extends Authentication {
     private final String realm;
 
-    public BasicAuthentication(String realm) {
+    public BasicAuthentication(final String realm) {
         this.realm = realm;
     }
 

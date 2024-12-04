@@ -41,8 +41,7 @@ public final class BasicAuthorization extends Authorization {
         return password;
     }
 
-    public static Authorization processIncomingAuth(String params) {
-        params = params.trim();
+    public static Authorization processIncomingAuth(final String params) {
         String[] auth = new String(Base64.getDecoder().decode(params), StandardCharsets.UTF_8).split(":", 0);
         return new BasicAuthorization(auth[0], auth[1]);
     }
