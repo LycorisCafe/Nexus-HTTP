@@ -47,9 +47,9 @@ public final class EndpointScanner {
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
-            boolean authenticated = clazz.isAnnotationPresent(Authenticated.class);
             for (Method method : clazz.getMethods()) {
-                if (!authenticated) authenticated = method.isAnnotationPresent(Authenticated.class);
+                boolean authenticated = clazz.isAnnotationPresent(Authenticated.class) ||
+                        method.isAnnotationPresent(Authenticated.class);
 
                 String endpointValue = null;
                 HttpRequestMethod reqMethod = switch (method) {
@@ -113,7 +113,7 @@ public final class EndpointScanner {
                 };
 
                 logger.atTrace().log(reqMethod.name() + " endpoint found @ " + clazz.getPackageName() + " - " +
-                        clazz.getSimpleName() + method.getName());
+                        clazz.getSimpleName() + "." + method.getName());
                 database.addEndpointData(new ReqEndpoint((serverConfiguration.isIgnoreEndpointCases() ?
                         clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
                         clazz.getAnnotation(HttpEndpoint.class).value()) +

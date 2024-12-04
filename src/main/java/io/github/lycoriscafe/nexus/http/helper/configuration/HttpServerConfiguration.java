@@ -49,7 +49,7 @@ public final class HttpServerConfiguration {
     private int maxChunkSize = 5_242_880;
 
     private HashSet<Header> defaultHeaders = null;
-    private Authentication defaultAuthentications = null;
+    private HashSet<Authentication> defaultAuthentications = null;
     private HashSet<Cookie> defaultCookies = null;
     private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
     private ContentSecurityPolicy defaultContentSecurityPolicy = null;
@@ -171,7 +171,7 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    public HttpServerConfiguration defaultAuthentications(final Authentication defaultAuthentications) {
+    public HttpServerConfiguration defaultAuthentications(final HashSet<Authentication> defaultAuthentications) {
         this.defaultAuthentications = defaultAuthentications;
         return this;
     }
@@ -283,7 +283,7 @@ public final class HttpServerConfiguration {
         return defaultHeaders;
     }
 
-    public Authentication getDefaultAuthentications() {
+    public HashSet<Authentication> getDefaultAuthentications() {
         return defaultAuthentications;
     }
 

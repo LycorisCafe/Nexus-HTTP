@@ -44,7 +44,7 @@ public final class BasicAuthentication extends Authentication {
         StringBuilder output = new StringBuilder().append("Basic").append(" ")
                 .append("realm=\"").append(realm).append("\"");
         if (charset != null) {
-            output.append(" ").append("charset=\"").append(charset).append("\"");
+            output.append(", ").append("charset=\"").append(charset).append("\"");
         }
         return output.toString();
     }

@@ -68,8 +68,9 @@ public final class RequestProcessor {
         if (httpRequest == null) {
             return;
         }
-
-        String[] uriParts = request[1].split("\\\\?", 0);
+        System.out.println(request[1]);
+        String[] uriParts = request[1].split("\\?", 0);
+        
         switch (uriParts.length) {
             case 1 -> httpRequest.setEndpoint(decodeUri(uriParts[0]));
             case 2 -> {
@@ -77,6 +78,7 @@ public final class RequestProcessor {
                 httpRequest.setParameters(decodeParams(uriParts[1]));
             }
             default -> {
+                System.out.println("x");
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
                 return;
             }

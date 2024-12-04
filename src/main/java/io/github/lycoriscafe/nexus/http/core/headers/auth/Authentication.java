@@ -17,25 +17,12 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 import java.util.HashSet;
-import java.util.List;
 
 public abstract class Authentication {
-    private HashSet<Authentication> authentications;
-
-    public Authentication addAuthentications(final Authentication authentication) {
-        if (authentications == null) authentications = new HashSet<>();
-        authentications.add(authentication);
-        return this;
-    }
-
-    public List<Authentication> getAuthentications() {
-        return authentications.stream().toList();
-    }
-
-    public static String processOutgoingAuth(final Authentication authentications) {
+    public static String processOutgoingAuth(final HashSet<Authentication> authentications) {
         if (authentications == null) return "";
         StringBuilder output = new StringBuilder();
-        for (Authentication authentication : authentications.getAuthentications()) {
+        for (Authentication authentication : authentications) {
             output.append("WWW-Authenticate:").append(" ").append(authentication.processOutgoingAuth()).append("\r\n");
         }
         return output.toString();

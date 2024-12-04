@@ -152,8 +152,9 @@ public final class Database {
 
             try {
                 Class<?> clazz = Class.forName(rs2.getString(2));
-                endpoint = new ReqEndpoint(rs.getString(2), HttpRequestMethod.valueOf(rs.getString(3)),
-                        rs.getBoolean(4), clazz,
+                endpoint = new ReqEndpoint(rs.getString(3),
+                        HttpRequestMethod.valueOf(rs.getString(4)),
+                        rs.getBoolean(5), clazz,
                         clazz.getMethod(rs2.getString(3), switch (httpRequest.getRequestMethod()) {
                             case CONNECT, TRACE -> null;
                             case DELETE -> HttpDeleteRequest.class;

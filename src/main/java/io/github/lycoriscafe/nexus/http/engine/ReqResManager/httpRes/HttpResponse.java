@@ -46,7 +46,7 @@ public final class HttpResponse {
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private Authentication authentications;
+    private HashSet<Authentication> authentications;
     private CacheControl cacheControl;
     private Content content;
 
@@ -152,7 +152,7 @@ public final class HttpResponse {
         return this;
     }
 
-    public HttpResponse authentication(final Authentication authentication) {
+    public HttpResponse authentication(final HashSet<Authentication> authentication) {
         this.authentications = authentication;
         return this;
     }
@@ -221,7 +221,7 @@ public final class HttpResponse {
         return crossOriginResourceSharing;
     }
 
-    public Authentication getWWWAuthentications() {
+    public HashSet<Authentication> getWWWAuthentications() {
         return authentications;
     }
 
