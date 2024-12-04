@@ -16,10 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
-public final class Authorization {
-    private AuthScheme authScheme;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
 
-    public void setAuthScheme(final AuthScheme authScheme) {
+import java.util.Locale;
+
+public class Authorization {
+    private final AuthScheme authScheme;
+
+    public Authorization(final AuthScheme authScheme) {
         this.authScheme = authScheme;
     }
 
@@ -28,7 +32,10 @@ public final class Authorization {
     }
 
     public static Authorization processIncomingAuth(final String auth) {
-        String[] parts = auth.split(" ");
-        return null;
+        String[] parts = auth.split(" ", 2);
+        return switch (parts[0].trim().toLowerCase(Locale.US)) {
+            case "basic" -> BasicAuthorization.processIncomingAuth(parts[1]);
+            default -> null;
+        };
     }
 }

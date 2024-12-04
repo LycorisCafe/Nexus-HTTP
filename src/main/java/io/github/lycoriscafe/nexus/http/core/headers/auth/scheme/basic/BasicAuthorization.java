@@ -16,5 +16,34 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic;
 
-public record BasicAuthorization(String username, String password) {
+import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Base64;
+
+public final class BasicAuthorization extends Authorization {
+    private final String username;
+    private final String password;
+
+    public BasicAuthorization(final String username,
+                              final String password) {
+        super(AuthScheme.Basic);
+        this.username = username;
+        this.password = password;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public static Authorization processIncomingAuth(String params) {
+        params = params.trim();
+        String[] auth = new String(Base64.getDecoder().decode(params), StandardCharsets.UTF_8).split(":", 0);
+        return new BasicAuthorization(auth[0], auth[1]);
+    }
 }
