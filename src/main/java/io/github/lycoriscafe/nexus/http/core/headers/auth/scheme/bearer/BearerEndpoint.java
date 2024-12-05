@@ -16,8 +16,10 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public record BearerTokenResponse(String bearerToken, long expiresIn, String refreshToken) {
-    public static String processOutgoingResponse(final BearerTokenResponse response) {
-        return "";
-    }
+import java.lang.annotation.*;
+
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
+public @interface BearerEndpoint {
 }

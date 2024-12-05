@@ -16,10 +16,54 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public class BearerAuthentication {
+public final class BearerAuthentication {
+    private final BearerError error;
     private String realm;
     private String scope;
-    private BearerError error;
     private String errorDescription;
     private String errorURI;
+
+    public BearerAuthentication(final BearerError error) {
+        this.error = error;
+    }
+
+    public BearerError getError() {
+        return error;
+    }
+
+    public String getRealm() {
+        return realm;
+    }
+
+    public BearerAuthentication setRealm(String realm) {
+        this.realm = realm;
+        return this;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public BearerAuthentication setScope(String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public String getErrorDescription() {
+        return errorDescription;
+    }
+
+    public BearerAuthentication setErrorDescription(String errorDescription) {
+        this.errorDescription = errorDescription;
+        return this;
+    }
+
+    public String getErrorURI() {
+        return errorURI;
+    }
+
+    public BearerAuthentication setErrorURI(String errorURI) {
+        this.errorURI = errorURI;
+        return this;
+    }
 }

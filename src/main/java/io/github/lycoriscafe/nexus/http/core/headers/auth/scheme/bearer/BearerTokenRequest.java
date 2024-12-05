@@ -16,9 +16,44 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public class BearerTokenRequest {
-    private BearerGrantType grantType;
+public final class BearerTokenRequest {
+    private final BearerGrantType grantType;
     private String username;
     private String password;
     private String refreshToken;
+
+    public BearerTokenRequest(final BearerGrantType grantType) {
+        this.grantType = grantType;
+    }
+
+    public BearerGrantType getGrantType() {
+        return grantType;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public BearerTokenRequest setUsername(String username) {
+        this.username = username;
+        return this;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public BearerTokenRequest setPassword(String password) {
+        this.password = password;
+        return this;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public BearerTokenRequest setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
+    }
 }
