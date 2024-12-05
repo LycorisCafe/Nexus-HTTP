@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth;
 import java.util.List;
 
 public abstract class Authentication {
-    public static String processOutgoingAuthentication(final List<Authentication> authentications) {
+    public static String processOutgoingAuthentications(final List<Authentication> authentications) {
         if (authentications == null || authentications.isEmpty()) return "";
 
         StringBuilder output = new StringBuilder();
@@ -29,10 +29,5 @@ public abstract class Authentication {
         return output.toString();
     }
 
-    /**
-     * Reserved
-     *
-     * @return
-     */
     public abstract String processOutgoingAuth();
 }

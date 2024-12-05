@@ -1,6 +1,6 @@
 target/
-/2004.db
-/NexusHttp2004.db
+*.db
+
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/

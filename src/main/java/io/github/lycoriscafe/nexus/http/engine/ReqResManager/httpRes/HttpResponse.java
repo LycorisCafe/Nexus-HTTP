@@ -290,7 +290,7 @@ public final class HttpResponse {
                                     getContentSecurityPolicyReportOnly(), true))
                             .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
                             .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
-                            .append(Authentication.processOutgoingAuthentication(getAuthentications()))
+                            .append(Authentication.processOutgoingAuthentications(getAuthentications()))
                             .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
                             .append(Content.WriteOperations.processOutgoingContent(getContent()));
 

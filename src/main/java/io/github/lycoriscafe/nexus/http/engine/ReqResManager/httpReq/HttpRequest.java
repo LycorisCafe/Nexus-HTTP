@@ -119,30 +119,23 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     public void finalizeRequest() {
-        System.out.println("finalizer");
         try {
             ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
-            System.out.println("1");
             if (endpointDetails == null) {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_FOUND);
                 return;
             }
-            System.out.println("-1");
-            System.out.println("2");
+
             if (endpointDetails.getStatusAnnotation() != null) {
                 processStatusAnnotation(endpointDetails);
                 return;
             }
-            System.out.println("-2");
-            System.out.println("3");
+
             if (endpointDetails.isAuthenticated() && authorization == null) {
-                System.out.println("3.5");
                 processUnauthorized();
-                System.out.println("-3.5");
                 return;
             }
-            System.out.println("-3");
-            System.out.println("calling method");
+
             requestConsumer.send((HttpResponse) endpointDetails.getMethod().invoke(null, this));
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {

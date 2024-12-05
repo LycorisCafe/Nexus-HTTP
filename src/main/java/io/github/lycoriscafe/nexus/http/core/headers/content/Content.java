@@ -27,7 +27,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.zip.GZIPInputStream;
@@ -37,8 +37,8 @@ public final class Content {
     private final String contentType;
     private long contentLength;
     private String downloadName;
-    private HashSet<TransferEncoding> transferEncodings;
-    private HashSet<ContentEncoding> contentEncodings;
+    private LinkedHashSet<TransferEncoding> transferEncodings;
+    private LinkedHashSet<ContentEncoding> contentEncodings;
     private Object data;
 
     public Content(final String contentType,
@@ -83,7 +83,7 @@ public final class Content {
 
     public Content addTransferEncoding(TransferEncoding transferEncoding) {
         if (transferEncodings == null) {
-            transferEncodings = new HashSet<>();
+            transferEncodings = new LinkedHashSet<>();
         }
         transferEncodings.add(transferEncoding);
         return this;
@@ -95,7 +95,7 @@ public final class Content {
 
     public Content addontentEncoding(ContentEncoding contentEncoding) {
         if (contentEncodings == null) {
-            contentEncodings = new HashSet<>();
+            contentEncodings = new LinkedHashSet<>();
         }
         contentEncodings.add(contentEncoding);
         return this;
@@ -180,8 +180,8 @@ public final class Content {
 
         public static Content processText(final long requestId,
                                           final RequestConsumer requestConsumer,
-                                          final HashSet<TransferEncoding> transferEncoding,
-                                          final HashSet<ContentEncoding> contentEncoding,
+                                          final LinkedHashSet<TransferEncoding> transferEncoding,
+                                          final LinkedHashSet<ContentEncoding> contentEncoding,
                                           final int contentLength,
                                           final String contentType) {
             Content content = processCommonContentType(requestId, requestConsumer, transferEncoding, contentEncoding,
@@ -194,8 +194,8 @@ public final class Content {
 
         public static Content processXWWWFormUrlencoded(final long requestId,
                                                         final RequestConsumer requestConsumer,
-                                                        final HashSet<TransferEncoding> transferEncoding,
-                                                        final HashSet<ContentEncoding> contentEncoding,
+                                                        final LinkedHashSet<TransferEncoding> transferEncoding,
+                                                        final LinkedHashSet<ContentEncoding> contentEncoding,
                                                         final int contentLength) {
             if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
@@ -221,8 +221,8 @@ public final class Content {
 
         public static Content processCommonContentType(final long requestId,
                                                        final RequestConsumer requestConsumer,
-                                                       final HashSet<TransferEncoding> transferEncoding,
-                                                       final HashSet<ContentEncoding> contentEncoding,
+                                                       final LinkedHashSet<TransferEncoding> transferEncoding,
+                                                       final LinkedHashSet<ContentEncoding> contentEncoding,
                                                        final int contentLength,
                                                        final String contentType) {
             Content content;

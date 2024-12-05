@@ -24,10 +24,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public final class MultiPartFormData {
     private String name;
@@ -57,8 +54,8 @@ public final class MultiPartFormData {
 
     public static Content process(final long requestId,
                                   final RequestConsumer requestConsumer,
-                                  final HashSet<TransferEncoding> transferEncoding,
-                                  final HashSet<ContentEncoding> contentEncoding,
+                                  final LinkedHashSet<TransferEncoding> transferEncoding,
+                                  final LinkedHashSet<ContentEncoding> contentEncoding,
                                   final int contentLength,
                                   final String boundary) {
         if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
