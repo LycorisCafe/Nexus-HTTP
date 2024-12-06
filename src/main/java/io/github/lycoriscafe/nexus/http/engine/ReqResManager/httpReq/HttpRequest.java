@@ -18,12 +18,16 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
+import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -120,54 +124,105 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public void finalizeRequest() {
         try {
-            ReqEndpoint endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
+            ReqMaster endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
             if (endpointDetails == null) {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_FOUND);
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND);
+                return;
+            }
+            if (endpointDetails.getReqMethod() != getRequestMethod()) {
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED);
                 return;
             }
 
-            if (endpointDetails.getStatusAnnotation() != null) {
-                processStatusAnnotation(endpointDetails);
-                return;
-            }
+            switch (endpointDetails) {
+                case ReqEndpoint reqEndpoint -> {
+                    if (reqEndpoint.getAuthSchemeAnnotation() != null) {
+                        processAuthAnnotation(reqEndpoint);
+                        return;
+                    }
 
-            if (endpointDetails.isAuthenticated() && authorization == null) {
-                processUnauthorized();
-                return;
-            }
+                    if (reqEndpoint.isAuthenticated() && getAuthorization() == null) {
+                        getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(),
+                                HttpStatusCode.UNAUTHORIZED).setAuthentications(
+                                getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
+                        return;
+                    }
 
-            requestConsumer.send((HttpResponse) endpointDetails.getMethod().invoke(null, this));
+                    if (reqEndpoint.getStatusAnnotation() != null) {
+                        processStatusAnnotation(reqEndpoint);
+                        return;
+                    }
+
+                    Object response = reqEndpoint.getMethod().invoke(null, this);
+                    if (response instanceof HttpResponse httpResponse) {
+                        getRequestConsumer().send(httpResponse);
+                    } else {
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+                    }
+                }
+                case ReqFile reqFile -> {
+                    // TODO implement
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + endpointDetails);
+            }
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
-            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
             throw new RuntimeException(e);
         }
     }
 
     private void processStatusAnnotation(final ReqEndpoint reqEndpoint) {
-        requestConsumer.send(switch (reqEndpoint.getStatusAnnotation()) {
-            case FOUND -> new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.FOUND).setHeader(
+        getRequestConsumer().send(switch (reqEndpoint.getStatusAnnotation()) {
+            case FOUND -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.FOUND).setHeader(
                     new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case GONE -> new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.GONE);
+            case GONE -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.GONE);
             case MOVED_PERMANENTLY ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeader(
+                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeader(
                             new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case PERMANENT_REDIRECT ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeader(
+                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeader(
                             new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case TEMPORARY_REDIRECT ->
-                    new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
+                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
                             new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case UNAVAILABLE_FOR_LEGAL_REASONS -> new HttpResponse(requestId, getRequestConsumer(),
+            case UNAVAILABLE_FOR_LEGAL_REASONS -> new HttpResponse(getRequestId(), getRequestConsumer(),
                     HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).setHeader(
                     new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
             default -> throw new IllegalStateException("Unexpected value: " + reqEndpoint.getStatusAnnotation());
         });
     }
 
-    private void processUnauthorized() {
-        requestConsumer.send(
-                new HttpResponse(requestId, getRequestConsumer(), HttpStatusCode.UNAUTHORIZED).setAuthentications(
-                        getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
+    private void processAuthAnnotation(final ReqEndpoint reqEndpoint)
+            throws InvocationTargetException, IllegalAccessException {
+        switch (reqEndpoint.getAuthSchemeAnnotation()) {
+            case Bearer -> {
+                if (getRequestMethod() != HttpRequestMethod.POST) {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
+
+                HttpPostRequest request = (HttpPostRequest) this;
+                if (!request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
+
+                BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
+                if (bearerTokenRequest == null) {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    return;
+                }
+
+                Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest);
+                if (response instanceof BearerTokenResponse httpResponse) {
+                    getRequestConsumer().send(
+                            BearerTokenResponse.parse(httpResponse, getRequestId(), getRequestConsumer()));
+                } else {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+                }
+            }
+            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED);
+        }
     }
 }

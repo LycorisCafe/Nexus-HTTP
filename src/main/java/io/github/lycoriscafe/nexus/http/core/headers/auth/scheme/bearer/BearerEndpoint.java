@@ -16,10 +16,13 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
+
 import java.lang.annotation.*;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface BearerEndpoint {
+    POST value();
 }

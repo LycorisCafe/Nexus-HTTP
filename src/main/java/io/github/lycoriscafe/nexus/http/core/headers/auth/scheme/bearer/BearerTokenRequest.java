@@ -16,44 +16,45 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public final class BearerTokenRequest {
-    private final BearerGrantType grantType;
-    private String username;
-    private String password;
-    private String refreshToken;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostRequest;
 
-    public BearerTokenRequest(final BearerGrantType grantType) {
+import java.util.Map;
+
+public final class BearerTokenRequest {
+    private final String grantType;
+    private Map<String, String> params;
+
+    public BearerTokenRequest(final String grantType) {
         this.grantType = grantType;
     }
 
-    public BearerGrantType getGrantType() {
+    public String getGrantType() {
         return grantType;
     }
 
-    public String getUsername() {
-        return username;
+    public Map<String, String> getParams() {
+        return params;
     }
 
-    public BearerTokenRequest setUsername(String username) {
-        this.username = username;
+    public BearerTokenRequest setParams(final Map<String, String> params) {
+        this.params = params;
         return this;
     }
 
-    public String getPassword() {
-        return password;
-    }
+    @SuppressWarnings("unchecked")
+    public static BearerTokenRequest parse(final HttpPostRequest request) {
+        Map<String, String> params;
+        if (!(request.getContent().getData() instanceof Map)) {
+            return null;
+        }
+        params = (Map<String, String>) request.getContent().getData();
 
-    public BearerTokenRequest setPassword(String password) {
-        this.password = password;
-        return this;
-    }
+        if (!params.containsKey("grant_type")) {
+            return null;
+        }
 
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public BearerTokenRequest setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-        return this;
+        BearerTokenRequest bearerTokenRequest = new BearerTokenRequest(params.get("grant_type"));
+        params.remove("grant_type");
+        return bearerTokenRequest.setParams(params);
     }
 }

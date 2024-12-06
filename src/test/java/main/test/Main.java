@@ -23,9 +23,11 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -78,5 +80,10 @@ public class Main {
                 HttpStatusCode.OK).setContent(
                 new Content("image/jpg",
                         Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
+    }
+
+    @BearerEndpoint(@POST("/generateToken"))
+    public static HttpResponse tokenEndpoint(final HttpResponse httpResponse) {
+        return null;
     }
 }

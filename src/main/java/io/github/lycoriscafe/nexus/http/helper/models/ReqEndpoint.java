@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.helper.models;
 
+import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 
@@ -26,6 +27,7 @@ public final class ReqEndpoint extends ReqMaster {
     private final Method methodName;
     private final HttpStatusCode statusAnnotation;
     private final String statusAnnotationValue;
+    private final AuthScheme authSchemeAnnotation;
 
     public ReqEndpoint(final String requestEndpoint,
                        final HttpRequestMethod reqMethod,
@@ -33,12 +35,14 @@ public final class ReqEndpoint extends ReqMaster {
                        final Class<?> className,
                        final Method methodName,
                        final HttpStatusCode statusAnnotation,
-                       final String statusAnnotationValue) {
+                       final String statusAnnotationValue,
+                       final AuthScheme authSchemeAnnotation) {
         super(requestEndpoint, reqMethod, authenticated);
         this.className = className;
         this.methodName = methodName;
         this.statusAnnotation = statusAnnotation;
         this.statusAnnotationValue = statusAnnotationValue;
+        this.authSchemeAnnotation = authSchemeAnnotation;
     }
 
     public Class<?> getClazz() {
@@ -55,5 +59,9 @@ public final class ReqEndpoint extends ReqMaster {
 
     public String getStatusAnnotationValue() {
         return statusAnnotationValue;
+    }
+
+    public AuthScheme getAuthSchemeAnnotation() {
+        return authSchemeAnnotation;
     }
 }

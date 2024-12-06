@@ -16,8 +16,62 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public record BearerTokenResponse(String bearerToken, long expiresIn, String refreshToken) {
-    public static String processOutgoingResponse(final BearerTokenResponse response) {
-        return "";
+import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
+import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+
+public class BearerTokenResponse {
+    private final String bearerToken;
+    private long expiresIn = -1L;
+    private String refreshToken;
+    private String scope;
+
+    public BearerTokenResponse(final String bearerToken) {
+        this.bearerToken = bearerToken;
+    }
+
+    public String getBearerToken() {
+        return bearerToken;
+    }
+
+    public long getExpiresIn() {
+        return expiresIn;
+    }
+
+    public BearerTokenResponse setExpiresIn(final long expiresIn) {
+        this.expiresIn = expiresIn;
+        return this;
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public BearerTokenResponse setRefreshToken(final String refreshToken) {
+        this.refreshToken = refreshToken;
+        return this;
+    }
+
+    public String getScope() {
+        return scope;
+    }
+
+    public BearerTokenResponse setScope(final String scope) {
+        this.scope = scope;
+        return this;
+    }
+
+    public static HttpResponse parse(final BearerTokenResponse response,
+                                     final long requestId,
+                                     final RequestConsumer requestConsumer) {
+        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK).setCashControl(
+                new CacheControl().setNoStore(true)).setContent(new Content("application/json",
+                "{\"access_token\":\"" + response.getBearerToken() + "\",\"token_type\":\"Bearer\"" +
+                        ((response.getExpiresIn() > -1L) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
+                        (response.getRefreshToken() != null ?
+                                ",\"refresh_token\":\"" + response.getRefreshToken() + "\"" : "") +
+                        (response.getScope() != null ? ",\"scope\":\"" + response.getScope() + "\"" : "") + "}"));
     }
 }
