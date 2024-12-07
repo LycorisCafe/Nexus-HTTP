@@ -21,6 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.util.DataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +59,7 @@ public final class RequestConsumer implements Runnable {
 
         this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        responseQue = new ArrayList<>();
+        responseQue = new DataList<>();
     }
 
     private long getRequestId() {

@@ -28,10 +28,10 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import io.github.lycoriscafe.nexus.http.helper.util.DataList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.HashSet;
 import java.util.List;
 
 public final class HttpResponse {
@@ -40,17 +40,17 @@ public final class HttpResponse {
     private final RequestConsumer requestConsumer;
 
     private final HttpStatusCode httpStatusCode;
-    private HashSet<Header> headers;
-    private HashSet<Cookie> cookies;
-    private HashSet<ReportingEndpoint> reportingEndpoints;
-    private HashSet<ContentSecurityPolicy> contentSecurityPolicies;
-    private HashSet<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly;
+    private List<Header> headers;
+    private List<Cookie> cookies;
+    private List<ReportingEndpoint> reportingEndpoints;
+    private List<ContentSecurityPolicy> contentSecurityPolicies;
+    private List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly;
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
     private CrossOriginResourceSharing crossOriginResourceSharing;
-    private HashSet<Authentication> authentications;
+    private List<Authentication> authentications;
     private CacheControl cacheControl;
-    private Content content;
+    private Content<?> content;
 
     private boolean dropConnection;
 
@@ -100,19 +100,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (headers == null) headers = new HashSet<>();
+        if (headers == null) headers = new DataList<>();
         headers.add(header);
         return this;
     }
 
-    public HttpResponse setHeaders(final HashSet<Header> headers) {
+    public HttpResponse setHeaders(final List<Header> headers) {
         this.headers = headers;
         return this;
     }
 
     public List<Header> getHeaders() {
-        if (headers == null) return null;
-        return headers.stream().toList();
+        return headers;
     }
 
     public HttpResponse setCookie(final Cookie cookie) {
@@ -121,19 +120,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (cookies == null) cookies = new HashSet<>();
+        if (cookies == null) cookies = new DataList<>();
         cookies.add(cookie);
         return this;
     }
 
-    public HttpResponse setCookies(final HashSet<Cookie> cookies) {
+    public HttpResponse setCookies(final List<Cookie> cookies) {
         this.cookies = cookies;
         return this;
     }
 
     public List<Cookie> getCookies() {
-        if (cookies == null) return null;
-        return cookies.stream().toList();
+        return cookies;
     }
 
     public HttpResponse setReportingEndpoint(final ReportingEndpoint reportingEndpoint) {
@@ -142,19 +140,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (reportingEndpoints == null) reportingEndpoints = new HashSet<>();
+        if (reportingEndpoints == null) reportingEndpoints = new DataList<>();
         reportingEndpoints.add(reportingEndpoint);
         return this;
     }
 
-    public HttpResponse setReportingEndpoints(final HashSet<ReportingEndpoint> reportingEndpoints) {
+    public HttpResponse setReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {
         this.reportingEndpoints = reportingEndpoints;
         return this;
     }
 
     public List<ReportingEndpoint> getReportingEndpoints() {
-        if (reportingEndpoints == null) return null;
-        return reportingEndpoints.stream().toList();
+        return reportingEndpoints;
     }
 
     public HttpResponse setContentSecurityPolicy(final ContentSecurityPolicy contentSecurityPolicy) {
@@ -163,19 +160,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (contentSecurityPolicies == null) contentSecurityPolicies = new HashSet<>();
+        if (contentSecurityPolicies == null) contentSecurityPolicies = new DataList<>();
         contentSecurityPolicies.add(contentSecurityPolicy);
         return this;
     }
 
-    public HttpResponse setContentSecurityPolicies(final HashSet<ContentSecurityPolicy> contentSecurityPolicies) {
+    public HttpResponse setContentSecurityPolicies(final List<ContentSecurityPolicy> contentSecurityPolicies) {
         this.contentSecurityPolicies = contentSecurityPolicies;
         return this;
     }
 
     public List<ContentSecurityPolicy> getContentSecurityPolicies() {
-        if (contentSecurityPolicies == null) return null;
-        return contentSecurityPolicies.stream().toList();
+        return contentSecurityPolicies;
     }
 
     public HttpResponse setContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly contentSecurityPolicyReportOnly) {
@@ -184,19 +180,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (this.contentSecurityPolicyReportOnly == null) this.contentSecurityPolicyReportOnly = new HashSet<>();
+        if (this.contentSecurityPolicyReportOnly == null) this.contentSecurityPolicyReportOnly = new DataList<>();
         this.contentSecurityPolicyReportOnly.add(contentSecurityPolicyReportOnly);
         return this;
     }
 
-    public HttpResponse setContentSecurityPolicyReportOnly(final HashSet<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly) {
+    public HttpResponse setContentSecurityPolicyReportOnly(final List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly) {
         this.contentSecurityPolicyReportOnly = contentSecurityPolicyReportOnly;
         return this;
     }
 
     public List<ContentSecurityPolicyReportOnly> getContentSecurityPolicyReportOnly() {
-        if (contentSecurityPolicyReportOnly == null) return null;
-        return contentSecurityPolicyReportOnly.stream().toList();
+        return contentSecurityPolicyReportOnly;
     }
 
     public HttpResponse setStrictTransportSecurity(final StrictTransportSecurity strictTransportSecurity) {
@@ -232,19 +227,18 @@ public final class HttpResponse {
             return this;
         }
 
-        if (authentications == null) authentications = new HashSet<>();
+        if (authentications == null) authentications = new DataList<>();
         authentications.add(authentication);
         return this;
     }
 
-    public HttpResponse setAuthentications(final HashSet<Authentication> authentications) {
+    public HttpResponse setAuthentications(final List<Authentication> authentications) {
         this.authentications = authentications;
         return this;
     }
 
     public List<Authentication> getAuthentications() {
-        if (authentications == null) return null;
-        return authentications.stream().toList();
+        return authentications;
     }
 
     public HttpResponse setCashControl(final CacheControl cacheControl) {
@@ -256,12 +250,12 @@ public final class HttpResponse {
         return cacheControl;
     }
 
-    public HttpResponse setContent(final Content content) {
+    public HttpResponse setContent(final Content<?> content) {
         this.content = content;
         return this;
     }
 
-    public Content getContent() {
+    public Content<?> getContent() {
         return content;
     }
 
@@ -281,7 +275,7 @@ public final class HttpResponse {
                             .append("\r\n").append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
                             .append("Connection:").append(" ").append("keep-alive").append("\r\n")
 
-                            .append(Header.processOutgoingHeaders(getHeaders()))
+                            .append(Header.parseOutgoingHeaders(getHeaders()))
                             .append(Cookie.processOutgoingCookies(getCookies()))
                             .append(ReportingEndpoint.processOutgoingReportingEndpoints(getReportingEndpoints()))
                             .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(),

@@ -27,7 +27,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 
 import java.net.InetAddress;
-import java.util.HashSet;
+import java.util.List;
 
 public final class HttpServerConfiguration {
     private int port = 0;
@@ -48,13 +48,13 @@ public final class HttpServerConfiguration {
     private int maxChunkedContentLength = 104_857_600;
     private int maxChunkSize = 5_242_880;
 
-    private HashSet<Header> defaultHeaders = null;
-    private HashSet<Authentication> defaultAuthentications = null;
-    private HashSet<Cookie> defaultCookies = null;
+    private List<Header> defaultHeaders = null;
+    private List<Authentication> defaultAuthentications = null;
+    private List<Cookie> defaultCookies = null;
     private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
-    private HashSet<ReportingEndpoint> reportingEndpoints = null;
-    private HashSet<ContentSecurityPolicy> defaultContentSecurityPolicies = null;
-    private HashSet<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly = null;
+    private List<ReportingEndpoint> reportingEndpoints = null;
+    private List<ContentSecurityPolicy> defaultContentSecurityPolicies = null;
+    private List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly = null;
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
     private CacheControl defaultCacheControl = null;
     private boolean xContentTypeOptionsNoSniff;
@@ -217,30 +217,30 @@ public final class HttpServerConfiguration {
         return maxChunkSize;
     }
 
-    public HttpServerConfiguration setDefaultHeaders(final HashSet<Header> defaultHeaders) {
+    public HttpServerConfiguration setDefaultHeaders(final List<Header> defaultHeaders) {
         this.defaultHeaders = defaultHeaders;
         return this;
     }
 
-    public HashSet<Header> getDefaultHeaders() {
+    public List<Header> getDefaultHeaders() {
         return defaultHeaders;
     }
 
-    public HttpServerConfiguration setDefaultAuthentications(final HashSet<Authentication> defaultAuthentications) {
+    public HttpServerConfiguration setDefaultAuthentications(final List<Authentication> defaultAuthentications) {
         this.defaultAuthentications = defaultAuthentications;
         return this;
     }
 
-    public HashSet<Authentication> getDefaultAuthentications() {
+    public List<Authentication> getDefaultAuthentications() {
         return defaultAuthentications;
     }
 
-    public HttpServerConfiguration setDefaultCookies(final HashSet<Cookie> defaultCookies) {
+    public HttpServerConfiguration setDefaultCookies(final List<Cookie> defaultCookies) {
         this.defaultCookies = defaultCookies;
         return this;
     }
 
-    public HashSet<Cookie> getDefaultCookies() {
+    public List<Cookie> getDefaultCookies() {
         return defaultCookies;
     }
 
@@ -254,34 +254,33 @@ public final class HttpServerConfiguration {
         return defaultCrossOriginResourceSharing;
     }
 
-    public HttpServerConfiguration setDefaultReportingEndpoints(final HashSet<ReportingEndpoint> reportingEndpoints)
+    public HttpServerConfiguration setDefaultReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints)
             throws HttpServerConfigurationException {
         this.reportingEndpoints = reportingEndpoints;
         return this;
     }
 
-    public HashSet<ReportingEndpoint> getDefaultReportingEndpoints() {
+    public List<ReportingEndpoint> getDefaultReportingEndpoints() {
         return reportingEndpoints;
     }
 
     public HttpServerConfiguration setDefaultContentSecurityPolicies(
-            final HashSet<ContentSecurityPolicy> defaultContentSecurityPolicies) {
+            final List<ContentSecurityPolicy> defaultContentSecurityPolicies) {
         this.defaultContentSecurityPolicies = defaultContentSecurityPolicies;
         return this;
     }
 
-    public HashSet<ContentSecurityPolicy> getDefaultContentSecurityPolicies() {
+    public List<ContentSecurityPolicy> getDefaultContentSecurityPolicies() {
         return defaultContentSecurityPolicies;
     }
 
     public HttpServerConfiguration setDefaultContentSecurityPolicyReportOnly(
-            final HashSet<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly) {
+            final List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly) {
         this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
         return this;
     }
 
-    public HashSet<ContentSecurityPolicyReportOnly> getDefaultContentSecurityPolicyReportOnly() {
-        if (defaultContentSecurityPolicyReportOnly == null) return null;
+    public List<ContentSecurityPolicyReportOnly> getDefaultContentSecurityPolicyReportOnly() {
         return defaultContentSecurityPolicyReportOnly;
     }
 

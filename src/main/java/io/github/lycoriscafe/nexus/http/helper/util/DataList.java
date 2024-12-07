@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.core.headers.csp;
+package io.github.lycoriscafe.nexus.http.helper.util;
 
-import java.util.List;
+import java.util.ArrayList;
 
-public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
-    public ContentSecurityPolicyReportOnly(final CSPDirective directive,
-                                           final List<String> values) {
-        super(directive, values);
+public final class DataList<E> extends ArrayList<E> {
+    @Override
+    public boolean add(final E e) {
+        if (!contains(e)) {
+            return super.add(e);
+        }
+        return false;
     }
 }

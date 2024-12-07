@@ -16,24 +16,13 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import java.util.Map;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.*;
-
-public final class MultiPartFormData {
+public final class MultiPartFormData<T> {
     private String name;
     private String fileName;
     private Map<String, String> parameters;
-    private Object data;
-
-    private MultiPartFormData() {
-    }
+    private T data;
 
     public String getName() {
         return name;
@@ -47,123 +36,7 @@ public final class MultiPartFormData {
         return parameters;
     }
 
-    public Object getData() {
+    public T getData() {
         return data;
-    }
-
-
-    public static Content process(final long requestId,
-                                  final RequestConsumer requestConsumer,
-                                  final LinkedHashSet<TransferEncoding> transferEncoding,
-                                  final LinkedHashSet<ContentEncoding> contentEncoding,
-                                  final int contentLength,
-                                  final String boundary) {
-        if (transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED)) {
-            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-            return null;
-        }
-
-        Content content =
-                Content.ReadOperations.processCommonContentType(requestId, requestConsumer, transferEncoding,
-                        contentEncoding,
-                        contentLength, "multipart/form-data");
-        if (content == null) return null;
-
-        HashSet<MultiPartFormData> data = new HashSet<>();
-        ByteArrayInputStream byteArrayInputStream =
-                new ByteArrayInputStream(((ByteArrayOutputStream) content.getData()).toByteArray());
-        BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(byteArrayInputStream));
-        int boundaryLength = boundary.length();
-        int len = 0;
-        try {
-            while (true) {
-                MultiPartFormData multiPartFormData = new MultiPartFormData();
-
-                String b = bufferedReader.readLine();
-                if (!b.equals(boundary)) {
-                    if (b.equals(boundary + "--")) {
-                        len += 2;
-                        if (contentLength != len) {
-                            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-                            return null;
-                        }
-                        break;
-                    }
-                }
-                len += boundaryLength;
-
-                String[] dispositionHeader = bufferedReader.readLine().split(":", 0);
-                if (!(dispositionHeader.length > 1) ||
-                        !dispositionHeader[0].equalsIgnoreCase("content-disposition")) {
-                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-                    return null;
-                }
-
-                String[] params = dispositionHeader[1].split(";", 0);
-                if (!(params.length > 2) ||
-                        !params[1].trim().equalsIgnoreCase("form-data") ||
-                        !params[2].trim().startsWith("name=")) {
-                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-                    return null;
-                }
-
-                for (String param : params) {
-                    String[] keyVal = param.trim().split("=", 0);
-                    if (keyVal[0].equalsIgnoreCase("form-data")) continue;
-                    if (keyVal[0].equalsIgnoreCase("name")) {
-                        multiPartFormData.name = keyVal[1].replaceAll("\"", "");
-                        continue;
-                    }
-                    if (keyVal[0].equalsIgnoreCase("file-name")) {
-                        multiPartFormData.fileName = keyVal[1].replaceAll("\"", "");
-                        continue;
-                    }
-                    multiPartFormData.parameters.put(keyVal[0], keyVal[1]);
-                }
-
-                List<Byte> termination = new ArrayList<>();
-                List<Byte> marker = new ArrayList<>();
-                for (int i = 0; i < 2; i++) {
-                    termination.add((byte) '\r');
-                    termination.add((byte) '\n');
-                    marker.add((byte) '\r');
-                    marker.add((byte) '\n');
-                }
-
-                int n;
-                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                while ((n = byteArrayInputStream.read()) != -1) {
-                    len++;
-                    if (len > contentLength) {
-                        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-                        return null;
-                    }
-
-                    termination.removeFirst();
-
-                    if (n == '\r' || n == '\n') {
-                        termination.add((byte) n);
-                        if (termination.equals(marker)) break;
-                    }
-
-                    byteArrayOutputStream.write(n);
-                }
-
-                if (multiPartFormData.fileName == null) {
-                    multiPartFormData.data = byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-                } else {
-                    multiPartFormData.data = byteArrayOutputStream;
-                }
-
-                data.add(multiPartFormData);
-            }
-        } catch (Exception e) {
-            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
-            return null;
-        }
-
-        content.setData(data);
-
-        return content;
     }
 }

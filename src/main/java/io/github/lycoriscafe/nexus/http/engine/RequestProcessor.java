@@ -86,11 +86,11 @@ public final class RequestProcessor {
             String[] parts = header.split(":", 2);
             String headerName = parts[0].toLowerCase(Locale.US).trim();
             if (headerName.equals("cookie")) {
-                httpRequest.setCookies(Cookie.processIncomingCookies(parts[1]));
+                httpRequest.setCookies(Cookie.parseIncomingCookies(parts[1]));
             } else if (headerName.equals("authorization")) {
                 httpRequest.setAuthorization(Authorization.processIncomingAuth(parts[1]));
             } else {
-                httpRequest.setHeaders(Header.processIncomingHeader(parts));
+                httpRequest.setHeader(Header.parseIncomingHeader(parts));
             }
         }
 

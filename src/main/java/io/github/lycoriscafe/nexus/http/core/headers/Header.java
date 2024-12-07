@@ -39,11 +39,11 @@ public class Header {
         return value;
     }
 
-    public static Header processIncomingHeader(final String[] headerParts) {
+    public static Header parseIncomingHeader(final String[] headerParts) {
         return new Header(headerParts[0].trim(), headerParts[1].trim());
     }
 
-    public static String processOutgoingHeaders(final List<Header> headers) {
+    public static String parseOutgoingHeaders(final List<Header> headers) {
         if (headers == null || headers.isEmpty()) return "";
         StringBuilder output = new StringBuilder();
         for (Header header : headers) {

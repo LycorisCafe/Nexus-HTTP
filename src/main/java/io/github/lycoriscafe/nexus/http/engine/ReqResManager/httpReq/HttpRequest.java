@@ -28,11 +28,11 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
+import io.github.lycoriscafe.nexus.http.helper.util.DataList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -42,8 +42,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private final HttpRequestMethod requestMethod;
     private String endpoint;
     private Map<String, String> parameters;
-    private HashSet<Header> headers;
-    private HashSet<Cookie> cookies;
+    private List<Header> headers;
+    private List<Cookie> cookies;
     private Authorization authorization;
 
     public HttpRequest(final RequestConsumer requestConsumer,
@@ -82,36 +82,24 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return parameters;
     }
 
-    public void setHeaders(final Header... headers) {
-        if (cookies == null || headers.length == 0) {
-            return;
-        }
-
-        if (this.headers == null) {
-            this.headers = new HashSet<>();
-        }
-        this.headers.addAll(Arrays.asList(headers));
+    public void setHeader(final Header header) {
+        if (header == null) return;
+        if (headers == null) headers = new DataList<>();
+        headers.add(header);
     }
 
     public List<Header> getHeaders() {
-        if (headers == null) return null;
-        return headers.stream().toList();
+        return headers;
     }
 
-    public void setCookies(final Cookie... cookies) {
-        if (cookies == null || cookies.length == 0) {
-            return;
-        }
-
-        if (this.cookies == null) {
-            this.cookies = new HashSet<>();
-        }
+    public void setCookies(final Cookie[] cookies) {
+        if (cookies == null || cookies.length == 0) return;
+        if (this.cookies == null) this.cookies = new DataList<>();
         this.cookies.addAll(Arrays.asList(cookies));
     }
 
     public List<Cookie> getCookies() {
-        if (cookies == null) return null;
-        return cookies.stream().toList();
+        return cookies;
     }
 
     public void setAuthorization(final Authorization authorization) {
@@ -203,7 +191,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 }
 
                 HttpPostRequest request = (HttpPostRequest) this;
-                if (!request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
+                if (request.getContent() == null ||
+                        !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
                     return;
                 }

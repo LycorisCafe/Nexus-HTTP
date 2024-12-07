@@ -17,17 +17,17 @@
 package io.github.lycoriscafe.nexus.http.core.headers.cors;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.helper.util.DataList;
 
-import java.util.HashSet;
 import java.util.List;
 
 public final class CrossOriginResourceSharing {
     private String accessControlAllowOrigin;
-    private HashSet<String> accessControlExposeHeaders;
+    private List<String> accessControlExposeHeaders;
     private long accessControlMaxAge = -1L;
     private boolean accessControlAllowCredentials;
-    private HashSet<HttpRequestMethod> accessControlAllowMethods;
-    private HashSet<String> accessControlAllowHeaders;
+    private List<HttpRequestMethod> accessControlAllowMethods;
+    private List<String> accessControlAllowHeaders;
 
     public CrossOriginResourceSharing setAccessControlAllowOrigin(final String accessControlAllowOrigin) {
         this.accessControlAllowOrigin = accessControlAllowOrigin;
@@ -39,7 +39,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlExposeHeader(final String accessControlExposeHeader) {
-        if (this.accessControlExposeHeaders == null) accessControlExposeHeaders = new HashSet<>();
+        if (this.accessControlExposeHeaders == null) accessControlExposeHeaders = new DataList<>();
         accessControlExposeHeaders.add(accessControlExposeHeader);
         return this;
     }
@@ -67,7 +67,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlAllowMethod(final HttpRequestMethod accessControlAllowMethod) {
-        if (this.accessControlAllowMethods == null) accessControlAllowMethods = new HashSet<>();
+        if (this.accessControlAllowMethods == null) accessControlAllowMethods = new DataList<>();
         accessControlAllowMethods.add(accessControlAllowMethod);
         return this;
     }
@@ -77,7 +77,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlAllowHeader(final String accessControlAllowHeader) {
-        if (accessControlAllowHeaders == null) accessControlAllowHeaders = new HashSet<>();
+        if (accessControlAllowHeaders == null) accessControlAllowHeaders = new DataList<>();
         accessControlAllowHeaders.add(accessControlAllowHeader);
         return this;
     }

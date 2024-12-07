@@ -24,7 +24,8 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEndpoint;
-import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
@@ -48,8 +49,7 @@ public class Main {
         HttpServerConfiguration httpServerConfiguration =
                 new HttpServerConfiguration("main.test").setPort(2004).setStaticFilesDirectory(null)
                         .setDatabaseLocation("")
-                        .setDefaultAuthentications(hs)
-                        .setDefaultCacheControl(new CacheControl().setNoCache(true).setNoStore(true));
+                        .setDefaultAuthentications(hs);
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
     }
@@ -83,7 +83,8 @@ public class Main {
     }
 
     @BearerEndpoint(@POST("/generateToken"))
-    public static HttpResponse tokenEndpoint(final HttpResponse httpResponse) {
-        return null;
+    public static BearerTokenResponse tokenEndpoint(final BearerTokenRequest bearerTokenRequest) {
+        System.out.println("x");
+        return new BearerTokenResponse("abcdefg");
     }
 }

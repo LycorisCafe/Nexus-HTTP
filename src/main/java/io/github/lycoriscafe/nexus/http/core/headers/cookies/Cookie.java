@@ -124,7 +124,7 @@ public final class Cookie {
         return prefix;
     }
 
-    public static Cookie[] processIncomingCookies(final String headerValue) {
+    public static Cookie[] parseIncomingCookies(final String headerValue) {
         String[] keyVal = headerValue.split(";", 0);
         Cookie[] cookies = new Cookie[keyVal.length];
         for (int i = 0; i < keyVal.length; i++) {

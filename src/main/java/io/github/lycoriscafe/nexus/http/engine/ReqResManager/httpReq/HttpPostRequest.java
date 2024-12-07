@@ -24,12 +24,13 @@ import io.github.lycoriscafe.nexus.http.core.headers.content.TransferEncoding;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import io.github.lycoriscafe.nexus.http.helper.util.DataList;
 
-import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Locale;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
-    private Content content;
+    private Content<?> content;
 
     public HttpPostRequest(final RequestConsumer requestConsumer,
                            final long requestId,
@@ -37,12 +38,12 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         super(requestConsumer, requestId, requestMethod);
     }
 
-    public Content getContent() {
+    public Content<?> getContent() {
         return content;
     }
 
-    private LinkedHashSet<TransferEncoding> transferEncoding;
-    private LinkedHashSet<ContentEncoding> contentEncoding;
+    private List<TransferEncoding> transferEncoding;
+    private List<ContentEncoding> contentEncoding;
     private Integer contentLength = null;
 
     @Override
@@ -50,12 +51,13 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         for (Header header : getHeaders()) {
             if (header.getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
-                if (getContentLength(transferEncoding == null || transferEncoding.contains(TransferEncoding.CHUNKED))) {
+                if (!getContentLength(
+                        transferEncoding == null || transferEncoding.contains(TransferEncoding.CHUNKED))) {
                     return;
                 }
 
                 String value = header.getValue().toLowerCase(Locale.US);
-                Content content = switch (value) {
+                Content<?> content = switch (value) {
                     case String x when x.startsWith("multipart/form-data") ->
                             MultiPartFormData.process(getRequestId(), getRequestConsumer(), transferEncoding,
                                     contentEncoding, contentLength, value.split(";")[1].trim().split("=")[1]);
@@ -91,7 +93,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
                 return switch (headerName) {
                     case "transfer-encoding" -> {
-                        transferEncoding = new LinkedHashSet<>();
+                        transferEncoding = new DataList<>();
                         for (String value : values) {
                             try {
                                 transferEncoding.add(TransferEncoding.valueOf(value));
@@ -103,7 +105,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         yield true;
                     }
                     case "content-encoding" -> {
-                        contentEncoding = new LinkedHashSet<>();
+                        contentEncoding = new DataList<>();
                         for (String value : values) {
                             try {
                                 contentEncoding.add(ContentEncoding.valueOf(value));
@@ -122,7 +124,8 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private boolean getContentLength(final boolean optional) {
-        for (Header header : getHeaders()) {
+        List<Header> headers = getHeaders().stream().toList();
+        for (Header header : headers) {
             if (header.getName().equalsIgnoreCase("content-length")) {
                 try {
                     contentLength = Integer.parseInt(header.getValue());

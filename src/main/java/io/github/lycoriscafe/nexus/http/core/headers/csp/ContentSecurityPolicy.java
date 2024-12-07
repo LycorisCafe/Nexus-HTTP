@@ -16,15 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
-import java.util.HashSet;
 import java.util.List;
 
 public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnly {
     private final CSPDirective directive;
-    private final HashSet<String> values;
+    private final List<String> values;
 
     public ContentSecurityPolicy(final CSPDirective directive,
-                                 final HashSet<String> values) {
+                                 final List<String> values) {
         if (directive == null || values == null || values.isEmpty()) {
             throw new NullPointerException("directive/values cannot be null");
         }
@@ -37,7 +36,7 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
     }
 
     public List<String> getValues() {
-        return values.stream().toList();
+        return values;
     }
 
     public static String processOutgoingCsp(final List<? extends ContentSecurityPolicy> contentSecurityPolicies,
