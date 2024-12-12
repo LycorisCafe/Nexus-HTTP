@@ -38,7 +38,7 @@ public final class HttpServerConfiguration {
 
     private final String basePackage;
     private String tempDirectory = "NexusTemp";
-    private String staticFilesDirectory = "NexusStatics";
+    private String staticFilesDirectory = null;
     private String databaseLocation = null;
 
     private boolean ignoreEndpointCases = true;
@@ -58,6 +58,8 @@ public final class HttpServerConfiguration {
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
     private CacheControl defaultCacheControl = null;
     private boolean xContentTypeOptionsNoSniff;
+
+    private boolean addErrorMessageToResponseHeaders = true;
 
     public HttpServerConfiguration(final String basePackage) {
         this.basePackage = basePackage;
@@ -310,5 +312,14 @@ public final class HttpServerConfiguration {
 
     public boolean isXContentTypeOptionsNoSniff() {
         return xContentTypeOptionsNoSniff;
+    }
+
+    public HttpServerConfiguration setAddErrorMessageToResponseHeaders(boolean addErrorMessageToResponseHeaders) {
+        this.addErrorMessageToResponseHeaders = addErrorMessageToResponseHeaders;
+        return this;
+    }
+
+    public boolean isAddErrorMessageToResponseHeaders() {
+        return addErrorMessageToResponseHeaders;
     }
 }

@@ -24,13 +24,13 @@ import io.github.lycoriscafe.nexus.http.core.headers.content.TransferEncoding;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.util.List;
 import java.util.Locale;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
-    private Content<?> content;
+    private Content content;
 
     public HttpPostRequest(final RequestConsumer requestConsumer,
                            final long requestId,
@@ -38,7 +38,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         super(requestConsumer, requestId, requestMethod);
     }
 
-    public Content<?> getContent() {
+    public Content getContent() {
         return content;
     }
 
@@ -93,24 +93,26 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
                 return switch (headerName) {
                     case "transfer-encoding" -> {
-                        transferEncoding = new DataList<>();
+                        transferEncoding = new NonDuplicateList<>();
                         for (String value : values) {
                             try {
                                 transferEncoding.add(TransferEncoding.valueOf(value));
                             } catch (IllegalArgumentException e) {
-                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED);
+                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
+                                        "provided transfer encoding not implemented");
                                 yield false;
                             }
                         }
                         yield true;
                     }
                     case "content-encoding" -> {
-                        contentEncoding = new DataList<>();
+                        contentEncoding = new NonDuplicateList<>();
                         for (String value : values) {
                             try {
                                 contentEncoding.add(ContentEncoding.valueOf(value));
                             } catch (IllegalArgumentException e) {
-                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED);
+                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
+                                        "provided content encoding not implemented");
                                 yield false;
                             }
                         }
@@ -131,21 +133,24 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                     contentLength = Integer.parseInt(header.getValue());
 
                     if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE);
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE,
+                                "content too large");
                         return false;
                     }
 
                     getHeaders().remove(header);
                     return true;
                 } catch (NumberFormatException e) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
+                            "invalid content length");
                     return false;
                 }
             }
         }
 
         if (!optional) {
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED);
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED,
+                    "content length required");
             return false;
         }
 

@@ -16,8 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-public class ContentException extends Exception {
-    public ContentException(String message) {
-        super(message);
-    }
+import java.util.HashMap;
+
+public final class UrlEncodedData extends HashMap<String, String> {
 }

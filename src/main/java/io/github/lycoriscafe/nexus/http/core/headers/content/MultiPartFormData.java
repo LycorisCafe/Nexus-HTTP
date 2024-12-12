@@ -18,11 +18,11 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 import java.util.Map;
 
-public final class MultiPartFormData<T> {
+public final class MultiPartFormData {
     private String name;
     private String fileName;
     private Map<String, String> parameters;
-    private T data;
+    private Object data;
 
     public String getName() {
         return name;
@@ -36,7 +36,7 @@ public final class MultiPartFormData<T> {
         return parameters;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 }

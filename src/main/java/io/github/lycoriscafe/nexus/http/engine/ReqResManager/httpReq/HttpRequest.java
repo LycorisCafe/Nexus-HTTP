@@ -28,7 +28,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
@@ -84,7 +84,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public void setHeader(final Header header) {
         if (header == null) return;
-        if (headers == null) headers = new DataList<>();
+        if (headers == null) headers = new NonDuplicateList<>();
         headers.add(header);
     }
 
@@ -94,7 +94,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public void setCookies(final Cookie[] cookies) {
         if (cookies == null || cookies.length == 0) return;
-        if (this.cookies == null) this.cookies = new DataList<>();
+        if (this.cookies == null) this.cookies = new NonDuplicateList<>();
         this.cookies.addAll(Arrays.asList(cookies));
     }
 
@@ -114,11 +114,12 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         try {
             ReqMaster endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
             if (endpointDetails == null) {
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND);
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found");
                 return;
             }
             if (endpointDetails.getReqMethod() != getRequestMethod()) {
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED);
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED,
+                        "requested method not allowed");
                 return;
             }
 
@@ -145,7 +146,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     if (response instanceof HttpResponse httpResponse) {
                         getRequestConsumer().send(httpResponse);
                     } else {
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
+                                "invalid http response provided");
                     }
                 }
                 case ReqFile reqFile -> {
@@ -155,7 +157,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             }
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
                  IllegalAccessException e) {
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
+                    "error while processing request/response");
             throw new RuntimeException(e);
         }
     }
@@ -186,20 +189,23 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         switch (reqEndpoint.getAuthSchemeAnnotation()) {
             case Bearer -> {
                 if (getRequestMethod() != HttpRequestMethod.POST) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
+                            "request method must be POST");
                     return;
                 }
 
                 HttpPostRequest request = (HttpPostRequest) this;
                 if (request.getContent() == null ||
                         !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
+                            "content type must be application/x-www-form-urlencoded");
                     return;
                 }
 
                 BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
                 if (bearerTokenRequest == null) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
+                            "missing required parameter");
                     return;
                 }
 
@@ -208,10 +214,12 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     getRequestConsumer().send(
                             BearerTokenResponse.parse(httpResponse, getRequestId(), getRequestConsumer()));
                 } else {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
+                            "invalid bearer response provided");
                 }
             }
-            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED);
+            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
+                    "auth scheme not implemented");
         }
     }
 }

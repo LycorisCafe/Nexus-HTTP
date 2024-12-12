@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.core.headers.cors;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlExposeHeader(final String accessControlExposeHeader) {
-        if (this.accessControlExposeHeaders == null) accessControlExposeHeaders = new DataList<>();
+        if (this.accessControlExposeHeaders == null) accessControlExposeHeaders = new NonDuplicateList<>();
         accessControlExposeHeaders.add(accessControlExposeHeader);
         return this;
     }
@@ -67,7 +67,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlAllowMethod(final HttpRequestMethod accessControlAllowMethod) {
-        if (this.accessControlAllowMethods == null) accessControlAllowMethods = new DataList<>();
+        if (this.accessControlAllowMethods == null) accessControlAllowMethods = new NonDuplicateList<>();
         accessControlAllowMethods.add(accessControlAllowMethod);
         return this;
     }
@@ -77,7 +77,7 @@ public final class CrossOriginResourceSharing {
     }
 
     public CrossOriginResourceSharing addAccessControlAllowHeader(final String accessControlAllowHeader) {
-        if (accessControlAllowHeaders == null) accessControlAllowHeaders = new DataList<>();
+        if (accessControlAllowHeaders == null) accessControlAllowHeaders = new NonDuplicateList<>();
         accessControlAllowHeaders.add(accessControlAllowHeader);
         return this;
     }

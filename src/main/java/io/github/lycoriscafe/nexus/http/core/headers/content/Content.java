@@ -16,29 +16,48 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 
-public final class Content<T> {
+public final class Content {
     private final String contentType;
     private long contentLength;
     private String downloadName;
     private List<TransferEncoding> transferEncodings;
     private List<ContentEncoding> contentEncodings;
-    private T data;
+    private Object data;
 
-    public Content(final String contentType,
-                   final T data) throws ContentException {
-        if (!((data instanceof Path) || (data instanceof byte[]) || (data instanceof InputStream) ||
-                (data instanceof String))) {
-            throw new ContentException("invalid data type");
-        }
+    Content(final String contentType) {
+        this.contentType = contentType;
+    }
 
+    private Content(final String contentType,
+                    final Object data) {
         this.contentType = contentType;
         this.data = data;
+    }
+
+    public Content(final String contentType,
+                   final Path data) {
+        this(contentType, (Object) data);
+    }
+
+    public Content(final String contentType,
+                   final byte[] data) {
+        this(contentType, (Object) data);
+    }
+
+    public Content(final String contentType,
+                   final String data) {
+        this(contentType, (Object) data);
+    }
+
+    public Content(final String contentType,
+                   final InputStream data) {
+        this(contentType, (Object) data);
     }
 
     public String getContentType() {
@@ -49,7 +68,7 @@ public final class Content<T> {
         return contentLength;
     }
 
-    public Content<T> setDownloadName(final String downloadName) {
+    public Content setDownloadName(final String downloadName) {
         this.downloadName = downloadName;
         return this;
     }
@@ -58,10 +77,8 @@ public final class Content<T> {
         return downloadName;
     }
 
-    public Content<T> addTransferEncoding(final TransferEncoding transferEncoding) {
-        if (transferEncodings == null) {
-            transferEncodings = new DataList<>();
-        }
+    public Content addTransferEncoding(final TransferEncoding transferEncoding) {
+        if (transferEncodings == null) transferEncodings = new NonDuplicateList<>();
         transferEncodings.add(transferEncoding);
         return this;
     }
@@ -70,24 +87,22 @@ public final class Content<T> {
         return transferEncodings;
     }
 
-    public Content<T> addContentEncoding(final ContentEncoding contentEncoding) {
-        if (contentEncodings == null) {
-            contentEncodings = new DataList<>();
-        }
+    public Content addContentEncoding(final ContentEncoding contentEncoding) {
+        if (contentEncodings == null) contentEncodings = new NonDuplicateList<>();
         contentEncodings.add(contentEncoding);
         return this;
     }
 
     public List<ContentEncoding> getContentEncodings() {
-        return contentEncodings == null ? null : contentEncodings.stream().toList();
+        return contentEncodings;
     }
 
-    Content<T> setData(final T data) {
+    Content setData(final Object data) {
         this.data = data;
         return this;
     }
 
-    public T getData() {
+    public Object getData() {
         return data;
     }
 

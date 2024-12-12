@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,7 +59,7 @@ public final class RequestConsumer implements Runnable {
 
         this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        responseQue = new DataList<>();
+        responseQue = new NonDuplicateList<>();
     }
 
     private long getRequestId() {
@@ -95,12 +95,6 @@ public final class RequestConsumer implements Runnable {
                 if (line == null) break;
                 line = line.trim();
 
-                if (line.length() > 8000) {
-                    // Handle length exceeded
-                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE);
-                    return;
-                }
-
                 if (requestLine == null) {
                     requestLine = line;
                     continue;
@@ -115,7 +109,8 @@ public final class RequestConsumer implements Runnable {
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
                     // Handle max headers count exceeded
-                    dropConnection(requestId, HttpStatusCode.BAD_REQUEST);
+                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE,
+                            "request header fields too large");
                     return;
                 }
 
@@ -128,9 +123,15 @@ public final class RequestConsumer implements Runnable {
     }
 
     public void dropConnection(final long requestId,
-                               final HttpStatusCode httpStatusCode) {
-        logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode);
-        send(new HttpResponse(requestId, this, httpStatusCode).setDropConnection(true));
+                               final HttpStatusCode httpStatusCode,
+                               final String errorMessage) {
+        logger.atDebug()
+                .log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
+        HttpResponse httpResponse = new HttpResponse(requestId, this, httpStatusCode).setDropConnection(true);
+        if (getServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
+            httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
+        }
+        send(httpResponse);
     }
 
     public synchronized void send(final HttpResponse httpResponse) {

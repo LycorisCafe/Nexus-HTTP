@@ -36,7 +36,8 @@ public sealed class HttpGetRequest extends HttpRequest
         if (getHeaders() != null) {
             for (Header header : getHeaders()) {
                 if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST);
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
+                            "content cannot be processed with provided request method");
                     return;
                 }
             }

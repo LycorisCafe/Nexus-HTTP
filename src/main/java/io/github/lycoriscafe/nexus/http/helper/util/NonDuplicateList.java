@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.helper.util;
 
 import java.util.ArrayList;
 
-public final class DataList<E> extends ArrayList<E> {
+public final class NonDuplicateList<E> extends ArrayList<E> {
     @Override
     public boolean add(final E e) {
         if (!contains(e)) {

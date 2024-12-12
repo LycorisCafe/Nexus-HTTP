@@ -28,7 +28,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
-import io.github.lycoriscafe.nexus.http.helper.util.DataList;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,7 +50,7 @@ public final class HttpResponse {
     private CrossOriginResourceSharing crossOriginResourceSharing;
     private List<Authentication> authentications;
     private CacheControl cacheControl;
-    private Content<?> content;
+    private Content content;
 
     private boolean dropConnection;
 
@@ -100,7 +100,7 @@ public final class HttpResponse {
             return this;
         }
 
-        if (headers == null) headers = new DataList<>();
+        if (headers == null) headers = new NonDuplicateList<>();
         headers.add(header);
         return this;
     }
@@ -120,7 +120,7 @@ public final class HttpResponse {
             return this;
         }
 
-        if (cookies == null) cookies = new DataList<>();
+        if (cookies == null) cookies = new NonDuplicateList<>();
         cookies.add(cookie);
         return this;
     }
@@ -140,7 +140,7 @@ public final class HttpResponse {
             return this;
         }
 
-        if (reportingEndpoints == null) reportingEndpoints = new DataList<>();
+        if (reportingEndpoints == null) reportingEndpoints = new NonDuplicateList<>();
         reportingEndpoints.add(reportingEndpoint);
         return this;
     }
@@ -160,7 +160,7 @@ public final class HttpResponse {
             return this;
         }
 
-        if (contentSecurityPolicies == null) contentSecurityPolicies = new DataList<>();
+        if (contentSecurityPolicies == null) contentSecurityPolicies = new NonDuplicateList<>();
         contentSecurityPolicies.add(contentSecurityPolicy);
         return this;
     }
@@ -180,7 +180,8 @@ public final class HttpResponse {
             return this;
         }
 
-        if (this.contentSecurityPolicyReportOnly == null) this.contentSecurityPolicyReportOnly = new DataList<>();
+        if (this.contentSecurityPolicyReportOnly == null)
+            this.contentSecurityPolicyReportOnly = new NonDuplicateList<>();
         this.contentSecurityPolicyReportOnly.add(contentSecurityPolicyReportOnly);
         return this;
     }
@@ -227,7 +228,7 @@ public final class HttpResponse {
             return this;
         }
 
-        if (authentications == null) authentications = new DataList<>();
+        if (authentications == null) authentications = new NonDuplicateList<>();
         authentications.add(authentication);
         return this;
     }
@@ -250,12 +251,12 @@ public final class HttpResponse {
         return cacheControl;
     }
 
-    public HttpResponse setContent(final Content<?> content) {
+    public HttpResponse setContent(final Content content) {
         this.content = content;
         return this;
     }
 
-    public Content<?> getContent() {
+    public Content getContent() {
         return content;
     }
 
@@ -278,8 +279,7 @@ public final class HttpResponse {
                             .append(Header.parseOutgoingHeaders(getHeaders()))
                             .append(Cookie.processOutgoingCookies(getCookies()))
                             .append(ReportingEndpoint.processOutgoingReportingEndpoints(getReportingEndpoints()))
-                            .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(),
-                                    false))
+                            .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(), false))
                             .append(ContentSecurityPolicyReportOnly.processOutgoingCsp(
                                     getContentSecurityPolicyReportOnly(), true))
                             .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
@@ -294,7 +294,8 @@ public final class HttpResponse {
 
             return output.append("\r\n").toString();
         } catch (Exception e) {
-            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR);
+            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR,
+                    "error while parsing http response");
             return null;
         }
     }
