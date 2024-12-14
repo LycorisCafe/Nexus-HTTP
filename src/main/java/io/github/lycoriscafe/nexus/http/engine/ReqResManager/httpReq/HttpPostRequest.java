@@ -52,30 +52,25 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
             if (header.getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
                 if (!getContentLength(
-                        transferEncoding == null || transferEncoding.contains(TransferEncoding.CHUNKED))) {
+                        transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED))) {
                     return;
                 }
 
                 String value = header.getValue().toLowerCase(Locale.US);
-                Content<?> content = switch (value) {
+                Content content = switch (value) {
                     case String x when x.startsWith("multipart/form-data") ->
                             MultiPartFormData.process(getRequestId(), getRequestConsumer(), transferEncoding,
                                     contentEncoding, contentLength, value.split(";")[1].trim().split("=")[1]);
-                    case String x when x.startsWith("text/") ->
-                            Content.ReadOperations.processText(getRequestId(), getRequestConsumer(), transferEncoding,
-                                    contentEncoding, contentLength, value);
-                    case "application/json", "application/xml" ->
-                            Content.ReadOperations.processText(getRequestId(), getRequestConsumer(), transferEncoding,
-                                    contentEncoding, contentLength, value);
                     case "application/x-www-form-urlencoded" ->
                             Content.ReadOperations.processXWWWFormUrlencoded(getRequestId(), getRequestConsumer(),
                                     transferEncoding, contentEncoding, contentLength);
-                    default -> Content.ReadOperations.processCommonContentType(getRequestId(), getRequestConsumer(),
-                            transferEncoding, contentEncoding, contentLength, value);
+                    default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(),
+                            value, contentLength, transferEncoding, contentEncoding);
                 };
 
                 if (content == null) return;
 
+                // TODO fix this
                 getHeaders().remove(header);
                 break;
             }
@@ -99,7 +94,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                                 transferEncoding.add(TransferEncoding.valueOf(value));
                             } catch (IllegalArgumentException e) {
                                 getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
-                                        "provided transfer encoding not implemented");
+                                        "provided transfer encoding not supported");
                                 yield false;
                             }
                         }
@@ -112,7 +107,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                                 contentEncoding.add(ContentEncoding.valueOf(value));
                             } catch (IllegalArgumentException e) {
                                 getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
-                                        "provided content encoding not implemented");
+                                        "provided content encoding not supported");
                                 yield false;
                             }
                         }

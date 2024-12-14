@@ -16,11 +16,20 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 public final class Content {
     private final String contentType;
@@ -107,7 +116,102 @@ public final class Content {
     }
 
     public static class ReadOperations {
+        public static Content process(final long requestId,
+                                      final RequestConsumer requestConsumer,
+                                      final String contentType,
+                                      final Integer contentLength,
+                                      final List<TransferEncoding> transferEncodings,
+                                      final List<ContentEncoding> contentEncodings) throws IOException {
+            Object content = null;
 
+            for (int i = transferEncodings.size() - 1; i >= 0; i--) {
+                switch (transferEncodings.get(i)) {
+                    case CHUNKED -> {
+                        if (content == null) {
+                            content = Files.createTempFile(
+                                    Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
+                                    "nexus-content-", null);
+                        }
+                        if (!readChunked(requestId, (Path) content, requestConsumer)) {
+                            return null;
+                        }
+                    }
+                    case GZIP -> {
+                        if (content == null) {
+                            if (contentLength == null) {
+                                requestConsumer.dropConnection(requestId, HttpStatusCode.LENGTH_REQUIRED,
+                                        "content length required");
+                                return null;
+                            }
+                            content = readGzip(requestId, new byte[contentLength], requestConsumer);
+                        } else {
+                            content = readGzip(requestId, content, requestConsumer);
+                        }
+                    }
+                }
+            }
+
+            for (ContentEncoding contentEncoding : contentEncodings) {
+                switch (contentEncoding) {
+                    case GZIP -> {
+
+                    }
+                }
+            }
+            return null;
+        }
+
+        private static boolean readChunked(final long requestId,
+                                           final Path path,
+                                           final RequestConsumer requestConsumer) throws IOException {
+            InputStream inputStream = requestConsumer.getSocket().getInputStream();
+            BufferedReader bufferedReader = requestConsumer.getReader();
+            int totalChunkSize = 0;
+
+            while (true) {
+                int chunkSize = Integer.parseInt(bufferedReader.readLine(), 16);
+                if (chunkSize == 0) break;
+                totalChunkSize += chunkSize;
+                if (totalChunkSize > requestConsumer.getServerConfiguration().getMaxChunkedContentLength()) {
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE,
+                            "max chunked size exceeded");
+                    return false;
+                }
+
+                while (true) {
+                    if (chunkSize <= requestConsumer.getServerConfiguration().getMaxChunkSize()) {
+                        Files.write(path, inputStream.readNBytes(chunkSize), StandardOpenOption.APPEND);
+                        break;
+                    } else {
+                        Files.write(path,
+                                inputStream.readNBytes(requestConsumer.getServerConfiguration().getMaxChunkSize()),
+                                StandardOpenOption.APPEND);
+                        chunkSize -= requestConsumer.getServerConfiguration().getMaxChunkSize();
+                    }
+                }
+            }
+            return true;
+        }
+
+        private static Object readGzip(final long requestId,
+                                       final Object content,
+                                       final RequestConsumer requestConsumer) throws IOException {
+            InputStream inputStream = requestConsumer.getSocket().getInputStream();
+            GZIPInputStream gzipInputStream;
+            switch (content) {
+                case Path path -> {
+                    gzipInputStream = new GZIPInputStream(new FileInputStream(path.toFile()));
+                    Path temp = Files.createTempFile(path, "nexus-content-", null);
+                    Files.write(temp, gzipInputStream.readAllBytes(), StandardOpenOption.APPEND);
+                    return temp;
+                }
+                case byte[] bytes -> {
+                    gzipInputStream = new GZIPInputStream(inputStream);
+                    return gzipInputStream.read(bytes);
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + content);
+            }
+        }
     }
 
     public static class WriteOperations {
