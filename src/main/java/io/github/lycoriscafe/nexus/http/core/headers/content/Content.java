@@ -288,6 +288,9 @@ public final class Content {
                                 gzipOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
                                 content.setData(byteArrayOutputStream.toByteArray());
                             }
+                            case InputStream inputStream -> {
+                                content.setData(new GZIPInputStream(inputStream));
+                            }
                             default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                         }
                     }
@@ -300,38 +303,41 @@ public final class Content {
 
             if (content.getTransferEncodings() != null) {
                 result.append("Transfer-Encoding: ");
-                for (int i = 0; i < content.getTransferEncodings().size(); i++) {
-                    if (content.getTransferEncodings().get(i) == TransferEncoding.GZIP) {
-                        switch (content.getData()) {
-                            case Path path -> {
-                                Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()),
-                                        "nexus-content-", null);
-                                GZIPOutputStream gzipOutputStream =
-                                        new GZIPOutputStream(new FileOutputStream(path.toFile()));
-                                try (FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
-                                    int c;
-                                    while ((c = fileInputStream.read()) != -1) {
-                                        gzipOutputStream.write(c);
-                                    }
+                if (content.getTransferEncodings().contains(TransferEncoding.GZIP)) {
+                    switch (content.getData()) {
+                        case Path path -> {
+                            Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()),
+                                    "nexus-content-", null);
+                            try (GZIPOutputStream gzipOutputStream = new GZIPOutputStream(new FileOutputStream(temp.toFile()));
+                                 FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
+                                int c;
+                                while ((c = fileInputStream.read()) != -1) {
+                                    gzipOutputStream.write(c);
                                 }
-                                content.setData(temp);
                             }
-                            case byte[] bytes -> {
-                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-                                gzipOutputStream.write(bytes);
-                                content.setData(byteArrayOutputStream.toByteArray());
-                            }
-                            case String string -> {
-                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-                                gzipOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
-                                content.setData(byteArrayOutputStream.toByteArray());
-                            }
-                            default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+                            content.setData(temp);
                         }
+                        case byte[] bytes -> {
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                            gzipOutputStream.write(bytes);
+                            content.setData(byteArrayOutputStream.toByteArray());
+                        }
+                        case String string -> {
+                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                            gzipOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+                            content.setData(byteArrayOutputStream.toByteArray());
+                        }
+                        case InputStream inputStream -> {
+                            GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+                            content.setData(gzipInputStream);
+                        }
+                        default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                     }
+                }
 
+                for (int i = 0; i < content.getTransferEncodings().size(); i++) {
                     if (i != 0) result.append(", ");
                     result.append(content.getTransferEncodings().get(i).getValue());
                 }
@@ -342,10 +348,9 @@ public final class Content {
             switch (content.getData()) {
                 case Path path -> result.append("Content-Length: ").append(Files.size(path)).append("\r\n");
                 case byte[] bytes -> result.append("Content-Length: ").append(bytes.length).append("\r\n");
-                case String string ->
-                        result.append("Content-Length: ").append(string.getBytes(StandardCharsets.UTF_8).length)
-                                .append("\r\n");
-                case InputStream ignored -> content.addTransferEncoding(TransferEncoding.CHUNKED);
+                case String string -> result.append("Content-Length: ").append(string.getBytes(StandardCharsets.UTF_8).length).append("\r\n");
+                case InputStream ignored -> {
+                }
                 default -> throw new IllegalStateException("Unexpected value: " + content.getData());
             }
 
@@ -359,7 +364,33 @@ public final class Content {
 
         public static void writeContent(final RequestConsumer requestConsumer,
                                         final Content content) throws IOException {
+            try (InputStream inputStream = switch (content.getData()) {
+                case Path path -> new FileInputStream(path.toFile());
+                case byte[] bytes -> new ByteArrayInputStream(bytes);
+                case String string -> new ByteArrayInputStream(string.getBytes(StandardCharsets.UTF_8));
+                case InputStream stream -> stream;
+                default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+            }) {
+                int c;
+                byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
 
+                while ((c = inputStream.read(buffer)) != -1) {
+                    if (content.getTransferEncodings() != null && content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
+                        requestConsumer.getSocket().getOutputStream().write((Integer.toHexString(c) + "\r\n").getBytes(StandardCharsets.UTF_8));
+                    }
+                    requestConsumer.getSocket().getOutputStream().write(buffer);
+                    if (content.getTransferEncodings() != null && content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
+                        requestConsumer.getSocket().getOutputStream().write("\r\n".getBytes(StandardCharsets.UTF_8));
+                    }
+                    requestConsumer.getSocket().getOutputStream().flush();
+                }
+                if (content.getTransferEncodings() != null && content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
+                    requestConsumer.getSocket().getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
+                    requestConsumer.getSocket().getOutputStream().flush();
+                }
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 }

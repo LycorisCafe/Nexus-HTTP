@@ -111,8 +111,7 @@ public final class MultiPartFormData {
                     switch (keyVal[0].trim()) {
                         case "name" -> multiPartFormData.setName(keyVal[1].trim().replaceAll("\"", ""));
                         case "filename" -> multiPartFormData.setFileName(keyVal[1].trim().replaceAll("\"", ""));
-                        default ->
-                                multiPartFormData.setParameter(keyVal[0].trim(), keyVal[1].trim().replaceAll("\"", ""));
+                        default -> multiPartFormData.setParameter(keyVal[0].trim(), keyVal[1].trim().replaceAll("\"", ""));
                     }
                 }
             }

@@ -17,5 +17,6 @@
 package io.github.lycoriscafe.nexus.http.helper.configuration;
 
 public enum ThreadType {
-    PLATFORM, VIRTUAL
+    PLATFORM,
+    VIRTUAL
 }

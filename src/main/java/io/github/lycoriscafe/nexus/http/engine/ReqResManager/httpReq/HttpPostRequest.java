@@ -56,13 +56,11 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 String value = getHeaders().get(i).getValue().toLowerCase(Locale.US);
                 try {
                     content = switch (value) {
-                        case String x when x.startsWith("multipart/form-data") ->
-                                MultiPartFormData.process(getRequestId(), getRequestConsumer(),
-                                        value.split(";")[1].split("=")[1], contentLength, transferEncoding,
-                                        contentEncoding);
-                        case "application/x-www-form-urlencoded" ->
-                                UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
-                                        transferEncoding, contentEncoding);
+                        case String x when x.startsWith("multipart/form-data") -> MultiPartFormData.process(getRequestId(), getRequestConsumer(),
+                                value.split(";")[1].split("=")[1], contentLength, transferEncoding,
+                                contentEncoding);
+                        case "application/x-www-form-urlencoded" -> UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
+                                transferEncoding, contentEncoding);
                         default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(), value,
                                 contentLength, transferEncoding, contentEncoding);
                     };

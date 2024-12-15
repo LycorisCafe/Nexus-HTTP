@@ -168,15 +168,12 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             case FOUND -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.FOUND).setHeader(
                     new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case GONE -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.GONE);
-            case MOVED_PERMANENTLY ->
-                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeader(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case PERMANENT_REDIRECT ->
-                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeader(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case TEMPORARY_REDIRECT ->
-                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
-                            new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case MOVED_PERMANENTLY -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeader(
+                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case PERMANENT_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeader(
+                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case TEMPORARY_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
+                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case UNAVAILABLE_FOR_LEGAL_REASONS -> new HttpResponse(getRequestId(), getRequestConsumer(),
                     HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).setHeader(
                     new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));

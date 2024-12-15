@@ -21,7 +21,6 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
-import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +32,8 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.SortedMap;
+import java.util.TreeMap;
 
 public final class RequestConsumer implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
@@ -44,7 +45,7 @@ public final class RequestConsumer implements Runnable {
 
     private final BufferedReader reader;
 
-    private final List<HttpResponse> responseQue;
+    private final SortedMap<Long, HttpResponse> responseQue;
     private long requestId = 0L;
     private long responseId = 0L;
 
@@ -59,7 +60,7 @@ public final class RequestConsumer implements Runnable {
 
         this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
-        responseQue = new NonDuplicateList<>();
+        responseQue = new TreeMap<>();
     }
 
     private long getRequestId() {
@@ -138,10 +139,15 @@ public final class RequestConsumer implements Runnable {
         if (socket.isClosed()) {
             return;
         }
-        responseQue.add(httpResponse);
+        responseQue.put(httpResponse.getRequestId(), httpResponse);
 
-        for (int i = 0; i < responseQue.size(); i++) {
-            HttpResponse response = responseQue.get(i);
+        List<Long> keySet = responseQue.keySet().stream().toList();
+        for (Long key : keySet) {
+            if (key != responseId) {
+                break;
+            }
+
+            HttpResponse response = responseQue.get(key);
             if (response.getRequestId() == responseId) {
                 try {
                     OutputStream outputStream = socket.getOutputStream();
@@ -156,7 +162,6 @@ public final class RequestConsumer implements Runnable {
                         Content.WriteOperations.writeContent(this, response.getContent());
                     }
 
-
                     if (response.isDropConnection()) {
                         socket.close();
                     }
@@ -164,7 +169,7 @@ public final class RequestConsumer implements Runnable {
                     logger.atDebug().log(e.getMessage());
                 }
 
-                responseQue.remove(response);
+                responseQue.remove(key);
                 responseId++;
             }
         }
