@@ -17,37 +17,25 @@
 package io.github.lycoriscafe.nexus.http.core.headers;
 
 import java.util.List;
+import java.util.Objects;
 
-public class Header {
-    private final String name;
-    private final String value;
-
+public record Header(String name,
+                     String value) {
     public Header(final String name,
                   final String value) {
-        if (name == null || value == null) {
-            throw new NullPointerException("name and value cannot be null");
-        }
-        this.name = name;
-        this.value = value;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getValue() {
-        return value;
+        this.name = Objects.requireNonNull(name);
+        this.value = Objects.requireNonNull(value);
     }
 
     public static Header parseIncomingHeader(final String[] headerParts) {
-        return new Header(headerParts[0].trim(), headerParts[1].trim());
+        return new Header(headerParts[0], headerParts[1].trim());
     }
 
     public static String parseOutgoingHeaders(final List<Header> headers) {
         if (headers == null || headers.isEmpty()) return "";
         StringBuilder output = new StringBuilder();
         for (Header header : headers) {
-            output.append(header.getName()).append(": ").append(header.getValue()).append("\r\n");
+            output.append(header.name()).append(": ").append(header.value()).append("\r\n");
         }
         return output.toString();
     }

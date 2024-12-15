@@ -16,5 +16,18 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public record BearerAuthorization(String accessToken) {
+import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
+
+public class BearerAuthorization extends Authorization {
+    private final String accessToken;
+
+    public BearerAuthorization(final String accessToken) {
+        super(AuthScheme.Bearer);
+        this.accessToken = accessToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
 }

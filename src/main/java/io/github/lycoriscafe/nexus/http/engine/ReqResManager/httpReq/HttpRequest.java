@@ -32,7 +32,6 @@ import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -83,7 +82,6 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     public void setHeader(final Header header) {
-        if (header == null) return;
         if (headers == null) headers = new NonDuplicateList<>();
         headers.add(header);
     }
@@ -92,10 +90,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         return headers;
     }
 
-    public void setCookies(final Cookie[] cookies) {
-        if (cookies == null || cookies.length == 0) return;
-        if (this.cookies == null) this.cookies = new NonDuplicateList<>();
-        this.cookies.addAll(Arrays.asList(cookies));
+    public void setCookies(final List<Cookie> cookies) {
+        this.cookies = cookies;
     }
 
     public List<Cookie> getCookies() {
@@ -112,33 +108,45 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public void finalizeRequest() {
         try {
-            ReqMaster endpointDetails = requestConsumer.getDatabase().getEndpointData(this);
-            if (endpointDetails == null) {
+            List<ReqMaster> data = requestConsumer.getDatabase().getEndpointData(this);
+            if (data.isEmpty()) {
                 getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found");
                 return;
             }
+
+            ReqMaster endpointDetails = null;
+            for (ReqMaster reqMaster : data) {
+                if (reqMaster.getReqMethod() == getRequestMethod()) {
+                    endpointDetails = reqMaster;
+                    break;
+                }
+            }
+
+            if (endpointDetails == null) {
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED, "request method not allowed");
+                return;
+            }
+
             if (endpointDetails.getReqMethod() != getRequestMethod()) {
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED,
-                        "requested method not allowed");
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED, "requested method not allowed");
                 return;
             }
 
             switch (endpointDetails) {
                 case ReqEndpoint reqEndpoint -> {
+                    if (reqEndpoint.getStatusAnnotation() != null) {
+                        processStatusAnnotation(reqEndpoint);
+                        return;
+                    }
+
                     if (reqEndpoint.getAuthSchemeAnnotation() != null) {
                         processAuthAnnotation(reqEndpoint);
                         return;
                     }
 
                     if (reqEndpoint.isAuthenticated() && getAuthorization() == null) {
-                        getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(),
-                                HttpStatusCode.UNAUTHORIZED).setAuthentications(
-                                getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
-                        return;
-                    }
-
-                    if (reqEndpoint.getStatusAnnotation() != null) {
-                        processStatusAnnotation(reqEndpoint);
+                        getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.UNAUTHORIZED)
+                                .setAuthentications(getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
                         return;
                     }
 
@@ -146,8 +154,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     if (response instanceof HttpResponse httpResponse) {
                         getRequestConsumer().send(httpResponse);
                     } else {
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
-                                "invalid http response provided");
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid http response provided");
                     }
                 }
                 case ReqFile reqFile -> {
@@ -155,10 +162,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + endpointDetails);
             }
-        } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException |
-                 IllegalAccessException e) {
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
-                    "error while processing request/response");
+        } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while processing request/response");
             throw new RuntimeException(e);
         }
     }
@@ -174,49 +179,41 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case TEMPORARY_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
                     new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case UNAVAILABLE_FOR_LEGAL_REASONS -> new HttpResponse(getRequestId(), getRequestConsumer(),
-                    HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).setHeader(
-                    new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
+            case UNAVAILABLE_FOR_LEGAL_REASONS ->
+                    new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS).setHeader(
+                            new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
             default -> throw new IllegalStateException("Unexpected value: " + reqEndpoint.getStatusAnnotation());
         });
     }
 
-    private void processAuthAnnotation(final ReqEndpoint reqEndpoint)
-            throws InvocationTargetException, IllegalAccessException {
+    private void processAuthAnnotation(final ReqEndpoint reqEndpoint) throws InvocationTargetException, IllegalAccessException {
         switch (reqEndpoint.getAuthSchemeAnnotation()) {
             case Bearer -> {
                 if (getRequestMethod() != HttpRequestMethod.POST) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
-                            "request method must be POST");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "request method must be POST");
                     return;
                 }
 
                 HttpPostRequest request = (HttpPostRequest) this;
-                if (request.getContent() == null ||
-                        !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
-                            "content type must be application/x-www-form-urlencoded");
+                if (request.getContent() == null || !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content type must be application/x-www-form-urlencoded");
                     return;
                 }
 
                 BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
                 if (bearerTokenRequest == null) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
-                            "missing required parameter");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "missing required parameter");
                     return;
                 }
 
                 Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest);
                 if (response instanceof BearerTokenResponse httpResponse) {
-                    getRequestConsumer().send(
-                            BearerTokenResponse.parse(httpResponse, getRequestId(), getRequestConsumer()));
+                    getRequestConsumer().send(BearerTokenResponse.parse(httpResponse, getRequestId(), getRequestConsumer()));
                 } else {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR,
-                            "invalid bearer response provided");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid bearer response provided");
                 }
             }
-            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
-                    "auth scheme not implemented");
+            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED, "auth scheme not implemented");
         }
     }
 }

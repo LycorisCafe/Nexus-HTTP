@@ -18,19 +18,19 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 public enum AuthScheme {
     Basic("Basic"),
-    Bearer("Bearer"),
-    Concealed("Concealed"),
-    Digest("Digest"),
-    DPoP("DPoP"),
-    GNAP("GNAP"),
-    HOBA("HOBA"),
-    Mutual("Mutual"),
-    Negotiate("Negotiate"),
-    OAuth("OAuth"),
-    PrivateToken("PrivateToken"),
-    SCRAM_SHA_1("SCRAM-SHA-1"),
-    SCRAM_SHA_256("SCRAM-SHA-256"),
-    vapid("vapid");
+    Bearer("Bearer");
+//    Concealed("Concealed"),
+//    Digest("Digest"),
+//    DPoP("DPoP"),
+//    GNAP("GNAP"),
+//    HOBA("HOBA"),
+//    Mutual("Mutual"),
+//    Negotiate("Negotiate"),
+//    OAuth("OAuth"),
+//    PrivateToken("PrivateToken"),
+//    SCRAM_SHA_1("SCRAM-SHA-1"),
+//    SCRAM_SHA_256("SCRAM-SHA-256"),
+//    vapid("vapid")
 
     private final String value;
 

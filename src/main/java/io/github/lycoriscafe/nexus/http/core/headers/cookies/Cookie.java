@@ -16,6 +16,8 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
+
 import java.util.List;
 
 public final class Cookie {
@@ -124,12 +126,12 @@ public final class Cookie {
         return prefix;
     }
 
-    public static Cookie[] parseIncomingCookies(final String headerValue) {
+    public static List<Cookie> parseIncomingCookies(final String headerValue) {
         String[] keyVal = headerValue.split(";", 0);
-        Cookie[] cookies = new Cookie[keyVal.length];
-        for (int i = 0; i < keyVal.length; i++) {
-            String[] parts = keyVal[i].split("=", 2);
-            cookies[i] = new Cookie(parts[0].trim(), parts[1].trim());
+        List<Cookie> cookies = new NonDuplicateList<>();
+        for (String string : keyVal) {
+            String[] parts = string.split("=", 2);
+            cookies.add(new Cookie(parts[0].trim(), parts[1].trim()));
         }
         return cookies;
     }

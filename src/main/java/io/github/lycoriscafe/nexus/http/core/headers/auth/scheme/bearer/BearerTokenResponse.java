@@ -66,12 +66,10 @@ public class BearerTokenResponse {
     public static HttpResponse parse(final BearerTokenResponse response,
                                      final long requestId,
                                      final RequestConsumer requestConsumer) {
-        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK).setCashControl(
-                new CacheControl().setNoStore(true)).setContent(new Content("application/json",
-                "{\"access_token\":\"" + response.getBearerToken() + "\",\"token_type\":\"Bearer\"" +
-                        ((response.getExpiresIn() > -1L) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
-                        (response.getRefreshToken() != null ?
-                                ",\"refresh_token\":\"" + response.getRefreshToken() + "\"" : "") +
+        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK).setCashControl(new CacheControl().setNoStore(true))
+                .setContent(new Content("application/json", "{\"access_token\":\"" + response.getBearerToken() + "\"," +
+                        "\"token_type\":\"Bearer\"" + ((response.getExpiresIn() > -1L) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
+                        (response.getRefreshToken() != null ? ",\"refresh_token\":\"" + response.getRefreshToken() + "\"" : "") +
                         (response.getScope() != null ? ",\"scope\":\"" + response.getScope() + "\"" : "") + "}"));
     }
 }

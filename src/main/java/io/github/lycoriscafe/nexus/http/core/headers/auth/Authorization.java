@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerAuthorization;
 
 import java.util.Locale;
 
@@ -35,6 +36,7 @@ public class Authorization {
         String[] parts = auth.trim().split(" ", 2);
         return switch (parts[0].trim().toLowerCase(Locale.US)) {
             case "basic" -> BasicAuthorization.processIncomingAuth(parts[1]);
+            case "bearer" -> new BearerAuthorization(parts[1]);
             default -> null;
         };
     }
