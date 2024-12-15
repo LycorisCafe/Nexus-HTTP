@@ -20,7 +20,6 @@ import io.github.lycoriscafe.nexus.http.HttpServer;
 import io.github.lycoriscafe.nexus.http.HttpServerException;
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEndpoint;
@@ -39,17 +38,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.HashSet;
 
 @HttpEndpoint
 public class Main {
     public static void main(String[] args) throws ScannerException, SQLException, IOException, HttpServerException {
-        HashSet<Authentication> hs = new HashSet<>();
-        hs.add(new BasicAuthentication("Hello, world!"));
         HttpServerConfiguration httpServerConfiguration =
-                new HttpServerConfiguration("main.test").setPort(2004).setStaticFilesDirectory(null)
+                new HttpServerConfiguration("main.test")
+                        .setPort(2004)
+                        .setStaticFilesDirectory(null)
                         .setDatabaseLocation("")
-                        .setDefaultAuthentications(hs);
+                        .addDefaultAuthentication(new BasicAuthentication("Hello, world!"));
         HttpServer httpServer = new HttpServer(httpServerConfiguration);
         httpServer.initialize();
     }

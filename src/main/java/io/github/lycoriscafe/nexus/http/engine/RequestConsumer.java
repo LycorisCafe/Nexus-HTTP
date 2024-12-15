@@ -64,6 +64,7 @@ public final class RequestConsumer implements Runnable {
         if (requestId == Long.MAX_VALUE) {
             try {
                 wait();
+                return -1L;
             } catch (InterruptedException e) {
                 // just wait for drop the connection
             }
@@ -158,7 +159,6 @@ public final class RequestConsumer implements Runnable {
                     OutputStream outputStream = socket.getOutputStream();
 
                     String headers = response.finalizeResponse();
-                    System.out.println(headers);
                     if (headers == null) return;
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
@@ -169,6 +169,7 @@ public final class RequestConsumer implements Runnable {
 
                     if (response.isDropConnection()) {
                         socket.close();
+                        notify();
                     }
                 } catch (IOException e) {
                     logger.atDebug().log(e.getMessage());

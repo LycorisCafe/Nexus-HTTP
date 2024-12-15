@@ -255,6 +255,8 @@ public final class Content {
     public static class WriteOperations {
         public static String processOutgoingContent(final HttpServerConfiguration httpServerConfiguration,
                                                     final Content content) throws IOException {
+            if (content == null) return "Content-Length: 0";
+
             StringBuilder result = new StringBuilder();
             result.append("Content-Type: ").append(content.getContentType()).append("\r\n");
 
