@@ -127,11 +127,6 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 return;
             }
 
-            if (endpointDetails.getReqMethod() != getRequestMethod()) {
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED, "requested method not allowed");
-                return;
-            }
-
             switch (endpointDetails) {
                 case ReqEndpoint reqEndpoint -> {
                     if (reqEndpoint.getStatusAnnotation() != null) {

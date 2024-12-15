@@ -255,7 +255,7 @@ public final class Content {
     public static class WriteOperations {
         public static String processOutgoingContent(final HttpServerConfiguration httpServerConfiguration,
                                                     final Content content) throws IOException {
-            if (content == null) return "Content-Length: 0";
+            if (content == null) return "Content-Length: 0\r\n";
 
             StringBuilder result = new StringBuilder();
             result.append("Content-Type: ").append(content.getContentType()).append("\r\n");
@@ -380,7 +380,7 @@ public final class Content {
                     if (content.getTransferEncodings() != null && content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
                         requestConsumer.getSocket().getOutputStream().write((Integer.toHexString(c) + "\r\n").getBytes(StandardCharsets.UTF_8));
                     }
-                    requestConsumer.getSocket().getOutputStream().write(buffer);
+                    requestConsumer.getSocket().getOutputStream().write(buffer, 0, c);
                     if (content.getTransferEncodings() != null && content.getTransferEncodings().contains(TransferEncoding.CHUNKED)) {
                         requestConsumer.getSocket().getOutputStream().write("\r\n".getBytes(StandardCharsets.UTF_8));
                     }
@@ -390,8 +390,6 @@ public final class Content {
                     requestConsumer.getSocket().getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
                     requestConsumer.getSocket().getOutputStream().flush();
                 }
-            } catch (IOException e) {
-                throw new RuntimeException(e);
             }
         }
     }

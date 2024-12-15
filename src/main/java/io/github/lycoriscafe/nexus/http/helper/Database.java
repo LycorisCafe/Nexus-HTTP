@@ -51,8 +51,7 @@ public final class Database {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
             String database = serverConfiguration.getDatabaseLocation()
-                    .isEmpty() ? "NexusHttp" + serverConfiguration.getPort() + ".db" :
-                    serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
+                    .isEmpty() ? "NexusHttp" + serverConfiguration.getPort() + ".db" : serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
             File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) throw new IOException("Failed to delete file: " + file.getAbsolutePath());
@@ -118,8 +117,7 @@ public final class Database {
         switch (model) {
             case ReqEndpoint endpoint -> {
                 PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
-                        "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue, authSchemeAnnotation) " +
-                        "VALUES (?, ?, ?, ?, ?, ?)");
+                        "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue, authSchemeAnnotation) VALUES (?, ?, ?, ?, ?, ?)");
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, endpoint.getClazz().getName());
                 subQuery.setString(3, endpoint.getMethod().getName());
@@ -150,48 +148,46 @@ public final class Database {
         ResultSet masterResult = masterQuery.executeQuery();
         List<ReqMaster> endpoints = new ArrayList<>();
         while (masterResult.next()) {
-            if (masterResult.first()) {
-                switch (masterResult.getString(5)) {
-                    case "endpoint" -> {
-                        PreparedStatement subQuery = databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
-                        subQuery.setInt(1, masterResult.getInt(1));
+            switch (masterResult.getString(5)) {
+                case "endpoint" -> {
+                    PreparedStatement subQuery = databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
+                    subQuery.setInt(1, masterResult.getInt(1));
 
-                        ResultSet subResult = subQuery.executeQuery();
-                        ReqEndpoint endpoint;
+                    ResultSet subResult = subQuery.executeQuery();
+                    ReqEndpoint endpoint;
 
-                        try {
-                            Class<?> clazz = Class.forName(subResult.getString(2));
-                            AuthScheme authScheme = subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6));
-                            Class<?> methodParamType = (authScheme == null) ? switch (httpRequest.getRequestMethod()) {
-                                case CONNECT, TRACE -> null;
-                                case DELETE -> HttpDeleteRequest.class;
-                                case GET -> HttpGetRequest.class;
-                                case HEAD -> HttpHeadRequest.class;
-                                case OPTIONS -> HttpOptionsRequest.class;
-                                case PATCH -> HttpPatchRequest.class;
-                                case POST -> HttpPostRequest.class;
-                                case PUT -> HttpPutRequest.class;
-                            } : switch (authScheme) {
-                                case Basic -> null;
-                                case Bearer -> BearerTokenRequest.class;
-                            };
+                    try {
+                        Class<?> clazz = Class.forName(subResult.getString(2));
+                        AuthScheme authScheme = (subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6)));
+                        Class<?> methodParamType = (authScheme == null) ? switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
+                            case CONNECT, TRACE -> null;
+                            case DELETE -> HttpDeleteRequest.class;
+                            case GET -> HttpGetRequest.class;
+                            case HEAD -> HttpHeadRequest.class;
+                            case OPTIONS -> HttpOptionsRequest.class;
+                            case PATCH -> HttpPatchRequest.class;
+                            case POST -> HttpPostRequest.class;
+                            case PUT -> HttpPutRequest.class;
+                        } : switch (authScheme) {
+                            case Basic -> null;
+                            case Bearer -> BearerTokenRequest.class;
+                        };
 
-                            endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
-                                    masterResult.getBoolean(6), clazz, clazz.getMethod(subResult.getString(3), methodParamType),
-                                    subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
-                                    subResult.getString(5), authScheme);
-                        } finally {
-                            subResult.close();
-                            subQuery.close();
-                            masterResult.close();
-                            masterQuery.close();
-                        }
-
-                        endpoints.add(endpoint);
+                        endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
+                                masterResult.getBoolean(4), clazz, clazz.getMethod(subResult.getString(3), methodParamType),
+                                subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
+                                subResult.getString(5), authScheme);
+                    } finally {
+                        subResult.close();
+                        subQuery.close();
+                        masterResult.close();
+                        masterQuery.close();
                     }
-                    case "file" -> {
-                        // TODO implement for file access
-                    }
+
+                    endpoints.add(endpoint);
+                }
+                case "file" -> {
+                    // TODO implement for file access
                 }
             }
         }
