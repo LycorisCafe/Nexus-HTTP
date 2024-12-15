@@ -18,35 +18,32 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
+import java.util.Objects;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 public final class Content {
     private final String contentType;
-    private long contentLength;
+    private final long contentLength = -1L;
     private String downloadName;
     private List<TransferEncoding> transferEncodings;
     private List<ContentEncoding> contentEncodings;
-    private Object data;
+    private final Object data;
 
-    Content(final String contentType) {
-        this.contentType = contentType;
-    }
-
-    private Content(final String contentType,
-                    final Object data) {
-        this.contentType = contentType;
-        this.data = data;
+    Content(final String contentType,
+            final Object data) {
+        this.contentType = Objects.requireNonNull(contentType, "content type cannot be null");
+        this.data = Objects.requireNonNull(data, "content data cannot be null");
     }
 
     public Content(final String contentType,
@@ -78,7 +75,7 @@ public final class Content {
     }
 
     public Content setDownloadName(final String downloadName) {
-        this.downloadName = downloadName;
+        this.downloadName = Objects.requireNonNull(downloadName, "download name cannot be null");
         return this;
     }
 
@@ -87,8 +84,14 @@ public final class Content {
     }
 
     public Content addTransferEncoding(final TransferEncoding transferEncoding) {
+        Objects.requireNonNull(transferEncoding, "transfer encoding cannot be null");
         if (transferEncodings == null) transferEncodings = new NonDuplicateList<>();
         transferEncodings.add(transferEncoding);
+        return this;
+    }
+
+    Content setTransferEncodings(final List<TransferEncoding> transferEncodings) {
+        this.transferEncodings = Objects.requireNonNull(transferEncodings, "transfer encodings cannot be null");
         return this;
     }
 
@@ -97,8 +100,14 @@ public final class Content {
     }
 
     public Content addContentEncoding(final ContentEncoding contentEncoding) {
+        Objects.requireNonNull(contentEncoding, "content encoding cannot be null");
         if (contentEncodings == null) contentEncodings = new NonDuplicateList<>();
         contentEncodings.add(contentEncoding);
+        return this;
+    }
+
+    Content setContentEncodings(final List<ContentEncoding> contentEncodings) {
+        this.contentEncodings = Objects.requireNonNull(contentEncodings, "content encodings cannot be null");
         return this;
     }
 
@@ -106,8 +115,8 @@ public final class Content {
         return contentEncodings;
     }
 
-    Content setData(final Object data) {
-        this.data = data;
+    private Content setData(final Object data) {
+        Objects.requireNonNull(data);
         return this;
     }
 
@@ -122,43 +131,66 @@ public final class Content {
                                       final Integer contentLength,
                                       final List<TransferEncoding> transferEncodings,
                                       final List<ContentEncoding> contentEncodings) throws IOException {
-            Object content = null;
+            Object data = null;
 
-            for (int i = transferEncodings.size() - 1; i >= 0; i--) {
-                switch (transferEncodings.get(i)) {
-                    case CHUNKED -> {
-                        if (content == null) {
-                            content = Files.createTempFile(
-                                    Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
-                                    "nexus-content-", null);
-                        }
-                        if (!readChunked(requestId, (Path) content, requestConsumer)) {
-                            return null;
-                        }
-                    }
-                    case GZIP -> {
-                        if (content == null) {
-                            if (contentLength == null) {
-                                requestConsumer.dropConnection(requestId, HttpStatusCode.LENGTH_REQUIRED,
-                                        "content length required");
+            if (transferEncodings != null) {
+                for (int i = transferEncodings.size() - 1; i >= 0; i--) {
+                    switch (transferEncodings.get(i)) {
+                        case CHUNKED -> {
+                            if (data == null) {
+                                data = Files.createTempFile(
+                                        Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()),
+                                        "nexus-content-", null);
+                            }
+                            if (!readChunked(requestId, (Path) data, requestConsumer)) {
                                 return null;
                             }
-                            content = readGzip(requestId, new byte[contentLength], requestConsumer);
-                        } else {
-                            content = readGzip(requestId, content, requestConsumer);
+                        }
+                        case GZIP -> {
+                            if (data == null) {
+                                if (contentLength == null) {
+                                    requestConsumer.dropConnection(requestId, HttpStatusCode.LENGTH_REQUIRED,
+                                            "content length required");
+                                    return null;
+                                }
+                                data = readGzip(requestId, new byte[contentLength], requestConsumer);
+                            } else {
+                                data = readGzip(requestId, data, requestConsumer);
+                            }
                         }
                     }
                 }
             }
 
-            for (ContentEncoding contentEncoding : contentEncodings) {
-                switch (contentEncoding) {
-                    case GZIP -> {
-
+            if (contentEncodings != null) {
+                for (int i = contentEncodings.size() - 1; i >= 0; i--) {
+                    switch (contentEncodings.get(i)) {
+                        case GZIP -> {
+                            if (data == null) {
+                                if (contentLength == null) {
+                                    requestConsumer.dropConnection(requestId, HttpStatusCode.LENGTH_REQUIRED,
+                                            "content length required");
+                                    return null;
+                                }
+                                data = readGzip(requestId, new byte[contentLength], requestConsumer);
+                            } else {
+                                data = readGzip(requestId, data, requestConsumer);
+                            }
+                        }
                     }
                 }
             }
-            return null;
+
+            if (data == null) {
+                data = new byte[contentLength];
+                int c = requestConsumer.getSocket().getInputStream().read((byte[]) data);
+                if (c != contentLength) {
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "connection error");
+                    return null;
+                }
+            }
+
+            return new Content(contentType, data);
         }
 
         private static boolean readChunked(final long requestId,
@@ -189,6 +221,12 @@ public final class Content {
                         chunkSize -= requestConsumer.getServerConfiguration().getMaxChunkSize();
                     }
                 }
+
+                long c = inputStream.skip(2);
+                if (c != 2) {
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid chunked content");
+                    return false;
+                }
             }
             return true;
         }
@@ -215,6 +253,113 @@ public final class Content {
     }
 
     public static class WriteOperations {
+        public static String processOutgoingContent(final HttpServerConfiguration httpServerConfiguration,
+                                                    final Content content) throws IOException {
+            StringBuilder result = new StringBuilder();
+            result.append("Content-Type: ").append(content.getContentType()).append("\r\n");
 
+            if (content.getContentEncodings() != null) {
+                result.append("Content-Encoding: ");
+                for (int i = 0; i < content.getContentEncodings().size(); i++) {
+                    if (content.getContentEncodings().get(i) == ContentEncoding.GZIP) {
+                        switch (content.getData()) {
+                            case Path path -> {
+                                Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()),
+                                        "nexus-content-", null);
+                                GZIPOutputStream gzipOutputStream =
+                                        new GZIPOutputStream(new FileOutputStream(path.toFile()));
+                                try (FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
+                                    int c;
+                                    while ((c = fileInputStream.read()) != -1) {
+                                        gzipOutputStream.write(c);
+                                    }
+                                }
+                                content.setData(temp);
+                            }
+                            case byte[] bytes -> {
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                                gzipOutputStream.write(bytes);
+                                content.setData(byteArrayOutputStream.toByteArray());
+                            }
+                            case String string -> {
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                                gzipOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+                                content.setData(byteArrayOutputStream.toByteArray());
+                            }
+                            default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+                        }
+                    }
+
+                    if (i != 0) result.append(", ");
+                    result.append(content.getContentEncodings().get(i).getValue());
+                }
+                result.append("\r\n");
+            }
+
+            if (content.getTransferEncodings() != null) {
+                result.append("Transfer-Encoding: ");
+                for (int i = 0; i < content.getTransferEncodings().size(); i++) {
+                    if (content.getTransferEncodings().get(i) == TransferEncoding.GZIP) {
+                        switch (content.getData()) {
+                            case Path path -> {
+                                Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()),
+                                        "nexus-content-", null);
+                                GZIPOutputStream gzipOutputStream =
+                                        new GZIPOutputStream(new FileOutputStream(path.toFile()));
+                                try (FileInputStream fileInputStream = new FileInputStream(path.toFile())) {
+                                    int c;
+                                    while ((c = fileInputStream.read()) != -1) {
+                                        gzipOutputStream.write(c);
+                                    }
+                                }
+                                content.setData(temp);
+                            }
+                            case byte[] bytes -> {
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                                gzipOutputStream.write(bytes);
+                                content.setData(byteArrayOutputStream.toByteArray());
+                            }
+                            case String string -> {
+                                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                                GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                                gzipOutputStream.write(string.getBytes(StandardCharsets.UTF_8));
+                                content.setData(byteArrayOutputStream.toByteArray());
+                            }
+                            default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+                        }
+                    }
+
+                    if (i != 0) result.append(", ");
+                    result.append(content.getTransferEncodings().get(i).getValue());
+                }
+                result.append("\r\n");
+            }
+
+
+            switch (content.getData()) {
+                case Path path -> result.append("Content-Length: ").append(Files.size(path)).append("\r\n");
+                case byte[] bytes -> result.append("Content-Length: ").append(bytes.length).append("\r\n");
+                case String string ->
+                        result.append("Content-Length: ").append(string.getBytes(StandardCharsets.UTF_8).length)
+                                .append("\r\n");
+                case InputStream ignored -> content.addTransferEncoding(TransferEncoding.CHUNKED);
+                default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+            }
+
+            if (content.getDownloadName() != null) {
+                result.append("Content-Disposition: attachment; filename=\"").append(content.getDownloadName())
+                        .append("\"\r\n");
+            }
+
+            return result.toString();
+        }
+
+        public static void writeContent(final RequestConsumer requestConsumer,
+                                        final Content content) throws IOException {
+
+        }
     }
 }

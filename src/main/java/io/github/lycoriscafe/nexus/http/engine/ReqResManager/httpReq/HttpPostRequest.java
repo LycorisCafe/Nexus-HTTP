@@ -16,16 +16,13 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
-import io.github.lycoriscafe.nexus.http.core.headers.Header;
-import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
-import io.github.lycoriscafe.nexus.http.core.headers.content.ContentEncoding;
-import io.github.lycoriscafe.nexus.http.core.headers.content.MultiPartFormData;
-import io.github.lycoriscafe.nexus.http.core.headers.content.TransferEncoding;
+import io.github.lycoriscafe.nexus.http.core.headers.content.*;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
@@ -48,30 +45,33 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
     @Override
     public void finalizeRequest() {
-        for (Header header : getHeaders()) {
-            if (header.getName().equalsIgnoreCase("content-type")) {
+        for (int i = 0; i < getHeaders().size(); i++) {
+            if (getHeaders().get(i).getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
                 if (!getContentLength(
                         transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED))) {
                     return;
                 }
 
-                String value = header.getValue().toLowerCase(Locale.US);
-                Content content = switch (value) {
-                    case String x when x.startsWith("multipart/form-data") ->
-                            MultiPartFormData.process(getRequestId(), getRequestConsumer(), transferEncoding,
-                                    contentEncoding, contentLength, value.split(";")[1].trim().split("=")[1]);
-                    case "application/x-www-form-urlencoded" ->
-                            Content.ReadOperations.processXWWWFormUrlencoded(getRequestId(), getRequestConsumer(),
-                                    transferEncoding, contentEncoding, contentLength);
-                    default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(),
-                            value, contentLength, transferEncoding, contentEncoding);
-                };
+                String value = getHeaders().get(i).getValue().toLowerCase(Locale.US);
+                try {
+                    content = switch (value) {
+                        case String x when x.startsWith("multipart/form-data") ->
+                                MultiPartFormData.process(getRequestId(), getRequestConsumer(),
+                                        value.split(";")[1].split("=")[1], contentLength, transferEncoding,
+                                        contentEncoding);
+                        case "application/x-www-form-urlencoded" ->
+                                UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
+                                        transferEncoding, contentEncoding);
+                        default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(), value,
+                                contentLength, transferEncoding, contentEncoding);
+                    };
+                    if (content == null) return;
+                } catch (IOException e) {
+                    return;
+                }
 
-                if (content == null) return;
-
-                // TODO fix this
-                getHeaders().remove(header);
+                getHeaders().remove(getHeaders().get(i));
                 break;
             }
         }
@@ -80,11 +80,11 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private boolean getEncodings() {
-        for (Header header : getHeaders()) {
-            String headerName = header.getName().toLowerCase(Locale.US);
+        for (int i = 0; i < getHeaders().size(); i++) {
+            String headerName = getHeaders().get(i).getName().toLowerCase(Locale.US);
             if (headerName.equals("transfer-encoding") || headerName.equals("content-encoding")) {
-                String[] values = header.getValue().toLowerCase(Locale.US).split(",", 0);
-                getHeaders().remove(header);
+                String[] values = getHeaders().get(i).getValue().toLowerCase(Locale.US).split(",", 0);
+                getHeaders().remove(getHeaders().get(i));
 
                 return switch (headerName) {
                     case "transfer-encoding" -> {
@@ -121,11 +121,10 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     }
 
     private boolean getContentLength(final boolean optional) {
-        List<Header> headers = getHeaders().stream().toList();
-        for (Header header : headers) {
-            if (header.getName().equalsIgnoreCase("content-length")) {
+        for (int i = 0; i < getHeaders().size(); i++) {
+            if (getHeaders().get(i).getName().equalsIgnoreCase("content-length")) {
                 try {
-                    contentLength = Integer.parseInt(header.getValue());
+                    contentLength = Integer.parseInt(getHeaders().get(i).getValue());
 
                     if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
                         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE,
@@ -133,7 +132,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         return false;
                     }
 
-                    getHeaders().remove(header);
+                    getHeaders().remove(getHeaders().get(i));
                     return true;
                 } catch (NumberFormatException e) {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,

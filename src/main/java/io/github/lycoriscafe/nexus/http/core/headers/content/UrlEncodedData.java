@@ -16,7 +16,38 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+
+import java.io.IOException;
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 
 public final class UrlEncodedData extends HashMap<String, String> {
+    public static Content process(final long requestId,
+                                  final RequestConsumer requestConsumer,
+                                  final Integer contentLength,
+                                  final List<TransferEncoding> transferEncodings,
+                                  final List<ContentEncoding> contentEncodings) throws IOException {
+        if (transferEncodings != null && transferEncodings.contains(TransferEncoding.CHUNKED)) {
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported");
+            return null;
+        }
+
+        Content content = Content.ReadOperations.process(requestId, requestConsumer,
+                "application/x-www-form-urlencoded", contentLength, transferEncodings, contentEncodings);
+        if (content == null) return null;
+        String[] data = (new String((byte[]) content.getData(), StandardCharsets.UTF_8)).split("&", 0);
+
+        UrlEncodedData urlEncodedData = new UrlEncodedData();
+        for (String s : data) {
+            String[] keyVal = s.split("=", 2);
+            urlEncodedData.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
+                    URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
+        }
+
+        return new Content("application/x-www-form-urlencoded", urlEncodedData);
+    }
 }

@@ -286,7 +286,8 @@ public final class HttpResponse {
                             .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
                             .append(Authentication.processOutgoingAuthentications(getAuthentications()))
                             .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
-                            .append(Content.WriteOperations.processOutgoingContent(getContent()));
+                            .append(Content.WriteOperations.processOutgoingContent(
+                                    getRequestConsumer().getServerConfiguration(), getContent()));
 
             if (isXContentTypeOptionsNoSniff()) {
                 output.append("X-Content-Type-Options: nosniff").append("\r\n");
