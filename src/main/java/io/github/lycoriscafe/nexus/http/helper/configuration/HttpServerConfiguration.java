@@ -25,9 +25,11 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
+import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Objects;
 
 public final class HttpServerConfiguration {
     private int port = 0;
@@ -62,7 +64,7 @@ public final class HttpServerConfiguration {
     private boolean addErrorMessageToResponseHeaders = true;
 
     public HttpServerConfiguration(final String basePackage) {
-        this.basePackage = basePackage;
+        this.basePackage = Objects.requireNonNull(basePackage);
     }
 
     public String getBasePackage() {
@@ -105,11 +107,8 @@ public final class HttpServerConfiguration {
         return connectionTimeout;
     }
 
-    public HttpServerConfiguration setThreadType(final ThreadType threadType) throws HttpServerConfigurationException {
-        if (threadType == null) {
-            throw new HttpServerConfigurationException("thread type cannot be null");
-        }
-        this.threadType = threadType;
+    public HttpServerConfiguration setThreadType(final ThreadType threadType) {
+        this.threadType = Objects.requireNonNull(threadType);
         return this;
     }
 
@@ -118,9 +117,7 @@ public final class HttpServerConfiguration {
     }
 
     public HttpServerConfiguration setTempDirectory(final String tempDirectory) {
-        if (tempDirectory != null) {
-            this.tempDirectory = tempDirectory;
-        }
+        this.tempDirectory = Objects.requireNonNull(tempDirectory);
         return this;
     }
 
@@ -155,8 +152,7 @@ public final class HttpServerConfiguration {
         return ignoreEndpointCases;
     }
 
-    public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest)
-            throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest) throws HttpServerConfigurationException {
         if (maxHeadersPerRequest < 2) {
             throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
         }
@@ -168,8 +164,7 @@ public final class HttpServerConfiguration {
         return maxHeadersPerRequest;
     }
 
-    public HttpServerConfiguration setMaxIncomingConnections(final int maxIncomingConnections)
-            throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxIncomingConnections(final int maxIncomingConnections) throws HttpServerConfigurationException {
         if (maxIncomingConnections < 1) {
             throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
         }
@@ -181,8 +176,7 @@ public final class HttpServerConfiguration {
         return maxIncomingConnections;
     }
 
-    public HttpServerConfiguration setMaxContentLength(final int maxContentLength)
-            throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxContentLength(final int maxContentLength) throws HttpServerConfigurationException {
         if (maxContentLength < 1) {
             throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
         }
@@ -194,8 +188,7 @@ public final class HttpServerConfiguration {
         return maxContentLength;
     }
 
-    public HttpServerConfiguration setMaxChunkedContentLength(final int maxChunkedContentLength)
-            throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxChunkedContentLength(final int maxChunkedContentLength) throws HttpServerConfigurationException {
         if (maxChunkedContentLength < 1) {
             throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
         }
@@ -228,8 +221,9 @@ public final class HttpServerConfiguration {
         return defaultHeaders;
     }
 
-    public HttpServerConfiguration setDefaultAuthentications(final List<Authentication> defaultAuthentications) {
-        this.defaultAuthentications = defaultAuthentications;
+    public HttpServerConfiguration addDefaultAuthentication(final Authentication defaultAuthentication) {
+        if (defaultAuthentications == null) defaultAuthentications = new NonDuplicateList<>();
+        defaultAuthentications.add(defaultAuthentication);
         return this;
     }
 
@@ -237,8 +231,9 @@ public final class HttpServerConfiguration {
         return defaultAuthentications;
     }
 
-    public HttpServerConfiguration setDefaultCookies(final List<Cookie> defaultCookies) {
-        this.defaultCookies = defaultCookies;
+    public HttpServerConfiguration addDefaultCookies(final Cookie defaultCookie) {
+        if (defaultCookies == null) defaultCookies = new NonDuplicateList<>();
+        defaultCookies.add(defaultCookie);
         return this;
     }
 
@@ -246,8 +241,7 @@ public final class HttpServerConfiguration {
         return defaultCookies;
     }
 
-    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(
-            final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
+    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
         this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
         return this;
     }
@@ -256,9 +250,9 @@ public final class HttpServerConfiguration {
         return defaultCrossOriginResourceSharing;
     }
 
-    public HttpServerConfiguration setDefaultReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints)
-            throws HttpServerConfigurationException {
-        this.reportingEndpoints = reportingEndpoints;
+    public HttpServerConfiguration addDefaultReportingEndpoints(final ReportingEndpoint reportingEndpoint) {
+        if (reportingEndpoints == null) reportingEndpoints = new NonDuplicateList<>();
+        reportingEndpoints.add(reportingEndpoint);
         return this;
     }
 
@@ -266,9 +260,9 @@ public final class HttpServerConfiguration {
         return reportingEndpoints;
     }
 
-    public HttpServerConfiguration setDefaultContentSecurityPolicies(
-            final List<ContentSecurityPolicy> defaultContentSecurityPolicies) {
-        this.defaultContentSecurityPolicies = defaultContentSecurityPolicies;
+    public HttpServerConfiguration addDefaultContentSecurityPolicies(final ContentSecurityPolicy defaultContentSecurityPolicy) {
+        if (defaultContentSecurityPolicies == null) defaultContentSecurityPolicies = new NonDuplicateList<>();
+        defaultContentSecurityPolicies.add(defaultContentSecurityPolicy);
         return this;
     }
 
@@ -276,9 +270,9 @@ public final class HttpServerConfiguration {
         return defaultContentSecurityPolicies;
     }
 
-    public HttpServerConfiguration setDefaultContentSecurityPolicyReportOnly(
-            final List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly) {
-        this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
+    public HttpServerConfiguration addDefaultContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
+        if (this.defaultContentSecurityPolicyReportOnly == null) this.defaultContentSecurityPolicyReportOnly = new NonDuplicateList<>();
+        this.defaultContentSecurityPolicyReportOnly.add(defaultContentSecurityPolicyReportOnly);
         return this;
     }
 
@@ -286,8 +280,7 @@ public final class HttpServerConfiguration {
         return defaultContentSecurityPolicyReportOnly;
     }
 
-    public HttpServerConfiguration setDefaultStrictTransportSecurity(
-            final StrictTransportSecurity defaultStrictTransportSecurity) {
+    public HttpServerConfiguration setDefaultStrictTransportSecurity(final StrictTransportSecurity defaultStrictTransportSecurity) {
         this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
         return this;
     }

@@ -34,16 +34,10 @@ import java.util.Locale;
 public final class FileScanner {
     public static void scan(final HttpServerConfiguration serverConfiguration,
                             final Database database) throws ScannerException {
-        if (serverConfiguration.getStaticFilesDirectory() == null) {
-            return;
-        }
+        if (serverConfiguration.getStaticFilesDirectory() == null) return;
         Path dir = Path.of(serverConfiguration.getStaticFilesDirectory());
-        if (!Files.exists(dir)) {
-            throw new ScannerException("static files directory is not exists");
-        }
-        if (!Files.isDirectory(dir)) {
-            throw new ScannerException("static files directory is not a directory");
-        }
+        if (!Files.exists(dir)) throw new ScannerException("static files directory is not exists");
+        if (!Files.isDirectory(dir)) throw new ScannerException("static files directory is not a directory");
         deepScan(dir, database, serverConfiguration);
     }
 
@@ -57,11 +51,8 @@ public final class FileScanner {
                     continue;
                 }
 
-                String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path).toString()
-                        .replaceAll("\\\\", "/");
-                database.addEndpointData(new ReqFile(
-                        serverConfiguration.isIgnoreEndpointCases() ? endpointName.toLowerCase(Locale.US) :
-                                endpointName, false,
+                String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path).toString().replaceAll("\\\\", "/");
+                database.addEndpointData(new ReqFile(serverConfiguration.isIgnoreEndpointCases() ? endpointName.toLowerCase(Locale.US) : endpointName, false,
                         // TODO http date format
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(), calculateETag(path)));
             }

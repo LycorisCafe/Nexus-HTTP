@@ -51,8 +51,7 @@ public final class EndpointScanner {
         for (Class<?> clazz : classes) {
             for (Method method : clazz.getMethods()) {
                 AuthScheme authSchemeAnnotation = null;
-                boolean authenticated = clazz.isAnnotationPresent(Authenticated.class) ||
-                        method.isAnnotationPresent(Authenticated.class);
+                boolean authenticated = clazz.isAnnotationPresent(Authenticated.class) || method.isAnnotationPresent(Authenticated.class);
 
                 String endpointValue;
                 HttpRequestMethod reqMethod;
@@ -77,8 +76,7 @@ public final class EndpointScanner {
                         endpointValue = m.getAnnotation(PATCH.class).value();
                         reqMethod = HttpRequestMethod.PATCH;
                     }
-                    case Method m when m.isAnnotationPresent(BearerEndpoint.class) &&
-                            Modifier.isStatic(m.getModifiers()) -> {
+                    case Method m when m.isAnnotationPresent(BearerEndpoint.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(BearerEndpoint.class).value().value();
                         reqMethod = HttpRequestMethod.POST;
                         authSchemeAnnotation = AuthScheme.Bearer;
@@ -89,8 +87,7 @@ public final class EndpointScanner {
                 }
 
                 if (endpointValue == null) {
-                    throw new ScannerException(
-                            "null endpoint at : class - " + clazz.getName() + " , method - " + method.getName());
+                    throw new ScannerException("null endpoint at : class - " + clazz.getName() + " , method - " + method.getName());
                 }
 
                 String statusAnnotationValue = null;
@@ -119,16 +116,12 @@ public final class EndpointScanner {
                     default -> null;
                 };
 
-                logger.atTrace().log(reqMethod.name() + " endpoint found @ " + clazz.getPackageName() + " - " +
-                        clazz.getSimpleName() + "." + method.getName());
                 database.addEndpointData(new ReqEndpoint((serverConfiguration.isIgnoreEndpointCases() ?
                         clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
-                        clazz.getAnnotation(HttpEndpoint.class).value()) +
-                        (serverConfiguration.isIgnoreEndpointCases() ? endpointValue.toLowerCase(Locale.US) :
-                                endpointValue), reqMethod, authenticated, clazz, method, statusAnnotation,
-                        serverConfiguration.isIgnoreEndpointCases() ?
-                                statusAnnotationValue == null ? null : statusAnnotationValue.toLowerCase(Locale.US) :
-                                statusAnnotationValue, authSchemeAnnotation));
+                        clazz.getAnnotation(HttpEndpoint.class).value()) + (serverConfiguration.isIgnoreEndpointCases() ?
+                        endpointValue.toLowerCase(Locale.US) : endpointValue),
+                        reqMethod, authenticated, clazz, method, statusAnnotation, serverConfiguration.isIgnoreEndpointCases() ?
+                        statusAnnotationValue == null ? null : statusAnnotationValue.toLowerCase(Locale.US) : statusAnnotationValue, authSchemeAnnotation));
             }
         }
         logger.atTrace().log("endpoint scanning done.");

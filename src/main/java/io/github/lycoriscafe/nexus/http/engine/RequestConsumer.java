@@ -30,10 +30,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.SortedMap;
-import java.util.TreeMap;
+import java.util.*;
 
 public final class RequestConsumer implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
@@ -54,9 +51,9 @@ public final class RequestConsumer implements Runnable {
                            final Socket socket) throws IOException {
         requestProcessor = new RequestProcessor(this);
 
-        this.serverConfiguration = serverConfiguration;
-        this.database = database;
-        this.socket = socket;
+        this.serverConfiguration = Objects.requireNonNull(serverConfiguration);
+        this.database = Objects.requireNonNull(database);
+        this.socket = Objects.requireNonNull(socket);
 
         this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
@@ -64,7 +61,17 @@ public final class RequestConsumer implements Runnable {
     }
 
     private long getRequestId() {
-        return requestId == Long.MAX_VALUE ? (requestId = 0L) : requestId++;
+        if (requestId == Long.MAX_VALUE) {
+            try {
+                wait();
+            } catch (InterruptedException e) {
+                // just wait for drop the connection
+            }
+        }
+        if (requestId + 2 == Long.MAX_VALUE) {
+            dropConnection(Long.MAX_VALUE, HttpStatusCode.INTERNAL_SERVER_ERROR, "connection reset");
+        }
+        return requestId++;
     }
 
     public HttpServerConfiguration getServerConfiguration() {
@@ -110,8 +117,7 @@ public final class RequestConsumer implements Runnable {
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
                     // Handle max headers count exceeded
-                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE,
-                            "request header fields too large");
+                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, "request header fields too large");
                     return;
                 }
 
@@ -126,8 +132,7 @@ public final class RequestConsumer implements Runnable {
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode,
                                final String errorMessage) {
-        logger.atDebug()
-                .log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
+        logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
         HttpResponse httpResponse = new HttpResponse(requestId, this, httpStatusCode).setDropConnection(true);
         if (getServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
             httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));

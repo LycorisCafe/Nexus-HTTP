@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.sql.SQLException;
+import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -42,11 +43,8 @@ public final class HttpServer {
     private ExecutorService executorService;
     private final Database database;
 
-    public HttpServer(final HttpServerConfiguration httpServerConfiguration)
-            throws SQLException, IOException, ScannerException, HttpServerException {
-        if (httpServerConfiguration == null) {
-            throw new HttpServerException("http server configuration cannot be null");
-        }
+    public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException, ScannerException {
+        Objects.requireNonNull(httpServerConfiguration);
 
         serverConfiguration = httpServerConfiguration;
         database = new Database(serverConfiguration);
@@ -56,9 +54,8 @@ public final class HttpServer {
     }
 
     private static ExecutorService initializeExecutorService(final HttpServerConfiguration serverConfiguration) {
-        return Executors.newFixedThreadPool(serverConfiguration.getMaxIncomingConnections(),
-                serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
-                        Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
+        return Executors.newFixedThreadPool(serverConfiguration.getMaxIncomingConnections(), serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
+                Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
     }
 
     public void initialize() throws HttpServerException {
@@ -72,16 +69,11 @@ public final class HttpServer {
             try {
                 serverSocket = serverConfiguration.getInetAddress() == null ?
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
-                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(),
-                                serverConfiguration.getInetAddress());
+                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
                 logger.atTrace().log("http server initialized!");
 
                 while (!serverSocket.isClosed()) {
-                    executorService.execute(new RequestConsumer(
-                            serverConfiguration,
-                            database,
-                            serverSocket.accept()
-                    ));
+                    executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }
             } catch (IOException e) {
                 throw new RuntimeException(e);

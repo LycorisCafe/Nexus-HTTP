@@ -29,11 +29,13 @@ import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.Objects;
 
 public final class Database {
     private final Connection databaseConnection;
 
     public Database(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
+        Objects.requireNonNull(serverConfiguration);
         databaseConnection = initializeDatabaseConnection(serverConfiguration);
     }
 
@@ -41,20 +43,17 @@ public final class Database {
         return databaseConnection;
     }
 
-    public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration)
-            throws SQLException, IOException {
+    public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
         Connection conn;
         if (serverConfiguration.getDatabaseLocation() == null) {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
-            String database = serverConfiguration.getDatabaseLocation().isEmpty() ?
-                    "NexusHttp" + serverConfiguration.getPort() + ".db" :
+            String database = serverConfiguration.getDatabaseLocation()
+                    .isEmpty() ? "NexusHttp" + serverConfiguration.getPort() + ".db" :
                     serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
             File file = new File(database);
             if (file.exists()) {
-                if (!file.delete()) {
-                    throw new IOException("Failed to delete file: " + file.getAbsolutePath());
-                }
+                if (!file.delete()) throw new IOException("Failed to delete file: " + file.getAbsolutePath());
             }
             conn = DriverManager.getConnection("jdbc:sqlite:" + database);
         }
@@ -63,6 +62,7 @@ public final class Database {
     }
 
     private static void buildDatabase(final Connection conn) throws SQLException {
+        Objects.requireNonNull(conn);
         String[] queries = {"PRAGMA foreign_keys = ON;",
                 // Mater table
                 "CREATE TABLE ReqMaster(" +
@@ -88,7 +88,8 @@ public final class Database {
                         "lastModified TEXT NOT NULL," +
                         "eTag TEXT NOT NULL," +
                         "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
-                        ");"};
+                        ");"
+        };
 
         for (String query : queries) {
             try (Statement stmt = conn.createStatement()) {
@@ -98,8 +99,9 @@ public final class Database {
     }
 
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException {
-        PreparedStatement masterQuery = databaseConnection.prepareStatement(
-                "INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)");
+        Objects.requireNonNull(model);
+
+        PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)");
         masterQuery.setString(1, model.getRequestEndpoint());
         masterQuery.setString(2, model.getReqMethod().name());
         masterQuery.setBoolean(3, model.isAuthenticated());
@@ -119,17 +121,14 @@ public final class Database {
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, endpoint.getClazz().getName());
                 subQuery.setString(3, endpoint.getMethod().getName());
-                subQuery.setString(4,
-                        endpoint.getStatusAnnotation() == null ? null : endpoint.getStatusAnnotation().toString());
+                subQuery.setString(4, endpoint.getStatusAnnotation() == null ? null : endpoint.getStatusAnnotation().toString());
                 subQuery.setString(5, endpoint.getStatusAnnotationValue());
-                subQuery.setString(6, endpoint.getAuthSchemeAnnotation() == null ? null :
-                        endpoint.getAuthSchemeAnnotation().toString());
+                subQuery.setString(6, endpoint.getAuthSchemeAnnotation() == null ? null : endpoint.getAuthSchemeAnnotation().toString());
                 subQuery.executeUpdate();
                 subQuery.close();
             }
             case ReqFile file -> {
-                PreparedStatement subQuery = databaseConnection.prepareStatement(
-                        "INSERT INTO ReqFile " + "(ROWID, lastModified, eTag) VALUES (?, ?, ?)");
+                PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile (ROWID, lastModified, eTag) VALUES (?, ?, ?)");
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, file.getLastModified());
                 subQuery.setString(3, file.getETag());
@@ -140,52 +139,49 @@ public final class Database {
         }
     }
 
-    public ReqMaster getEndpointData(final HttpRequest httpRequest)
-            throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        PreparedStatement masterQuery = databaseConnection.prepareStatement(
-                "SELECT COUNT(ROWID), * FROM ReqMaster WHERE endpoint = ?");
+    public ReqMaster getEndpointData(final HttpRequest httpRequest) throws SQLException, ClassNotFoundException, NoSuchMethodException {
+        Objects.requireNonNull(httpRequest);
+
+        PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? AND reqMethod = ?");
         masterQuery.setString(1, httpRequest.getEndpoint());
+        masterQuery.setString(2, httpRequest.getRequestMethod().name());
 
-        ResultSet rs = masterQuery.executeQuery();
-        if (rs.getInt(1) == 1) {
-            switch (rs.getString(6)) {
+        ResultSet masterResult = masterQuery.executeQuery();
+        if (masterResult.first()) {
+            switch (masterResult.getString(5)) {
                 case "endpoint" -> {
-                    PreparedStatement subQuery =
-                            databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
-                    subQuery.setInt(1, rs.getInt(2));
+                    PreparedStatement subQuery = databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
+                    subQuery.setInt(1, masterResult.getInt(1));
 
-                    ResultSet rs2 = subQuery.executeQuery();
+                    ResultSet subResult = subQuery.executeQuery();
                     ReqEndpoint endpoint;
 
                     try {
-                        Class<?> clazz = Class.forName(rs2.getString(2));
-                        AuthScheme authScheme = rs2.getString(6) == null ? null :
-                                AuthScheme.valueOf(rs2.getString(6));
-                        Class<?> methodParamType = (authScheme == null) ?
-                                switch (httpRequest.getRequestMethod()) {
-                                    case CONNECT, TRACE -> null;
-                                    case DELETE -> HttpDeleteRequest.class;
-                                    case GET -> HttpGetRequest.class;
-                                    case HEAD -> HttpHeadRequest.class;
-                                    case OPTIONS -> HttpOptionsRequest.class;
-                                    case PATCH -> HttpPatchRequest.class;
-                                    case POST -> HttpPostRequest.class;
-                                    case PUT -> HttpPutRequest.class;
-                                } :
-                                switch (authScheme) {
-                                    case Basic, Concealed, Digest, DPoP, GNAP, HOBA, Mutual, Negotiate, OAuth,
-                                         PrivateToken, SCRAM_SHA_1, SCRAM_SHA_256, vapid -> null;
-                                    case Bearer -> BearerTokenRequest.class;
-                                };
+                        Class<?> clazz = Class.forName(subResult.getString(2));
+                        AuthScheme authScheme = subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6));
+                        Class<?> methodParamType = (authScheme == null) ? switch (httpRequest.getRequestMethod()) {
+                            case CONNECT, TRACE -> null;
+                            case DELETE -> HttpDeleteRequest.class;
+                            case GET -> HttpGetRequest.class;
+                            case HEAD -> HttpHeadRequest.class;
+                            case OPTIONS -> HttpOptionsRequest.class;
+                            case PATCH -> HttpPatchRequest.class;
+                            case POST -> HttpPostRequest.class;
+                            case PUT -> HttpPutRequest.class;
+                        } : switch (authScheme) {
+                            case Basic, Concealed, Digest, DPoP, GNAP, HOBA, Mutual, Negotiate, OAuth, PrivateToken, SCRAM_SHA_1, SCRAM_SHA_256,
+                                 vapid -> null;
+                            case Bearer -> BearerTokenRequest.class;
+                        };
 
-                        endpoint = new ReqEndpoint(rs.getString(3), HttpRequestMethod.valueOf(rs.getString(4)),
-                                rs.getBoolean(5), clazz, clazz.getMethod(rs2.getString(3), methodParamType),
-                                rs2.getString(4) == null ? null : HttpStatusCode.valueOf(rs2.getString(4)),
-                                rs2.getString(5), authScheme);
+                        endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
+                                masterResult.getBoolean(6), clazz, clazz.getMethod(subResult.getString(3), methodParamType),
+                                subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
+                                subResult.getString(5), authScheme);
                     } finally {
-                        rs2.close();
+                        subResult.close();
                         subQuery.close();
-                        rs.close();
+                        masterResult.close();
                         masterQuery.close();
                     }
 
@@ -197,7 +193,7 @@ public final class Database {
             }
         }
 
-        rs.close();
+        masterResult.close();
         masterQuery.close();
         return null;
     }
