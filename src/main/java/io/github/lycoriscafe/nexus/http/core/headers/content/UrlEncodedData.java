@@ -23,24 +23,22 @@ import java.io.IOException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
-import java.util.List;
 
 public final class UrlEncodedData extends HashMap<String, String> {
     public static Content process(final long requestId,
                                   final RequestConsumer requestConsumer,
                                   final Integer contentLength,
-                                  final List<TransferEncoding> transferEncodings,
-                                  final List<ContentEncoding> contentEncodings) throws IOException {
-        if (transferEncodings != null && transferEncodings.contains(TransferEncoding.CHUNKED)) {
+                                  final boolean chunked,
+                                  final boolean gzipped) throws IOException {
+        if (chunked) {
             requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported");
             return null;
         }
 
-        Content content = Content.ReadOperations.process(requestId, requestConsumer,
-                "application/x-www-form-urlencoded", contentLength, transferEncodings, contentEncodings);
+        Content content = Content.ReadOperations.process(requestId, requestConsumer, "application/x-www-form-urlencoded", contentLength, false, gzipped);
         if (content == null) return null;
-        String[] data = (new String((byte[]) content.getData(), StandardCharsets.UTF_8)).split("&", 0);
 
+        String[] data = (new String((byte[]) content.getData(), StandardCharsets.UTF_8)).split("&", 0);
         UrlEncodedData urlEncodedData = new UrlEncodedData();
         for (String s : data) {
             String[] keyVal = s.split("=", 2);

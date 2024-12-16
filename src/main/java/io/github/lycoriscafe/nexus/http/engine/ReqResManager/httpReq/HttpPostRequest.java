@@ -16,14 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
-import io.github.lycoriscafe.nexus.http.core.headers.content.*;
+import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
+import io.github.lycoriscafe.nexus.http.core.headers.content.MultiPartFormData;
+import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
-import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Locale;
 
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
@@ -39,8 +39,8 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         return content;
     }
 
-    private List<TransferEncoding> transferEncoding;
-    private List<ContentEncoding> contentEncoding;
+    private boolean chunked;
+    private boolean gzipped;
     private Integer contentLength = null;
 
     @Override
@@ -48,21 +48,16 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
         for (int i = 0; i < getHeaders().size(); i++) {
             if (getHeaders().get(i).name().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
-                if (!getContentLength(
-                        transferEncoding != null && transferEncoding.contains(TransferEncoding.CHUNKED))) {
-                    return;
-                }
+                if (!chunked) if (!getContentLength()) return;
 
                 String value = getHeaders().get(i).value().toLowerCase(Locale.US);
                 try {
                     content = switch (value) {
                         case String x when x.startsWith("multipart/form-data") -> MultiPartFormData.process(getRequestId(), getRequestConsumer(),
-                                value.split(";")[1].split("=")[1], contentLength, transferEncoding,
-                                contentEncoding);
+                                value.split(";")[1].split("=")[1], contentLength, chunked, gzipped);
                         case "application/x-www-form-urlencoded" -> UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
-                                transferEncoding, contentEncoding);
-                        default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(), value,
-                                contentLength, transferEncoding, contentEncoding);
+                                chunked, gzipped);
+                        default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(), value, contentLength, chunked, gzipped);
                     };
                     if (content == null) return;
                 } catch (IOException e) {
@@ -82,70 +77,50 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
             String headerName = getHeaders().get(i).name().toLowerCase(Locale.US);
             if (headerName.equals("transfer-encoding") || headerName.equals("content-encoding")) {
                 String[] values = getHeaders().get(i).value().toLowerCase(Locale.US).split(",", 0);
-                getHeaders().remove(getHeaders().get(i));
-
-                return switch (headerName) {
+                switch (headerName) {
                     case "transfer-encoding" -> {
-                        transferEncoding = new NonDuplicateList<>();
-                        for (String value : values) {
-                            try {
-                                transferEncoding.add(TransferEncoding.valueOf(value));
-                            } catch (IllegalArgumentException e) {
-                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
-                                        "provided transfer encoding not supported");
-                                yield false;
-                            }
+                        if (values.length == 1 && values[0].equals("chunked")) {
+                            chunked = true;
+                        } else {
+                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only chunked transfer encoding supported");
+                            return false;
                         }
-                        yield true;
                     }
                     case "content-encoding" -> {
-                        contentEncoding = new NonDuplicateList<>();
-                        for (String value : values) {
-                            try {
-                                contentEncoding.add(ContentEncoding.valueOf(value));
-                            } catch (IllegalArgumentException e) {
-                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED,
-                                        "provided content encoding not supported");
-                                yield false;
-                            }
+                        if (values.length == 1 && values[0].equals("gzip")) {
+                            chunked = true;
+                        } else {
+                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only gzip content encoding supported");
+                            return false;
                         }
-                        yield true;
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + headerName);
-                };
+                }
+                getHeaders().remove(getHeaders().get(i));
             }
         }
         return true;
     }
 
-    private boolean getContentLength(final boolean optional) {
+    private boolean getContentLength() {
         for (int i = 0; i < getHeaders().size(); i++) {
             if (getHeaders().get(i).name().equalsIgnoreCase("content-length")) {
                 try {
                     contentLength = Integer.parseInt(getHeaders().get(i).value());
-
                     if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE,
-                                "content too large");
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large");
                         return false;
                     }
-
                     getHeaders().remove(getHeaders().get(i));
                     return true;
                 } catch (NumberFormatException e) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
-                            "invalid content length");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content length");
                     return false;
                 }
             }
         }
 
-        if (!optional) {
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED,
-                    "content length required");
-            return false;
-        }
-
-        return true;
+        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED, "content length required");
+        return false;
     }
 }

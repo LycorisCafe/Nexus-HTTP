@@ -71,6 +71,7 @@ public class Main {
 
     @BearerEndpoint(@POST("/generateToken"))
     public static BearerTokenResponse tokenEndpoint(final BearerTokenRequest bearerTokenRequest) {
+        System.out.println("x");
         return new BearerTokenResponse("abcdefg");
     }
 }

@@ -71,16 +71,14 @@ public final class MultiPartFormData {
                                   final RequestConsumer requestConsumer,
                                   final String boundary,
                                   final Integer contentLength,
-                                  final List<TransferEncoding> transferEncodings,
-                                  final List<ContentEncoding> contentEncodings) throws IOException {
-        if (transferEncodings != null && transferEncodings.contains(TransferEncoding.CHUNKED)) {
+                                  final boolean chunked,
+                                  final boolean gzipped) throws IOException {
+        if (chunked) {
             requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported");
             return null;
         }
 
-        Content content =
-                Content.ReadOperations.process(requestId, requestConsumer, "multipart/form-data", contentLength,
-                        transferEncodings, contentEncodings);
+        Content content = Content.ReadOperations.process(requestId, requestConsumer, "multipart/form-data", contentLength, false, gzipped);
         if (content == null) return null;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[]) content.getData());

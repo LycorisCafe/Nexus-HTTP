@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
+import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostRequest;
 
 import java.util.Map;
@@ -41,13 +42,12 @@ public final class BearerTokenRequest {
         return this;
     }
 
-    @SuppressWarnings("unchecked")
     public static BearerTokenRequest parse(final HttpPostRequest request) {
-        Map<String, String> params;
-        if (!(request.getContent().getData() instanceof Map)) {
+        UrlEncodedData params;
+        if (!(request.getContent().getData() instanceof UrlEncodedData)) {
             return null;
         }
-        params = (Map<String, String>) request.getContent().getData();
+        params = (UrlEncodedData) request.getContent().getData();
 
         if (!params.containsKey("grant_type")) {
             return null;
