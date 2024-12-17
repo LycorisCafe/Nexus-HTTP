@@ -80,7 +80,7 @@ public final class BearerAuthentication extends Authentication {
 
     @Override
     public String processOutgoingAuth() {
-        StringBuilder output = new StringBuilder().append("Bearer ");
+        StringBuilder output = new StringBuilder().append("BEARER ");
         if (error != null) output.append("error=\"").append(error.getValue()).append("\"").append(", realm=\"").append(realm).append("\"");
         else output.append("realm=\"").append(realm).append("\"");
 

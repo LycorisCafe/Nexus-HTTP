@@ -28,7 +28,7 @@ public final class BasicAuthorization extends Authorization {
 
     public BasicAuthorization(final String username,
                               final String password) {
-        super(AuthScheme.Basic);
+        super(AuthScheme.BASIC);
         this.username = username;
         this.password = password;
     }

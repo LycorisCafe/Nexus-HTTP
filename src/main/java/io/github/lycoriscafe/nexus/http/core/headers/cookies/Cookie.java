@@ -32,8 +32,8 @@ public final class Cookie {
     private CookieSameSite sameSite;
     private CookiePrefix prefix;
 
-    private Cookie(final String cookieName,
-                   final String cookieValue) {
+    public Cookie(final String cookieName,
+                  final String cookieValue) {
         name = cookieName;
         value = cookieValue;
     }

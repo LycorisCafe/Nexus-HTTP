@@ -31,6 +31,6 @@ public final class BasicAuthentication extends Authentication {
 
     @Override
     public String processOutgoingAuth() {
-        return "Basic realm=\"" + realm + "\", charset=\"UTF-8\"";
+        return "BASIC realm=\"" + realm + "\", charset=\"UTF-8\"";
     }
 }

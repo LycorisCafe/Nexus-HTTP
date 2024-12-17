@@ -17,8 +17,8 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 public enum AuthScheme {
-    Basic("Basic"),
-    Bearer("Bearer");
+    BASIC("Basic"),
+    BEARER("Bearer");
 //    Concealed("Concealed"),
 //    Digest("Digest"),
 //    DPoP("DPoP"),

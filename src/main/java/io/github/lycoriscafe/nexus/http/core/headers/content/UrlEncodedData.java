@@ -42,8 +42,7 @@ public final class UrlEncodedData extends HashMap<String, String> {
         UrlEncodedData urlEncodedData = new UrlEncodedData();
         for (String s : data) {
             String[] keyVal = s.split("=", 2);
-            urlEncodedData.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8),
-                    URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
+            urlEncodedData.put(URLDecoder.decode(keyVal[0], StandardCharsets.UTF_8), URLDecoder.decode(keyVal[1], StandardCharsets.UTF_8));
         }
 
         return new Content("application/x-www-form-urlencoded", urlEncodedData);

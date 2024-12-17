@@ -183,12 +183,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     private void processAuthAnnotation(final ReqEndpoint reqEndpoint) throws InvocationTargetException, IllegalAccessException {
         switch (reqEndpoint.getAuthSchemeAnnotation()) {
-            case Bearer -> {
-                if (getRequestMethod() != HttpRequestMethod.POST) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "request method must be POST");
-                    return;
-                }
-
+            case BEARER -> {
                 HttpPostRequest request = (HttpPostRequest) this;
                 if (request.getContent() == null || !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content type must be application/x-www-form-urlencoded");

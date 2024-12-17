@@ -139,37 +139,36 @@ public final class Content {
             }
 
             if (data == null) {
-                data = new byte[contentLength];
-                int c = requestConsumer.getSocket().getInputStream().read((byte[]) data);
+                byte[] buffer = new byte[contentLength];
+                int c = requestConsumer.getSocket().getInputStream().readNBytes(buffer, 0, contentLength);
                 if (c != contentLength) {
                     requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "connection error");
                     return null;
                 }
+                data = buffer;
             }
 
-            long dataLength = switch (data) {
-                case Path path -> Files.size(path);
-                case byte[] bytes -> bytes.length;
-                default -> -1L;
-            };
-
-            return new Content(contentType, data).setContentLength(dataLength);
+            return new Content(contentType, data);
         }
 
         private static boolean readChunked(final long requestId,
                                            final Path path,
                                            final RequestConsumer requestConsumer) throws IOException {
             InputStream inputStream = requestConsumer.getSocket().getInputStream();
-            BufferedReader bufferedReader = requestConsumer.getReader();
             int totalChunkSize = 0;
 
             while (true) {
-                int chunkSize = Integer.parseInt(bufferedReader.readLine(), 16);
+                String line = requestConsumer.readLine();
+                if (line == null) {
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "content cannot process");
+                    return false;
+                }
+
+                int chunkSize = Integer.parseInt(line, 16);
                 if (chunkSize == 0) break;
                 totalChunkSize += chunkSize;
                 if (totalChunkSize > requestConsumer.getServerConfiguration().getMaxChunkedContentLength()) {
-                    requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE,
-                            "max chunked size exceeded");
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE, "max chunked size exceeded");
                     return false;
                 }
 
@@ -178,9 +177,8 @@ public final class Content {
                         Files.write(path, inputStream.readNBytes(chunkSize), StandardOpenOption.APPEND);
                         break;
                     } else {
-                        Files.write(path,
-                                inputStream.readNBytes(requestConsumer.getServerConfiguration().getMaxChunkSize()),
-                                StandardOpenOption.APPEND);
+                        Files.write(path, inputStream.readNBytes(requestConsumer.getServerConfiguration()
+                                .getMaxChunkSize()), StandardOpenOption.APPEND);
                         chunkSize -= requestConsumer.getServerConfiguration().getMaxChunkSize();
                     }
                 }
@@ -210,8 +208,9 @@ public final class Content {
                     return temp;
                 }
                 case byte[] bytes -> {
-                    var gzipInputStream = new GZIPInputStream(requestConsumer.getSocket().getInputStream());
-                    return gzipInputStream.read(bytes);
+                    try (var gzipInputStream = new GZIPInputStream(requestConsumer.getSocket().getInputStream())) {
+                        return gzipInputStream.read(bytes);
+                    }
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + content);
             }
@@ -243,10 +242,11 @@ public final class Content {
                         }
                     }
                     case byte[] bytes -> {
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-                        gzipOutputStream.write(bytes);
-                        content.setData(byteArrayOutputStream.toByteArray());
+                        try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
+                            gzipOutputStream.write(bytes);
+                            content.setData(byteArrayOutputStream.toByteArray());
+                        }
                     }
                     case InputStream inputStream -> {
                         GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
@@ -260,8 +260,7 @@ public final class Content {
                 switch (content.getData()) {
                     case Path path -> result.append("Content-Length: ").append(Files.size(path)).append("\r\n");
                     case byte[] bytes -> result.append("Content-Length: ").append(bytes.length).append("\r\n");
-                    case InputStream ignored -> {
-                    }
+                    case InputStream ignored -> {}
                     default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                 }
             } else {
@@ -269,8 +268,7 @@ public final class Content {
             }
 
             if (content.getDownloadName() != null) {
-                result.append("Content-Disposition: attachment; filename=\"").append(content.getDownloadName())
-                        .append("\"\r\n");
+                result.append("Content-Disposition: attachment; filename=\"").append(content.getDownloadName()).append("\"\r\n");
             }
 
             return result.toString();
@@ -278,12 +276,15 @@ public final class Content {
 
         public static void writeContent(final RequestConsumer requestConsumer,
                                         final Content content) throws IOException {
-            try (InputStream inputStream = switch (content.getData()) {
-                case Path path -> new FileInputStream(path.toFile());
-                case byte[] bytes -> new ByteArrayInputStream(bytes);
-                case InputStream stream -> stream;
-                default -> throw new IllegalStateException("Unexpected value: " + content.getData());
-            }) {
+            InputStream inputStream = null;
+            try {
+                inputStream = switch (content.getData()) {
+                    case Path path -> new FileInputStream(path.toFile());
+                    case byte[] bytes -> new ByteArrayInputStream(bytes);
+                    case InputStream stream -> stream;
+                    default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+                };
+
                 int c;
                 byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
                 while ((c = inputStream.read(buffer)) != -1) {
@@ -300,6 +301,8 @@ public final class Content {
                     requestConsumer.getSocket().getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
                     requestConsumer.getSocket().getOutputStream().flush();
                 }
+            } finally {
+                if (inputStream != null) inputStream.close();
             }
         }
     }

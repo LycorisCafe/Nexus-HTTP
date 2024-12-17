@@ -23,7 +23,7 @@ public final class BearerAuthorization extends Authorization {
     private final String accessToken;
 
     public BearerAuthorization(final String accessToken) {
-        super(AuthScheme.Bearer);
+        super(AuthScheme.BEARER);
         this.accessToken = accessToken;
     }
 

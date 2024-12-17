@@ -177,8 +177,8 @@ public final class Database {
                             case POST -> HttpPostRequest.class;
                             case PUT -> HttpPutRequest.class;
                         } : switch (authScheme) {
-                            case Basic -> null;
-                            case Bearer -> BearerTokenRequest.class;
+                            case BASIC -> null;
+                            case BEARER -> BearerTokenRequest.class;
                         };
 
                         endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),

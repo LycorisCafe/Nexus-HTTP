@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Objects;
 
 public final class HttpResponse {
     private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
@@ -60,22 +61,15 @@ public final class HttpResponse {
         if (requestId < 0) {
             throw new IllegalStateException("invalid response id passed");
         }
-        if (requestConsumer == null) {
-            throw new NullPointerException("invalid request consumer passed");
-        }
-        if (httpStatusCode == null) {
-            throw new NullPointerException("invalid httpStatusCode passed");
-        }
 
         this.requestId = requestId;
-        this.requestConsumer = requestConsumer;
-        this.httpStatusCode = httpStatusCode;
+        this.requestConsumer = Objects.requireNonNull(requestConsumer);
+        this.httpStatusCode = Objects.requireNonNull(httpStatusCode);
 
         headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
         cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
         contentSecurityPolicies = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicies();
-        contentSecurityPolicyReportOnly =
-                requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
+        contentSecurityPolicyReportOnly = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
         xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isDefaultXContentTypeOptionsNoSniff();
         crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
@@ -271,28 +265,20 @@ public final class HttpResponse {
 
     public String finalizeResponse() {
         try {
-            StringBuilder output =
-                    new StringBuilder().append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode())
-                            .append("\r\n").append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
-                            .append("Connection:").append(" ").append("keep-alive").append("\r\n")
-
-                            .append(Header.parseOutgoingHeaders(getHeaders()))
-                            .append(Cookie.processOutgoingCookies(getCookies()))
-                            .append(ReportingEndpoint.processOutgoingReportingEndpoints(getReportingEndpoints()))
-                            .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(), false))
-                            .append(ContentSecurityPolicyReportOnly.processOutgoingCsp(
-                                    getContentSecurityPolicyReportOnly(), true))
-                            .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
-                            .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
-                            .append(Authentication.processOutgoingAuthentications(getAuthentications()))
-                            .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
-                            .append(Content.WriteOperations.processOutgoingContent(
-                                    getRequestConsumer().getServerConfiguration(), getContent()));
-
-            if (isXContentTypeOptionsNoSniff()) {
-                output.append("X-Content-Type-Options: nosniff").append("\r\n");
-            }
-
+            StringBuilder output = new StringBuilder().append("HTTP/1.1").append(" ").append(httpStatusCode.getStatusCode())
+                    .append("\r\n").append("Server:").append(" ").append("nexus-http/1.0.0").append("\r\n")
+                    .append("Connection:").append(" ").append("keep-alive").append("\r\n")
+                    .append(Header.parseOutgoingHeaders(getHeaders()))
+                    .append(Cookie.processOutgoingCookies(getCookies()))
+                    .append(ReportingEndpoint.processOutgoingReportingEndpoints(getReportingEndpoints()))
+                    .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(), false))
+                    .append(ContentSecurityPolicyReportOnly.processOutgoingCsp(getContentSecurityPolicyReportOnly(), true))
+                    .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
+                    .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
+                    .append(Authentication.processOutgoingAuthentications(getAuthentications()))
+                    .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
+                    .append(Content.WriteOperations.processOutgoingContent(getRequestConsumer().getServerConfiguration(), getContent()));
+            if (isXContentTypeOptionsNoSniff()) output.append("X-Content-Type-Options: nosniff").append("\r\n");
             return output.append("\r\n").toString();
         } catch (Exception e) {
             requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR,

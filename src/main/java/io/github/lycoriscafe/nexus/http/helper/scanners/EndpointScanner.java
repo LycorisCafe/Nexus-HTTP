@@ -79,7 +79,7 @@ public final class EndpointScanner {
                     case Method m when m.isAnnotationPresent(BearerEndpoint.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(BearerEndpoint.class).value().value();
                         reqMethod = HttpRequestMethod.POST;
-                        authSchemeAnnotation = AuthScheme.Bearer;
+                        authSchemeAnnotation = AuthScheme.BEARER;
                     }
                     default -> {
                         continue;

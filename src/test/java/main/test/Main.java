@@ -25,6 +25,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEn
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
+import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -52,7 +53,8 @@ public class Main {
     @GET("/")
     public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("text/plan", "Hello world"));
+                .setContent(new Content("text/plan", "Hello world"))
+                .setCookie(new Cookie("testCookie", "testCookieValue"));
     }
 
     @GET("/test")
@@ -66,13 +68,11 @@ public class Main {
     @Authenticated
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg"))
-                        .setContentEncodingGzipped(true));
+                .setContent(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
     }
 
     @BearerEndpoint(@POST("/generateToken"))
     public static BearerTokenResponse tokenEndpoint(final BearerTokenRequest bearerTokenRequest) {
-        System.out.println("x");
         return new BearerTokenResponse("abcdefg");
     }
 }

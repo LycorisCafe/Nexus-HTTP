@@ -50,7 +50,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 if (!getEncodings()) return;
                 if (!chunked) if (!getContentLength()) return;
 
-                String value = getHeaders().get(i).value().toLowerCase(Locale.US);
+                String value = getHeaders().get(i).value().toLowerCase(Locale.US).trim();
                 try {
                     content = switch (value) {
                         case String x when x.startsWith("multipart/form-data") -> MultiPartFormData.process(getRequestId(), getRequestConsumer(),

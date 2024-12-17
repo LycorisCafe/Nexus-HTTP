@@ -24,9 +24,8 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfigura
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
@@ -34,13 +33,17 @@ import java.util.*;
 
 public final class RequestConsumer implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
+
+    private static final byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
     private final RequestProcessor requestProcessor;
 
     private final HttpServerConfiguration serverConfiguration;
     private final Database database;
     private final Socket socket;
 
-    private final BufferedReader reader;
+    // readLine() components
+    private final byte[] terminatePoint = new byte[2];
+    private final ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
 
     private final SortedMap<Long, HttpResponse> responseQue;
     private long requestId = 0L;
@@ -56,7 +59,6 @@ public final class RequestConsumer implements Runnable {
         this.socket = Objects.requireNonNull(socket);
 
         this.socket.setSoTimeout(serverConfiguration.getConnectionTimeout());
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream(), StandardCharsets.UTF_8));
         responseQue = new TreeMap<>();
     }
 
@@ -87,8 +89,21 @@ public final class RequestConsumer implements Runnable {
         return socket;
     }
 
-    public BufferedReader getReader() {
-        return reader;
+    public String readLine() throws IOException {
+        byteArrayOutputStream.reset();
+
+        int c = socket.getInputStream().read(terminatePoint, 0, 2);
+        if (c != 2) return null;
+
+        while (!Arrays.equals(lineTerminator, terminatePoint)) {
+            int b = socket.getInputStream().read();
+            if (b == -1) return null;
+            byteArrayOutputStream.write(terminatePoint[0]);
+            terminatePoint[0] = terminatePoint[1];
+            terminatePoint[1] = (byte) b;
+        }
+
+        return byteArrayOutputStream.size() == 0 ? "" : byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
 
     @Override
@@ -100,7 +115,7 @@ public final class RequestConsumer implements Runnable {
             List<String> headers = new ArrayList<>();
 
             while (true) {
-                String line = reader.readLine();
+                String line = readLine();
                 if (line == null) break;
                 line = line.trim();
 
