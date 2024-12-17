@@ -231,7 +231,7 @@ public final class Content {
                     case Path path -> {
                         Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()), "nexus-content-", null);
                         try (var fileInputStream = new FileInputStream(path.toFile());
-                             var fileOutputStream = new FileOutputStream(path.toFile());
+                             var fileOutputStream = new FileOutputStream(temp.toFile());
                              var gzipOutputStream = new GZIPOutputStream(fileOutputStream)) {
                             int c;
                             byte[] buffer = new byte[httpServerConfiguration.getMaxChunkSize()];

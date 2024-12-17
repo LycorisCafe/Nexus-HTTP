@@ -68,7 +68,7 @@ public class Main {
     @Authenticated
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
+                .setContent(new Content("video/mp4", Paths.get("NexusTemp\\c97123a510d037aabd51db740738cf1a.mp4")));
     }
 
     @BearerEndpoint(@POST("/generateToken"))
