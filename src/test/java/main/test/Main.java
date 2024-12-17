@@ -66,7 +66,8 @@ public class Main {
     @Authenticated
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg")));
+                .setContent(new Content("image/jpg", Paths.get("D:\\Media\\45e9989c6cc9b5d0db8f1fe67d07c177.jpg"))
+                        .setContentEncodingGzipped(true));
     }
 
     @BearerEndpoint(@POST("/generateToken"))

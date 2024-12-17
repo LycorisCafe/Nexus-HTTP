@@ -116,8 +116,10 @@ public final class HttpServerConfiguration {
         return threadType;
     }
 
-    public HttpServerConfiguration setTempDirectory(final String tempDirectory) {
-        this.tempDirectory = Objects.requireNonNull(tempDirectory);
+    public HttpServerConfiguration setTempDirectory(final String tempDirectory) throws HttpServerConfigurationException {
+        Objects.requireNonNull(tempDirectory);
+        if (tempDirectory.isBlank()) throw new HttpServerConfigurationException("temp directory cannot be empty/blank");
+        this.tempDirectory = tempDirectory;
         return this;
     }
 

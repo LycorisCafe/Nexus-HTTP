@@ -28,6 +28,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.ServerSocket;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.SQLException;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
@@ -43,8 +46,16 @@ public final class HttpServer {
     private ExecutorService executorService;
     private final Database database;
 
-    public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException, ScannerException {
+    public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException, ScannerException, HttpServerException {
         Objects.requireNonNull(httpServerConfiguration);
+
+        Path tempPath = Paths.get(httpServerConfiguration.getTempDirectory());
+        if (!Files.exists(tempPath)) Files.createDirectory(tempPath);
+
+        if (httpServerConfiguration.getStaticFilesDirectory() != null) {
+            Path staticPath = Paths.get(httpServerConfiguration.getStaticFilesDirectory());
+            if (!Files.exists(staticPath) || !Files.isDirectory(staticPath)) throw new HttpServerException("static path cannot be found");
+        }
 
         serverConfiguration = httpServerConfiguration;
         database = new Database(serverConfiguration);
@@ -59,18 +70,14 @@ public final class HttpServer {
     }
 
     public void initialize() throws HttpServerException {
-        if (serverThread != null && serverThread.isAlive()) {
-            throw new HttpServerException("http server already running");
-        }
+        if (serverThread != null && serverThread.isAlive()) throw new HttpServerException("http server already running");
 
-        logger.atTrace().log("http server initializing...");
         executorService = initializeExecutorService(serverConfiguration);
         serverThread = Thread.ofPlatform().start(() -> {
             try {
                 serverSocket = serverConfiguration.getInetAddress() == null ?
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
-                logger.atTrace().log("http server initialized!");
 
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
@@ -82,18 +89,9 @@ public final class HttpServer {
     }
 
     public void shutdown() throws IOException, InterruptedException, HttpServerException {
-        if (!serverThread.isAlive()) {
-            throw new HttpServerException("http server already shutdown");
-        }
-
-        logger.atTrace().log("http server shutting down...");
-        if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) {
-            executorService.shutdownNow();
-        }
+        if (!serverThread.isAlive()) throw new HttpServerException("http server already shutdown");
+        if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) executorService.shutdownNow();
         serverSocket.close();
-        if (serverThread.isAlive()) {
-            serverThread.interrupt();
-        }
-        logger.atTrace().log("http server shutdown!");
+        if (serverThread.isAlive()) serverThread.interrupt();
     }
 }

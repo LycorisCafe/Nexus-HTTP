@@ -25,6 +25,7 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfigura
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
+import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.File;
 import java.io.IOException;
@@ -99,8 +100,15 @@ public final class Database {
         }
     }
 
-    public synchronized void addEndpointData(final ReqMaster model) throws SQLException {
+    public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
         Objects.requireNonNull(model);
+
+        PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster WHERE endpoint = ?");
+        preQuery.setString(1, model.getRequestEndpoint());
+        ResultSet preResultSet = preQuery.executeQuery();
+        if (preResultSet.getInt(1) != 0) {
+            throw new ScannerException("endpoints with same value found, aborting scanning");
+        }
 
         PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)");
         masterQuery.setString(1, model.getRequestEndpoint());
