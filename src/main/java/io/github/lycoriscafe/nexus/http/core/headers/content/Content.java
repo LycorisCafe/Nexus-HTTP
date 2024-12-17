@@ -226,33 +226,37 @@ public final class Content {
             StringBuilder result = new StringBuilder();
             result.append("Content-Type: ").append(content.getContentType()).append("\r\n");
 
-            if (!content.isTransferEncodingChunked()) {
-                if (content.isContentEncodingGzipped()) {
-                    switch (content.getData()) {
-                        case Path path -> {
-                            Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()), "nexus-content-", null);
-                            try (var fileInputStream = new FileInputStream(path.toFile());
-                                 var fileOutputStream = new FileOutputStream(path.toFile());
-                                 var gzipOutputStream = new GZIPOutputStream(fileOutputStream)) {
-                                int c;
-                                byte[] buffer = new byte[httpServerConfiguration.getMaxChunkSize()];
-                                while ((c = fileInputStream.read(buffer)) != -1) {
-                                    gzipOutputStream.write(buffer, 0, c);
-                                }
-                                content.setData(temp);
+            if (content.isContentEncodingGzipped()) {
+                result.append("Content-Encoding: ").append("gzip").append("\r\n");
+                switch (content.getData()) {
+                    case Path path -> {
+                        Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()), "nexus-content-", null);
+                        try (var fileInputStream = new FileInputStream(path.toFile());
+                             var fileOutputStream = new FileOutputStream(path.toFile());
+                             var gzipOutputStream = new GZIPOutputStream(fileOutputStream)) {
+                            int c;
+                            byte[] buffer = new byte[httpServerConfiguration.getMaxChunkSize()];
+                            while ((c = fileInputStream.read(buffer)) != -1) {
+                                gzipOutputStream.write(buffer, 0, c);
                             }
+                            content.setData(temp);
                         }
-                        case byte[] bytes -> {
-                            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                            GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
-                            gzipOutputStream.write(bytes);
-                            content.setData(byteArrayOutputStream.toByteArray());
-                        }
-                        case InputStream ignored -> {}
-                        default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                     }
+                    case byte[] bytes -> {
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream);
+                        gzipOutputStream.write(bytes);
+                        content.setData(byteArrayOutputStream.toByteArray());
+                    }
+                    case InputStream inputStream -> {
+                        GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
+                        content.setData(gzipInputStream);
+                    }
+                    default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                 }
+            }
 
+            if (!content.isTransferEncodingChunked()) {
                 switch (content.getData()) {
                     case Path path -> result.append("Content-Length: ").append(Files.size(path)).append("\r\n");
                     case byte[] bytes -> result.append("Content-Length: ").append(bytes.length).append("\r\n");
@@ -260,6 +264,8 @@ public final class Content {
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                 }
+            } else {
+                result.append("Transfer-Encoding: ").append("chunked").append("\r\n");
             }
 
             if (content.getDownloadName() != null) {
@@ -280,7 +286,6 @@ public final class Content {
             }) {
                 int c;
                 byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
-
                 while ((c = inputStream.read(buffer)) != -1) {
                     if (content.isTransferEncodingChunked()) {
                         requestConsumer.getSocket().getOutputStream().write((Integer.toHexString(c) + "\r\n").getBytes(StandardCharsets.UTF_8));
