@@ -19,7 +19,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
-public class BearerAuthorization extends Authorization {
+public final class BearerAuthorization extends Authorization {
     private final String accessToken;
 
     public BearerAuthorization(final String accessToken) {

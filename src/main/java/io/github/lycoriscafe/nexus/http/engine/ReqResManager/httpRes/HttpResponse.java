@@ -77,7 +77,7 @@ public final class HttpResponse {
         contentSecurityPolicyReportOnly =
                 requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
-        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isXContentTypeOptionsNoSniff();
+        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isDefaultXContentTypeOptionsNoSniff();
         crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
         cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
     }

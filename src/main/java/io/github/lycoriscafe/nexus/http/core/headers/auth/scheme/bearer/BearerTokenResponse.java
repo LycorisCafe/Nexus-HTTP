@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
-public class BearerTokenResponse {
+public final class BearerTokenResponse {
     private final String bearerToken;
     private long expiresIn = -1L;
     private String refreshToken;

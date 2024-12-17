@@ -16,8 +16,10 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
-public final class BearerAuthentication {
-    private final BearerError error;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
+
+public final class BearerAuthentication extends Authentication {
+    private BearerError error;
     private String realm;
     private String scope;
     private String errorDescription;
@@ -27,15 +29,24 @@ public final class BearerAuthentication {
         this.error = error;
     }
 
+    public BearerAuthentication(final String realm) {
+        this.realm = realm;
+    }
+
     public BearerError getError() {
         return error;
+    }
+
+    public BearerAuthentication setError(final BearerError error) {
+        this.error = error;
+        return this;
     }
 
     public String getRealm() {
         return realm;
     }
 
-    public BearerAuthentication setRealm(String realm) {
+    public BearerAuthentication setRealm(final String realm) {
         this.realm = realm;
         return this;
     }
@@ -44,7 +55,7 @@ public final class BearerAuthentication {
         return scope;
     }
 
-    public BearerAuthentication setScope(String scope) {
+    public BearerAuthentication setScope(final String scope) {
         this.scope = scope;
         return this;
     }
@@ -53,7 +64,7 @@ public final class BearerAuthentication {
         return errorDescription;
     }
 
-    public BearerAuthentication setErrorDescription(String errorDescription) {
+    public BearerAuthentication setErrorDescription(final String errorDescription) {
         this.errorDescription = errorDescription;
         return this;
     }
@@ -62,8 +73,20 @@ public final class BearerAuthentication {
         return errorURI;
     }
 
-    public BearerAuthentication setErrorURI(String errorURI) {
+    public BearerAuthentication setErrorURI(final String errorURI) {
         this.errorURI = errorURI;
         return this;
+    }
+
+    @Override
+    public String processOutgoingAuth() {
+        StringBuilder output = new StringBuilder().append("Bearer ");
+        if (error != null) output.append("error=\"").append(error.getValue()).append("\"").append(", realm=\"").append(realm).append("\"");
+        else output.append("realm=\"").append(realm).append("\"");
+
+        if (scope != null) output.append(", scope=\"").append(scope).append("\"");
+        if (errorDescription != null) output.append(", error-description=\"").append(errorDescription).append("\"");
+        if (errorURI != null) output.append(", error-uri=\"").append(errorURI).append("\"");
+        return output.toString();
     }
 }

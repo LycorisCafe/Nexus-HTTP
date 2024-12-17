@@ -59,7 +59,7 @@ public final class HttpServerConfiguration {
     private List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly = null;
     private StrictTransportSecurity defaultStrictTransportSecurity = null;
     private CacheControl defaultCacheControl = null;
-    private boolean xContentTypeOptionsNoSniff;
+    private boolean defaultXContentTypeOptionsNoSniff;
 
     private boolean addErrorMessageToResponseHeaders = true;
 
@@ -298,13 +298,13 @@ public final class HttpServerConfiguration {
         return defaultCacheControl;
     }
 
-    public HttpServerConfiguration setXContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
-        this.xContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
+    public HttpServerConfiguration setDefaultXContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
+        this.defaultXContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
         return this;
     }
 
-    public boolean isXContentTypeOptionsNoSniff() {
-        return xContentTypeOptionsNoSniff;
+    public boolean isDefaultXContentTypeOptionsNoSniff() {
+        return defaultXContentTypeOptionsNoSniff;
     }
 
     public HttpServerConfiguration setAddErrorMessageToResponseHeaders(boolean addErrorMessageToResponseHeaders) {
