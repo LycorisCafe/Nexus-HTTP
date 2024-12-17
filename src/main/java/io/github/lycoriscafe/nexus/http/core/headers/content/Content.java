@@ -217,6 +217,7 @@ public final class Content {
         }
     }
 
+    // TODO content encoding (gzip) has bugs
     public static class WriteOperations {
         public static String processOutgoingContent(final HttpServerConfiguration httpServerConfiguration,
                                                     final Content content) throws IOException {
@@ -298,7 +299,7 @@ public final class Content {
                     requestConsumer.getSocket().getOutputStream().flush();
                 }
                 if (content.isTransferEncodingChunked()) {
-                    requestConsumer.getSocket().getOutputStream().write("0".getBytes(StandardCharsets.UTF_8));
+                    requestConsumer.getSocket().getOutputStream().write("0\r\n\r\n".getBytes(StandardCharsets.UTF_8));
                     requestConsumer.getSocket().getOutputStream().flush();
                 }
             } finally {
