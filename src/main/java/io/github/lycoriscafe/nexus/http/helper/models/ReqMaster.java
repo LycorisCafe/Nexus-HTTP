@@ -43,7 +43,7 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
         return authenticated;
     }
 
-    private static String parseEndpoint(final String requestEndpoint) {
+    public static String parseEndpoint(final String requestEndpoint) {
         String[] parts = requestEndpoint.split("/", 0);
         StringBuilder reconstructed = new StringBuilder("/");
         for (int i = 0; i < parts.length; i++) {
