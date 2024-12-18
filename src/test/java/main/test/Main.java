@@ -61,14 +61,15 @@ public class Main {
     @Authenticated
     public static HttpResponse authTestEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("text/plan", "Test Endpoint!"));
+                .setContent(new Content("text/plan", "Test Endpoint!").setContentEncodingGzipped(true));
     }
 
     @GET("/img")
     @Authenticated
     public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
         return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("video/mp4", Paths.get("NexusTemp\\c97123a510d037aabd51db740738cf1a.mp4")));
+                .setContent(new Content("video/mp4", Paths.get("NexusTemp\\c97123a510d037aabd51db740738cf1a.mp4"))
+                        .setContentEncodingGzipped(true));
     }
 
     @BearerEndpoint(@POST("/generateToken"))

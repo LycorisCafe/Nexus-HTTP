@@ -44,6 +44,7 @@ public final class HttpServerConfiguration {
     private String databaseLocation = null;
 
     private boolean ignoreEndpointCases = true;
+    private int maxHeaderSize = 10_240;
     private int maxHeadersPerRequest = 50;
     private int maxIncomingConnections = 100;
     private int maxContentLength = 5_242_880;
@@ -152,6 +153,15 @@ public final class HttpServerConfiguration {
 
     public boolean isIgnoreEndpointCases() {
         return ignoreEndpointCases;
+    }
+
+    public HttpServerConfiguration setMaxHeaderSize(final int maxHeaderSize) {
+        this.maxHeaderSize = maxHeaderSize;
+        return this;
+    }
+
+    public int getMaxHeaderSize() {
+        return maxHeaderSize;
     }
 
     public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest) throws HttpServerConfigurationException {

@@ -99,6 +99,10 @@ public final class RequestConsumer implements Runnable {
             int b = socket.getInputStream().read();
             if (b == -1) return null;
             byteArrayOutputStream.write(terminatePoint[0]);
+            if (byteArrayOutputStream.size() > serverConfiguration.getMaxHeaderSize()) {
+                dropConnection(0, HttpStatusCode.CONTENT_TOO_LARGE, "provided header too large");
+                return null;
+            }
             terminatePoint[0] = terminatePoint[1];
             terminatePoint[1] = (byte) b;
         }
@@ -164,7 +168,7 @@ public final class RequestConsumer implements Runnable {
 
         List<Long> keySet = responseQue.keySet().stream().toList();
         for (Long key : keySet) {
-            if (key != responseId) {
+            if (key > responseId) {
                 break;
             }
 

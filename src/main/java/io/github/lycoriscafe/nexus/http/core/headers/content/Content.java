@@ -32,7 +32,6 @@ import java.util.zip.GZIPOutputStream;
 
 public final class Content {
     private final String contentType;
-    private long contentLength = -1L;
     private String downloadName;
     private boolean transferEncodingChunked;
     private boolean contentEncodingGzipped;
@@ -69,15 +68,6 @@ public final class Content {
         return contentType;
     }
 
-    private Content setContentLength(final long contentLength) {
-        this.contentLength = contentLength;
-        return this;
-    }
-
-    public long getContentLength() {
-        return contentLength;
-    }
-
     public Content setDownloadName(final String downloadName) {
         this.downloadName = Objects.requireNonNull(downloadName, "download name cannot be null");
         return this;
@@ -97,6 +87,7 @@ public final class Content {
     }
 
     public Content setContentEncodingGzipped(final boolean contentEncodingGzipped) {
+        if (data instanceof InputStream) throw new IllegalStateException("input stream with gzip not yet supported");
         this.contentEncodingGzipped = contentEncodingGzipped;
         return this;
     }
@@ -126,17 +117,7 @@ public final class Content {
                 if (!readChunked(requestId, (Path) data, requestConsumer)) return null;
             }
 
-            if (gzipped) {
-                if (data == null) {
-                    if (contentLength == null) {
-                        requestConsumer.dropConnection(requestId, HttpStatusCode.LENGTH_REQUIRED, "content length required");
-                        return null;
-                    }
-                    data = readGzip(new byte[contentLength], requestConsumer);
-                } else {
-                    data = readGzip(data, requestConsumer);
-                }
-            }
+            if (gzipped) data = readGzip(Objects.requireNonNullElseGet(data, () -> new byte[contentLength]), requestConsumer);
 
             if (data == null) {
                 byte[] buffer = new byte[contentLength];
@@ -197,10 +178,11 @@ public final class Content {
             switch (content) {
                 case Path path -> {
                     Path temp = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()), "nexus-content-", null);
-                    try (var gzipInputStream = new GZIPInputStream(new FileInputStream(path.toFile()));
+                    try (var gzipInputStream = new GZIPInputStream(new FileInputStream(path.toFile()), requestConsumer.getServerConfiguration()
+                            .getMaxChunkSize());
                          var fileOutputStream = new FileOutputStream(temp.toFile())) {
-                        byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
                         int c;
+                        byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
                         while ((c = gzipInputStream.read(buffer)) != -1) {
                             fileOutputStream.write(buffer, 0, c);
                         }
@@ -208,7 +190,8 @@ public final class Content {
                     return temp;
                 }
                 case byte[] bytes -> {
-                    try (var gzipInputStream = new GZIPInputStream(requestConsumer.getSocket().getInputStream())) {
+                    try (var gzipInputStream = new GZIPInputStream(requestConsumer.getSocket()
+                            .getInputStream(), requestConsumer.getServerConfiguration().getMaxChunkSize())) {
                         return gzipInputStream.read(bytes);
                     }
                 }
@@ -228,30 +211,29 @@ public final class Content {
 
             if (content.isContentEncodingGzipped()) {
                 result.append("Content-Encoding: ").append("gzip").append("\r\n");
+                // InputStream gzip should be implemented
                 switch (content.getData()) {
                     case Path path -> {
                         Path temp = Files.createTempFile(Paths.get(httpServerConfiguration.getTempDirectory()), "nexus-content-", null);
                         try (var fileInputStream = new FileInputStream(path.toFile());
                              var fileOutputStream = new FileOutputStream(temp.toFile());
-                             var gzipOutputStream = new GZIPOutputStream(fileOutputStream)) {
+                             var gzipOutputStream = new GZIPOutputStream(fileOutputStream, httpServerConfiguration.getMaxChunkSize())) {
                             int c;
                             byte[] buffer = new byte[httpServerConfiguration.getMaxChunkSize()];
                             while ((c = fileInputStream.read(buffer)) != -1) {
                                 gzipOutputStream.write(buffer, 0, c);
                             }
+                            gzipOutputStream.flush();
                             content.setData(temp);
                         }
                     }
                     case byte[] bytes -> {
                         try (ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream)) {
+                             GZIPOutputStream gzipOutputStream = new GZIPOutputStream(byteArrayOutputStream, httpServerConfiguration.getMaxChunkSize())) {
                             gzipOutputStream.write(bytes);
+                            gzipOutputStream.flush();
                             content.setData(byteArrayOutputStream.toByteArray());
                         }
-                    }
-                    case InputStream inputStream -> {
-                        GZIPInputStream gzipInputStream = new GZIPInputStream(inputStream);
-                        content.setData(gzipInputStream);
                     }
                     default -> throw new IllegalStateException("Unexpected value: " + content.getData());
                 }
@@ -277,14 +259,12 @@ public final class Content {
 
         public static void writeContent(final RequestConsumer requestConsumer,
                                         final Content content) throws IOException {
-            InputStream inputStream = null;
-            try {
-                inputStream = switch (content.getData()) {
-                    case Path path -> new FileInputStream(path.toFile());
-                    case byte[] bytes -> new ByteArrayInputStream(bytes);
-                    case InputStream stream -> stream;
-                    default -> throw new IllegalStateException("Unexpected value: " + content.getData());
-                };
+            try (InputStream inputStream = switch (content.getData()) {
+                case Path path -> new FileInputStream(path.toFile());
+                case byte[] bytes -> new ByteArrayInputStream(bytes);
+                case InputStream stream -> stream;
+                default -> throw new IllegalStateException("Unexpected value: " + content.getData());
+            }) {
 
                 int c;
                 byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
@@ -302,8 +282,6 @@ public final class Content {
                     requestConsumer.getSocket().getOutputStream().write("0\r\n\r\n".getBytes(StandardCharsets.UTF_8));
                     requestConsumer.getSocket().getOutputStream().flush();
                 }
-            } finally {
-                if (inputStream != null) inputStream.close();
             }
         }
     }
