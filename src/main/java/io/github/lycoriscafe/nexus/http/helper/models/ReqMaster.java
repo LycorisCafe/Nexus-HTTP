@@ -26,7 +26,7 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     public ReqMaster(final String requestEndpoint,
                      final HttpRequestMethod reqMethod,
                      final boolean authenticated) {
-        this.requestEndpoint = requestEndpoint;
+        this.requestEndpoint = parseEndpoint(requestEndpoint);
         this.reqMethod = reqMethod;
         this.authenticated = authenticated;
     }
@@ -41,5 +41,16 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
 
     public boolean isAuthenticated() {
         return authenticated;
+    }
+
+    private static String parseEndpoint(final String requestEndpoint) {
+        String[] parts = requestEndpoint.split("/", 0);
+        StringBuilder reconstructed = new StringBuilder("/");
+        for (int i = 0; i < parts.length; i++) {
+            if (parts[i].isEmpty()) continue;
+            reconstructed.append(parts[i]);
+            if (i < parts.length - 1) reconstructed.append("/");
+        }
+        return reconstructed.toString();
     }
 }

@@ -39,6 +39,7 @@ public final class HttpServerConfiguration {
     private ThreadType threadType = ThreadType.VIRTUAL;
 
     private final String basePackage;
+    private String urlExtension = "";
     private String tempDirectory = "NexusTemp";
     private String staticFilesDirectory = null;
     private String databaseLocation = null;
@@ -126,6 +127,16 @@ public final class HttpServerConfiguration {
 
     public String getTempDirectory() {
         return tempDirectory;
+    }
+
+    public HttpServerConfiguration setUrlExtension(final String urlExtension) {
+        Objects.requireNonNull(urlExtension);
+        this.urlExtension = urlExtension.startsWith("\\") ? urlExtension : "\\" + urlExtension;
+        return this;
+    }
+
+    public String getUrlExtension() {
+        return urlExtension;
     }
 
     public HttpServerConfiguration setStaticFilesDirectory(final String staticFilesDirectory) {
