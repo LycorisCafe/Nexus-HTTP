@@ -52,6 +52,9 @@ public final class EndpointScanner {
             for (Method method : clazz.getMethods()) {
                 AuthScheme authSchemeAnnotation = null;
                 boolean authenticated = clazz.isAnnotationPresent(Authenticated.class) || method.isAnnotationPresent(Authenticated.class);
+                if (serverConfiguration.getDefaultAuthentications() == null && authenticated) {
+                    throw new ScannerException("authenticated endpoint found but no default authentications provided");
+                }
 
                 String endpointValue;
                 HttpRequestMethod reqMethod;
