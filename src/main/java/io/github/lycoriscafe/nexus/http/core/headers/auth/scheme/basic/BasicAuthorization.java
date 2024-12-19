@@ -22,10 +22,32 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
+/**
+ * The 'Basic' authorization for HTTP. An instance of this class will receive to the server endpoint when client provided the 'Authorization' header
+ * with authentication scheme 'Basic'. The username and password will decode from Base64 to cleartext (charset UTF-8).
+ * <pre>
+ *     {@code
+ *     <!-- General header format -->
+ *     Authorization: Basic Base64EncodedUsernamePasswordPair
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
+ * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
+ * @since v1.0.0
+ */
 public final class BasicAuthorization extends Authorization {
     private final String username;
     private final String password;
 
+    /**
+     * Create an instance of 'Basic' authorization.
+     *
+     * @param username Cleartext username (charset UTF-8)
+     * @param password Cleartext password (charset UTF-8)
+     * @see BasicAuthorization
+     * @since v1.0.0
+     */
     public BasicAuthorization(final String username,
                               final String password) {
         super(AuthScheme.BASIC);
@@ -33,10 +55,24 @@ public final class BasicAuthorization extends Authorization {
         this.password = password;
     }
 
+    /**
+     * Get cleartext username (charset UTF-8)
+     *
+     * @return Received username
+     * @see BasicAuthorization
+     * @since v1.0.0
+     */
     public String getUsername() {
         return username;
     }
 
+    /**
+     * Get cleartext password (charset UTF-8)
+     *
+     * @return Received password
+     * @see BasicAuthorization
+     * @since v1.0.0
+     */
     public String getPassword() {
         return password;
     }

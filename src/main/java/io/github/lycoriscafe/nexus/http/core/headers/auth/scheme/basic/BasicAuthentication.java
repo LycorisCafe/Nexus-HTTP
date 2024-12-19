@@ -18,19 +18,50 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 
+/**
+ * The 'Basic' authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource without
+ * specifying 'Authorization' header. Default charset that send with this is 'UTF-8'.
+ * <pre>
+ *     {@code
+ *      <!-- General header format -->
+ *      HTTP/1.1 401 Unauthorized
+ *      WWW-Authenticate: Basic realm="specifiedRealm", charset="UTF-8"
+ *      }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization
+ * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
+ * @since v1.0.0
+ */
 public final class BasicAuthentication extends Authentication {
     private final String realm;
 
+    /**
+     * Create an instance of 'Basic' authentication.
+     *
+     * @param realm Realm for the target resource
+     * @see BasicAuthentication
+     * @since v1.0.0
+     */
     public BasicAuthentication(final String realm) {
         this.realm = realm;
     }
 
+    /**
+     * Get realm of the provided instance.
+     *
+     * @return Specified realm
+     * @see BasicAuthentication
+     * @since v1.0.0
+     */
     public String getRealm() {
         return realm;
     }
 
     @Override
     public String processOutgoingAuth() {
-        return "BASIC realm=\"" + realm + "\", charset=\"UTF-8\"";
+        return "Basic realm=\"" + realm + "\", charset=\"UTF-8\"";
     }
 }

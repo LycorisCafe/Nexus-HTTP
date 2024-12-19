@@ -18,6 +18,31 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 
+/**
+ * The 'Bearer' authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource without
+ * specifying 'Authorization' header.
+ * <pre>
+ *     {@code
+ *      <!-- General header format with realm specified -->
+ *      HTTP/1.1 401 Unauthorized
+ *      WWW-Authenticate: Bearer realm="specifiedRealm"
+ *
+ *      <!-- General header format with error specified -->
+ *      HTTP/1.1 401 Unauthorized
+ *      WWW-Authenticate: Bearer error="specifiedError"
+ *
+ *      <!-- General header format -->
+ *      HTTP/1.1 401 Unauthorized
+ *      WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired"
+ *      }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerAuthorization
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 public final class BearerAuthentication extends Authentication {
     private BearerError error;
     private String realm;
@@ -25,54 +50,152 @@ public final class BearerAuthentication extends Authentication {
     private String errorDescription;
     private String errorURI;
 
+    /**
+     * Create an instance of 'Bearer' authentication with specifying 'error'.
+     *
+     * @param error Bearer authentication error
+     * @see BearerError
+     * @see #BearerAuthentication(String)
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerAuthentication(final BearerError error) {
         this.error = error;
     }
 
+    /**
+     * Create an instance of 'Bearer' authentication with specifying 'realm'.
+     *
+     * @param realm Realm for the target resource
+     * @see #BearerAuthentication(BearerError)
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerAuthentication(final String realm) {
         this.realm = realm;
     }
 
+    /**
+     * Get 'Bearer' error of the provided instance.
+     *
+     * @return Specified 'Bearer' error
+     * @see BearerError
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerError getError() {
         return error;
     }
 
+    /**
+     * Set 'Bearer' error for the provided instance. <i>Note: if you specify the 'Bearer' error with the constructor, reusing this method will change
+     * the provided values.</i>
+     *
+     * @param error 'Bearer' error
+     * @return Same 'BearerAuthentication' instance
+     * @see BearerError
+     * @see BearerAuthentication
+     * @see #BearerAuthentication(BearerError)
+     * @since v1.0.0
+     */
     public BearerAuthentication setError(final BearerError error) {
         this.error = error;
         return this;
     }
 
+    /**
+     * Get 'Bearer' realm of the provided instance.
+     *
+     * @return Specified 'Bearer' realm
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public String getRealm() {
         return realm;
     }
 
+    /**
+     * Set 'Bearer' realm for the provided instance. <i>Note: if you specify the 'Bearer' realm with the constructor, reusing this method will change
+     * the provided values.</i>
+     *
+     * @param realm 'Bearer' realm
+     * @return Same 'BearerAuthentication' instance
+     * @see BearerAuthentication
+     * @see #BearerAuthentication(String)
+     * @since v1.0.0
+     */
     public BearerAuthentication setRealm(final String realm) {
         this.realm = realm;
         return this;
     }
 
+    /**
+     * Get 'Bearer' scope of the provided instance.
+     *
+     * @return Specified 'Bearer' scope
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public String getScope() {
         return scope;
     }
 
+    /**
+     * Set 'Bearer' scope for the provided instance.
+     *
+     * @param scope 'Bearer' scope
+     * @return Same 'BearerAuthentication' instance
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerAuthentication setScope(final String scope) {
         this.scope = scope;
         return this;
     }
 
+    /**
+     * Get 'Bearer' error description of the provided instance.
+     *
+     * @return Specified 'Bearer' error description
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public String getErrorDescription() {
         return errorDescription;
     }
 
+    /**
+     * Set 'Bearer' error description for the provided instance.
+     *
+     * @param errorDescription 'Bearer' error description
+     * @return Same 'BearerAuthentication' instance
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerAuthentication setErrorDescription(final String errorDescription) {
         this.errorDescription = errorDescription;
         return this;
     }
 
+    /**
+     * Get 'Bearer' error URI of the provided instance.
+     *
+     * @return Specified 'Bearer' error URI
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public String getErrorURI() {
         return errorURI;
     }
 
+    /**
+     * Set 'Bearer' error URI for the provided instance.
+     *
+     * @param errorURI 'Bearer' error URI
+     * @return Same 'BearerAuthentication' instance
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     public BearerAuthentication setErrorURI(final String errorURI) {
         this.errorURI = errorURI;
         return this;
@@ -80,9 +203,18 @@ public final class BearerAuthentication extends Authentication {
 
     @Override
     public String processOutgoingAuth() {
-        StringBuilder output = new StringBuilder().append("BEARER ");
-        if (error != null) output.append("error=\"").append(error.getValue()).append("\"").append(", realm=\"").append(realm).append("\"");
-        else output.append("realm=\"").append(realm).append("\"");
+        StringBuilder output = new StringBuilder().append("Bearer ");
+        boolean errorFound = false;
+        if (error != null) {
+            errorFound = true;
+            output.append("error=\"").append(error.getValue()).append("\"");
+        }
+
+        if (errorFound) {
+            output.append(", realm=\"").append(realm).append("\"");
+        } else {
+            output.append("realm=\"").append(realm).append("\"");
+        }
 
         if (scope != null) output.append(", scope=\"").append(scope).append("\"");
         if (errorDescription != null) output.append(", error-description=\"").append(errorDescription).append("\"");
