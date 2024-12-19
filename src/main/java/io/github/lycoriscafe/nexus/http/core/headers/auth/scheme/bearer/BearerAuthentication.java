@@ -201,6 +201,14 @@ public final class BearerAuthentication extends Authentication {
         return this;
     }
 
+    /**
+     * Process authentication instance as <code>WWW-Authenticate</code> HTTP header value.
+     *
+     * @return HTTP header value string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BearerAuthentication
+     * @since v1.0.0
+     */
     @Override
     public String processOutgoingAuth() {
         StringBuilder output = new StringBuilder().append("Bearer ");

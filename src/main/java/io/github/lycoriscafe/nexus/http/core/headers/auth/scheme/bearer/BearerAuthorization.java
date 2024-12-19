@@ -59,4 +59,17 @@ public final class BearerAuthorization extends Authorization {
     public String getAccessToken() {
         return accessToken;
     }
+
+    /**
+     * Process provided string to a new instance of <code>BearerAuthorization</code>
+     *
+     * @param params Bearer authorization header value part (only data)
+     * @return New instance of <code>BearerAuthorization</code>
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BearerAuthorization
+     * @since v1.0.0
+     */
+    public static Authorization processIncomingAuth(final String params) {
+        return new BearerAuthorization(params);
+    }
 }

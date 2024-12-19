@@ -29,9 +29,9 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  *      }
  * </pre>
  *
+ * @see BasicAuthorization
  * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
  * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
- * @see BasicAuthorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
  * @since v1.0.0
  */
@@ -60,6 +60,14 @@ public final class BasicAuthentication extends Authentication {
         return realm;
     }
 
+    /**
+     * Process authentication instance as <code>WWW-Authenticate</code> HTTP header value.
+     *
+     * @return HTTP header value string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BasicAuthentication
+     * @since v1.0.0
+     */
     @Override
     public String processOutgoingAuth() {
         return "Basic realm=\"" + realm + "\", charset=\"UTF-8\"";

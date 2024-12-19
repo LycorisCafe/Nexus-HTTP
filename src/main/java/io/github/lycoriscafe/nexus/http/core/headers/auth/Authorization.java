@@ -21,13 +21,35 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerAu
 
 import java.util.Locale;
 
+/**
+ * Parent authorization class
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth
+ * @since v1.0.0
+ */
 public class Authorization {
     private final AuthScheme authScheme;
 
+    /**
+     * Create an instance of <code>Authorization</code>.
+     *
+     * @param authScheme Authentication scheme
+     * @see Authorization
+     * @see <a href="https://datatracker.ietf.org/doc/rfc7235">Hypertext Transfer Protocol (HTTP/1.1): Authentication (rfc 7235)</a>
+     * @since v1.0.0
+     */
     public Authorization(final AuthScheme authScheme) {
         this.authScheme = authScheme;
     }
 
+    /**
+     * Get provided authentication scheme
+     *
+     * @return Authentication scheme
+     * @see AuthScheme
+     * @see Authorization
+     * @since v1.0.0
+     */
     public AuthScheme getAuthScheme() {
         return authScheme;
     }
@@ -36,7 +58,7 @@ public class Authorization {
         String[] parts = auth.trim().split(" ", 2);
         return switch (parts[0].trim().toLowerCase(Locale.US)) {
             case "basic" -> BasicAuthorization.processIncomingAuth(parts[1]);
-            case "bearer" -> new BearerAuthorization(parts[1]);
+            case "bearer" -> BearerAuthorization.processIncomingAuth(parts[1]);
             default -> null;
         };
     }

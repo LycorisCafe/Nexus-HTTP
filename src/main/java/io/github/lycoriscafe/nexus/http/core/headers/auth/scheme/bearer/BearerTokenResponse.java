@@ -130,10 +130,22 @@ public final class BearerTokenResponse {
         return this;
     }
 
+    /**
+     * Process token response as <code>HttpResponse</code>
+     *
+     * @param response        <code>BearerTokenResponse</code> that should be parsed
+     * @param requestId       Target client's request id
+     * @param requestConsumer Target client's <code>RequestConsumer</code>
+     * @return New instance of <code>HttpResponse</code> with processed content
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public static HttpResponse parse(final BearerTokenResponse response,
                                      final long requestId,
                                      final RequestConsumer requestConsumer) {
-        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK).setCashControl(new CacheControl().setNoStore(true))
+        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK)
+                .setCashControl(new CacheControl().setNoStore(true))
                 .setContent(new Content("application/json", "{\"access_token\":\"" + response.getBearerToken() + "\"," +
                         "\"token_type\":\"Bearer\"" + ((response.getExpiresIn() > -1L) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
                         (response.getRefreshToken() != null ? ",\"refresh_token\":\"" + response.getRefreshToken() + "\"" : "") +

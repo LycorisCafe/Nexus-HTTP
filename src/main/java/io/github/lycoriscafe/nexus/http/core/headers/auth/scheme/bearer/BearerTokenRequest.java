@@ -80,6 +80,15 @@ public final class BearerTokenRequest {
         return this;
     }
 
+    /**
+     * Process provided request content to a new instance of <code>BearerTokenRequest</code>.
+     *
+     * @param request <code>HttpPost</code> request
+     * @return New instance of <code>BearerTokenRequest</code>
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BearerTokenRequest
+     * @since v1.0.0
+     */
     public static BearerTokenRequest parse(final HttpPostRequest request) {
         UrlEncodedData params;
         if (!(request.getContent().getData() instanceof UrlEncodedData)) {

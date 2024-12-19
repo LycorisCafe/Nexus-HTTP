@@ -77,6 +77,15 @@ public final class BasicAuthorization extends Authorization {
         return password;
     }
 
+    /**
+     * Process provided string to a new instance of <code>BasicAuthorization</code>
+     *
+     * @param params Basic authorization header value part (only data)
+     * @return New instance of <code>BasicAuthorization</code>
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see BasicAuthorization
+     * @since v1.0.0
+     */
     public static Authorization processIncomingAuth(final String params) {
         String[] auth = new String(Base64.getDecoder().decode(params), StandardCharsets.UTF_8).split(":", 2);
         return new BasicAuthorization(auth[0], auth[1]);
