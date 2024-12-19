@@ -107,16 +107,16 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     public void finalizeRequest() {
+        String parsedEndpoint = ReqMaster.parseEndpoint(getEndpoint());
+        if (!getEndpoint().equals(parsedEndpoint)) {
+            getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT)
+                    .setHeader(new Header("Location", parsedEndpoint)));
+            return;
+        }
+
         try {
             List<ReqMaster> data = requestConsumer.getDatabase().getEndpointData(this);
             if (data.isEmpty()) {
-                setEndpoint(ReqMaster.parseEndpoint(getEndpoint()));
-                List<ReqMaster> reData = requestConsumer.getDatabase().getEndpointData(this);
-                if (!reData.isEmpty()) {
-                    getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT)
-                            .setHeader(new Header("Location", getEndpoint())));
-                }
-
                 getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found");
                 return;
             }
