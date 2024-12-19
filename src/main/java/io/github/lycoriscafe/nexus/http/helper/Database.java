@@ -168,7 +168,6 @@ public final class Database {
                         Class<?> clazz = Class.forName(subResult.getString(2));
                         AuthScheme authScheme = (subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6)));
                         Class<?> methodParamType = (authScheme == null) ? switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
-                            case CONNECT, TRACE -> null;
                             case DELETE -> HttpDeleteRequest.class;
                             case GET -> HttpGetRequest.class;
                             case HEAD -> HttpHeadRequest.class;

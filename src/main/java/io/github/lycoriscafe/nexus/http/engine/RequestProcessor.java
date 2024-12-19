@@ -45,14 +45,6 @@ public final class RequestProcessor {
         }
 
         HttpRequest httpRequest = switch (HttpRequestMethod.validate(request[0].trim())) {
-            case CONNECT, TRACE -> {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented");
-                yield null;
-            }
-            case null -> {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented");
-                yield null;
-            }
             case DELETE -> new HttpDeleteRequest(requestConsumer, requestId, HttpRequestMethod.DELETE);
             case GET -> new HttpGetRequest(requestConsumer, requestId, HttpRequestMethod.GET);
             case HEAD -> new HttpHeadRequest(requestConsumer, requestId, HttpRequestMethod.HEAD);
@@ -60,6 +52,10 @@ public final class RequestProcessor {
             case PATCH -> new HttpPatchRequest(requestConsumer, requestId, HttpRequestMethod.PATCH);
             case POST -> new HttpPostRequest(requestConsumer, requestId, HttpRequestMethod.POST);
             case PUT -> new HttpPutRequest(requestConsumer, requestId, HttpRequestMethod.PUT);
+            case null -> {
+                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented");
+                yield null;
+            }
         };
         if (httpRequest == null) return;
 

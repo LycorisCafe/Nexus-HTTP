@@ -18,6 +18,9 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 import java.util.List;
 
+/**
+ *
+ */
 public abstract class Authentication {
     public static String processOutgoingAuthentications(final List<Authentication> authentications) {
         if (authentications == null || authentications.isEmpty()) return "";

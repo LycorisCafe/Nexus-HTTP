@@ -17,15 +17,13 @@
 package io.github.lycoriscafe.nexus.http.core.requestMethods;
 
 public enum HttpRequestMethod {
-    CONNECT,
     DELETE,
     GET,
     HEAD,
     OPTIONS,
     PATCH,
     POST,
-    PUT,
-    TRACE;
+    PUT;
 
     public static HttpRequestMethod validate(String requestMethod) {
         try {
