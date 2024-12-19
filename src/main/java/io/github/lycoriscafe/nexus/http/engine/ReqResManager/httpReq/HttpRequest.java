@@ -202,10 +202,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 }
 
                 BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
-                if (bearerTokenRequest == null) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "missing required parameter");
-                    return;
-                }
+                if (bearerTokenRequest == null) return;
 
                 Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest);
                 if (response instanceof BearerTokenResponse httpResponse) {

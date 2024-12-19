@@ -19,8 +19,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 
 /**
- * The 'Bearer' authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource without
- * specifying 'Authorization' header.
+ * The <code>Bearer</code> authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected
+ * resource without specifying <code>Authorization</code> header.
  * <pre>
  *     {@code
  *      <!-- General header format with realm specified -->
@@ -37,9 +37,9 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  *      }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerAuthorization
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
+ * @see BearerAuthorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
  * @since v1.0.0
  */
@@ -51,9 +51,9 @@ public final class BearerAuthentication extends Authentication {
     private String errorURI;
 
     /**
-     * Create an instance of 'Bearer' authentication with specifying 'error'.
+     * Create an instance of <code>BearerAuthentication</code> with specifying authentication error.
      *
-     * @param error Bearer authentication error
+     * @param error Authentication error
      * @see BearerError
      * @see #BearerAuthentication(String)
      * @see BearerAuthentication
@@ -64,7 +64,7 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Create an instance of 'Bearer' authentication with specifying 'realm'.
+     * Create an instance of <code>BearerAuthentication</code> with specifying realm.
      *
      * @param realm Realm for the target resource
      * @see #BearerAuthentication(BearerError)
@@ -76,9 +76,9 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get 'Bearer' error of the provided instance.
+     * Get authentication error of the provided instance.
      *
-     * @return Specified 'Bearer' error
+     * @return Specified authentication error
      * @see BearerError
      * @see BearerAuthentication
      * @since v1.0.0
@@ -88,11 +88,11 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set 'Bearer' error for the provided instance. <i>Note: if you specify the 'Bearer' error with the constructor, reusing this method will change
-     * the provided values.</i>
+     * Set authentication error for the provided instance.
      *
-     * @param error 'Bearer' error
-     * @return Same 'BearerAuthentication' instance
+     * @param error Authentication error
+     * @return Same <code>BearerAuthentication</code> instance
+     * @apiNote if you specify the authentication error with the constructor, reusing this method will change the provided values.
      * @see BearerError
      * @see BearerAuthentication
      * @see #BearerAuthentication(BearerError)
@@ -104,9 +104,9 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get 'Bearer' realm of the provided instance.
+     * Get realm of the provided instance.
      *
-     * @return Specified 'Bearer' realm
+     * @return Specified realm
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -115,11 +115,11 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set 'Bearer' realm for the provided instance. <i>Note: if you specify the 'Bearer' realm with the constructor, reusing this method will change
-     * the provided values.</i>
+     * Set realm for the provided instance.
      *
-     * @param realm 'Bearer' realm
-     * @return Same 'BearerAuthentication' instance
+     * @param realm Realm
+     * @return Same <code>BearerAuthentication</code> instance
+     * @apiNote if you specify the <code>Bearer</code> realm with the constructor, reusing this method will change the provided values.
      * @see BearerAuthentication
      * @see #BearerAuthentication(String)
      * @since v1.0.0
@@ -130,9 +130,9 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get 'Bearer' scope of the provided instance.
+     * Get scope of the provided instance.
      *
-     * @return Specified 'Bearer' scope
+     * @return Specified scope
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -141,10 +141,10 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set 'Bearer' scope for the provided instance.
+     * Set scope for the provided instance.
      *
-     * @param scope 'Bearer' scope
-     * @return Same 'BearerAuthentication' instance
+     * @param scope Scope
+     * @return Same <code>BearerAuthentication</code> instance
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -154,9 +154,9 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get 'Bearer' error description of the provided instance.
+     * Get error description of the provided instance.
      *
-     * @return Specified 'Bearer' error description
+     * @return Specified error description
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -165,10 +165,10 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set 'Bearer' error description for the provided instance.
+     * Set <code>Bearer</code> error description for the provided instance.
      *
-     * @param errorDescription 'Bearer' error description
-     * @return Same 'BearerAuthentication' instance
+     * @param errorDescription Error description
+     * @return Same <code>BearerAuthentication</code> instance
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -178,9 +178,9 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get 'Bearer' error URI of the provided instance.
+     * Get error URI of the provided instance.
      *
-     * @return Specified 'Bearer' error URI
+     * @return Specified Error URI
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -189,10 +189,10 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set 'Bearer' error URI for the provided instance.
+     * Set error URI for the provided instance.
      *
-     * @param errorURI 'Bearer' error URI
-     * @return Same 'BearerAuthentication' instance
+     * @param errorURI Error URI
+     * @return Same <code>BearerAuthentication</code> instance
      * @see BearerAuthentication
      * @since v1.0.0
      */

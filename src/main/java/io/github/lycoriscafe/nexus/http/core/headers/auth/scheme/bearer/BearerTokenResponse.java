@@ -22,42 +22,109 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be returned from the target
+ * endpoint. The endpoint must be annotated with <code>@BearerEndpoint</code>.
+ *
+ * @see BearerEndpoint
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 public final class BearerTokenResponse {
     private final String bearerToken;
     private long expiresIn = -1L;
     private String refreshToken;
     private String scope;
 
+    /**
+     * Create and instance of <code>BearerTokenResponse</code>.
+     *
+     * @param bearerToken Generated bearer token
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public BearerTokenResponse(final String bearerToken) {
         this.bearerToken = bearerToken;
     }
 
+    /**
+     * Get provided access token.
+     *
+     * @return Access token
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public String getBearerToken() {
         return bearerToken;
     }
 
+    /**
+     * Get provided token expire time.
+     *
+     * @return Token expire time
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public long getExpiresIn() {
         return expiresIn;
     }
 
+    /**
+     * Set token expire time
+     *
+     * @param expiresIn Expire time in seconds.
+     * @return Same <code>BearerTokenResponse</code> instance
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public BearerTokenResponse setExpiresIn(final long expiresIn) {
         this.expiresIn = expiresIn;
         return this;
     }
 
+    /**
+     * Get provided refresh token.
+     *
+     * @return Refresh token
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public String getRefreshToken() {
         return refreshToken;
     }
 
+    /**
+     * Set refresh token
+     *
+     * @param refreshToken Refresh token
+     * @return Same <code>BearerTokenResponse</code> instance
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public BearerTokenResponse setRefreshToken(final String refreshToken) {
         this.refreshToken = refreshToken;
         return this;
     }
 
+    /**
+     * Get provided token scope
+     *
+     * @return Scope of the token
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public String getScope() {
         return scope;
     }
 
+    /**
+     * Set scope of the token
+     *
+     * @param scope Scope of the token
+     * @return Same <code>BearerTokenResponse</code> instance
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
     public BearerTokenResponse setScope(final String scope) {
         this.scope = scope;
         return this;

@@ -20,9 +20,42 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 
 import java.lang.annotation.*;
 
+/**
+ * Mark endpoint as a 'Bearer' token generator endpoint.
+ * <p>
+ * The endpoint annotated with this,
+ * <ul>
+ *     <li>must <code>public</code> and <code>static</code></li>
+ *     <li>must return <code>BearerTokenResponse</code> as <b>return</b> value</li>
+ *     <li>must accept <code>BearerTokenRequest</code> as <b>only parameter</b></li>
+ * </ul>
+ * <pre>
+ *     {@code
+ *     @BearerEndpoint(@POST("/sampleBearerTokenEndpoint"))
+ *     public static BearerTokenResponse sampleBearerTokenEndpoint(BearerTokenRequest request) {
+ *         BearerTokenResponse response = ...
+ *         // ...
+ *         return response;
+ *     }
+ *     }
+ * </pre>
+ *
+ * @see BearerTokenResponse
+ * @see BearerTokenRequest
+ * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST POST
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface BearerEndpoint {
+    /**
+     * Endpoint value.
+     *
+     * @return Endpoint value
+     * @see BearerEndpoint
+     * @since v1.0.0
+     */
     POST value();
 }

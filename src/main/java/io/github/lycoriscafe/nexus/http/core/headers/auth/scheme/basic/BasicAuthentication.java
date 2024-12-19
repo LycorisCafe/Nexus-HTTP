@@ -29,9 +29,9 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  *      }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthorization
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
+ * @see BasicAuthorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
  * @since v1.0.0
  */

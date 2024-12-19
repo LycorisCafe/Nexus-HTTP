@@ -19,14 +19,43 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
+/**
+ * The <code>Bearer</code> authorization for HTTP. An instance of this class will receive to the server endpoint when client provided the
+ * <code>Authorization</code> header with authentication scheme <code>Bearer</code>. Only authorization header field will be treated as a proper
+ * authorization (see rfc6750 - 2).
+ * <pre>
+ *     {@code
+ *     <!-- General header format -->
+ *     Authorization: Bearer BearerAccessToken
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 public final class BearerAuthorization extends Authorization {
     private final String accessToken;
 
+    /**
+     * Create an instance of <code>BearerAuthorization</code>.
+     *
+     * @param accessToken Received access token
+     * @see BearerAuthorization
+     * @since v1.0.0
+     */
     public BearerAuthorization(final String accessToken) {
         super(AuthScheme.BEARER);
         this.accessToken = accessToken;
     }
 
+    /**
+     * Get received access token
+     *
+     * @return Received access token
+     * @see BearerAuthorization
+     * @since v1.0.0
+     */
     public String getAccessToken() {
         return accessToken;
     }

@@ -18,6 +18,41 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
 import java.lang.annotation.*;
 
+/**
+ * Mark endpoint as an authenticated resource. To access the endpoint, the <code>Authorization</code> header must present in the request.
+ * <p>
+ * The endpoint annotated with this,
+ * <ul>
+ *     <li>must <code>public</code> and <code>static</code></li>
+ *     <li>must annotate with any of request method annotation</li>
+ *     <li>must return <code>HttpResponse</code> as <b>return</b> value</li>
+ *     <li>must accept any type of <code>HttpRequest</code> as <b>only parameter</b></li>
+ * </ul>
+ * <pre>
+ *     {@code
+ *     @Authenticated
+ *     @GET("/sampleAuthenticatedEndpoint")
+ *     public static HttpResponse sampleAuthenticatedEndpoint(HttpGetRequest request) {
+ *         HttpResponse response = ...
+ *         // Either these methods will work
+ *         // if (request.getAuthorization() instanceof AuthScheme.BASIC) {}
+ *         if (request.getAuthorization().getAuthScheme() == AuthScheme.BASIC) {
+ *             var authorization = (BasicAuthorization) request.getAuthorization();
+ *             // validations ...
+ *         }
+ *         // ...
+ *         return response;
+ *     }
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see Authorization
+ * @see AuthScheme
+ * @see <a href="https://datatracker.ietf.org/doc/rfc7235">Hypertext Transfer Protocol (HTTP/1.1): Authentication (rfc 7235)</a>
+ * @since v1.0.0
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE, ElementType.METHOD})

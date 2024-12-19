@@ -32,7 +32,7 @@ import java.util.Base64;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
  * @since v1.0.0
  */

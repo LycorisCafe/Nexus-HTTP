@@ -17,26 +17,64 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
 import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostRequest;
 
 import java.util.Map;
 
+/**
+ * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be received to the target endpoint.
+ * The endpoint must be annotated with <code>@BearerEndpoint</code>.
+ *
+ * @see BearerEndpoint
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 public final class BearerTokenRequest {
     private final String grantType;
     private Map<String, String> params;
 
+    /**
+     * Create an instance of <code>BearerTokenRequest</code>.
+     *
+     * @param grantType Token grant type
+     * @see BearerTokenRequest
+     * @since v1.0.0
+     */
     public BearerTokenRequest(final String grantType) {
         this.grantType = grantType;
     }
 
+    /**
+     * Get provided token grant type.
+     *
+     * @return Token grant type
+     * @see BearerTokenRequest
+     * @since v1.0.0
+     */
     public String getGrantType() {
         return grantType;
     }
 
+    /**
+     * Get other parameters come along with the token request (without <code>grant_type</code>).
+     *
+     * @return Other parameters
+     * @see BearerTokenRequest
+     * @since v1.0.0
+     */
     public Map<String, String> getParams() {
         return params;
     }
 
+    /**
+     * Set other parameters come along with the token request (without <code>grant_type</code>)
+     *
+     * @param params Other parameters
+     * @return Same <code>BearerTokenRequest</code> instance
+     * @see BearerTokenRequest
+     * @since v1.0.0
+     */
     public BearerTokenRequest setParams(final Map<String, String> params) {
         this.params = params;
         return this;
@@ -45,11 +83,13 @@ public final class BearerTokenRequest {
     public static BearerTokenRequest parse(final HttpPostRequest request) {
         UrlEncodedData params;
         if (!(request.getContent().getData() instanceof UrlEncodedData)) {
+            request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content type");
             return null;
         }
         params = (UrlEncodedData) request.getContent().getData();
 
         if (!params.containsKey("grant_type")) {
+            request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing");
             return null;
         }
 

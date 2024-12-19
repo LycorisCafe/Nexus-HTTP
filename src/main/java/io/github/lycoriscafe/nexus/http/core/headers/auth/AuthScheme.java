@@ -16,8 +16,25 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
+/**
+ * Supported authentication schemes by the server.
+ *
+ * @since v1.0.0
+ */
 public enum AuthScheme {
+    /**
+     * Basic authentication scheme.
+     *
+     * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic
+     * @since v1.0.0
+     */
     BASIC("Basic"),
+    /**
+     * Bearer authentication scheme.
+     *
+     * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer
+     * @since v1.0.0
+     */
     BEARER("Bearer");
 //    Concealed("Concealed"),
 //    Digest("Digest"),
@@ -38,6 +55,13 @@ public enum AuthScheme {
         this.value = value;
     }
 
+    /**
+     * Get the target 'AuthScheme' value to set in header.
+     *
+     * @return 'AuthScheme' value to set in header
+     * @see AuthScheme
+     * @since v1.0.0
+     */
     public String getValue() {
         return value;
     }

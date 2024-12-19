@@ -16,6 +16,14 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
+/**
+ * Possible errors for 'Brear' authentication request.
+ *
+ * @see BearerAuthentication
+ * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
+ * @since v1.0.0
+ */
 public enum BearerError {
     /**
      * The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than
@@ -40,6 +48,13 @@ public enum BearerError {
         this.value = value;
     }
 
+    /**
+     * Get the target 'BearerError' value to set in header.
+     *
+     * @return 'BearerError' value to set in header
+     * @see BearerError
+     * @since v1.0.0
+     */
     public String getValue() {
         return value;
     }
