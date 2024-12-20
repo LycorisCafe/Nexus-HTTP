@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
-import io.github.lycoriscafe.nexus.http.core.headers.content.MultiPartFormData;
+import io.github.lycoriscafe.nexus.http.core.headers.content.MultipartFormData;
 import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -53,7 +53,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 String value = getHeaders().get(i).value().toLowerCase(Locale.US).trim();
                 try {
                     content = switch (value) {
-                        case String x when x.startsWith("multipart/form-data") -> MultiPartFormData.process(getRequestId(), getRequestConsumer(),
+                        case String x when x.startsWith("multipart/form-data") -> MultipartFormData.process(getRequestId(), getRequestConsumer(),
                                 value.split(";")[1].split("=")[1], contentLength, chunked, gzipped);
                         case "application/x-www-form-urlencoded" -> UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
                                 chunked, gzipped);

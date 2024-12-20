@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http.engine;
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
@@ -72,15 +73,19 @@ public final class RequestProcessor {
             }
         }
 
+        CORSRequest corsRequest = null;
         for (String header : headers) {
             String[] parts = header.split(":", 2);
             String headerName = parts[0].toLowerCase(Locale.US);
             switch (headerName) {
                 case "cookie" -> httpRequest.setCookies(Cookie.parseIncomingCookies(parts[1]));
                 case "authorization" -> httpRequest.setAuthorization(Authorization.processIncomingAuth(parts[1]));
+                case "origin", "access-control-request-method", "access-control-request-headers" ->
+                        corsRequest = CORSRequest.processIncomingCors(corsRequest, parts);
                 default -> httpRequest.setHeader(Header.parseIncomingHeader(parts));
             }
         }
+        httpRequest.setCorsRequest(corsRequest);
 
         httpRequest.finalizeRequest();
     }

@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
-import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
@@ -48,7 +48,7 @@ public final class HttpResponse {
     private List<ContentSecurityPolicyReportOnly> contentSecurityPolicyReportOnly;
     private StrictTransportSecurity strictTransportSecurity;
     private boolean xContentTypeOptionsNoSniff;
-    private CrossOriginResourceSharing crossOriginResourceSharing;
+    private CORSResponse corsResponse;
     private List<Authentication> authentications;
     private CacheControl cacheControl;
     private Content content;
@@ -72,7 +72,7 @@ public final class HttpResponse {
         contentSecurityPolicyReportOnly = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
         strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
         xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isDefaultXContentTypeOptionsNoSniff();
-        crossOriginResourceSharing = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
+        corsResponse = requestConsumer.getServerConfiguration().getDefaultCrossOriginResourceSharing();
         cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
     }
 
@@ -207,13 +207,13 @@ public final class HttpResponse {
         return xContentTypeOptionsNoSniff;
     }
 
-    public HttpResponse setCrossOriginResourceSharing(final CrossOriginResourceSharing crossOriginResourceSharing) {
-        this.crossOriginResourceSharing = crossOriginResourceSharing;
+    public HttpResponse setCorsResponse(final CORSResponse corsResponse) {
+        this.corsResponse = corsResponse;
         return this;
     }
 
-    public CrossOriginResourceSharing getCrossOriginResourceSharing() {
-        return crossOriginResourceSharing;
+    public CORSResponse getCorsResponse() {
+        return corsResponse;
     }
 
     public HttpResponse setAuthentication(final Authentication authentication) {
@@ -274,7 +274,7 @@ public final class HttpResponse {
                     .append(ContentSecurityPolicy.processOutgoingCsp(getContentSecurityPolicies(), false))
                     .append(ContentSecurityPolicyReportOnly.processOutgoingCsp(getContentSecurityPolicyReportOnly(), true))
                     .append(StrictTransportSecurity.processOutgoingHSTS(getStrictTransportSecurity()))
-                    .append(CrossOriginResourceSharing.processOutgoingCORS(getCrossOriginResourceSharing()))
+                    .append(CORSResponse.processOutgoingCORS(getCorsResponse()))
                     .append(Authentication.processOutgoingAuthentications(getAuthentications()))
                     .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
                     .append(Content.WriteOperations.processOutgoingContent(getRequestConsumer().getServerConfiguration(), getContent()));

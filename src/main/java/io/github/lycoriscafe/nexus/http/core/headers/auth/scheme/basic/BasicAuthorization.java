@@ -41,7 +41,7 @@ public final class BasicAuthorization extends Authorization {
     private final String password;
 
     /**
-     * Create an instance of 'Basic' authorization.
+     * Create an instance for 'Basic' authorization.
      *
      * @param username Cleartext username (charset UTF-8)
      * @param password Cleartext password (charset UTF-8)

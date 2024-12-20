@@ -34,12 +34,7 @@ import java.util.zip.GZIPOutputStream;
  * HTTP request/response content.
  * <pre>
  *     {@code
- *     // Example code 1
- *     String jsonString = "{\"key\" : \"value\"}";
- *     var content = new Content("application/json", jsonString);
- *     }
- *     {@code
- *     // Example code 2
+ *     // Example code
  *     var content = new Content("video/mp4", Paths.get("path/to/mp4/video"))
  *          .setTransferEncodingChunked(true)
  *          .setDownloadName("SampleVideo.mp4");
@@ -278,13 +273,13 @@ public final class Content {
      * @return Data as <code>Object</code>
      * @apiNote When receiving,
      * <ul>
-     *  <li><code>multipart/form-data</code>, the data should be cast to <code>List</code> of <code>MultiPartFormData></code>.</li>
+     *  <li><code>multipart/form-data</code>, the data should be cast to <code>List</code> of <code>MultipartFormData></code>.</li>
      *  <li><code>application/x-www-form-urlencoded</code>, the data should cast to <code>UrlEncodedData</code>.</li>
      *  <li><code>Transfer-Encoding: chunked</code>, the data should cast to <code>Path</code>.</li>
      *  <li>Others should cast to <code>byte[]</code>.</li>
      * </ul>
      * @see #getContentType()
-     * @see MultiPartFormData
+     * @see MultipartFormData
      * @see UrlEncodedData
      * @see Path
      * @see Content
@@ -303,7 +298,7 @@ public final class Content {
      */
     public static class ReadOperations {
         /**
-         * General process task for incoming content.
+         * General processor for incoming content.
          *
          * @param requestId       <code>HttpRequest</code> id
          * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>

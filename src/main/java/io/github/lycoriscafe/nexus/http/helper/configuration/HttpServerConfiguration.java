@@ -20,7 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
-import io.github.lycoriscafe.nexus.http.core.headers.cors.CrossOriginResourceSharing;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
@@ -55,7 +55,7 @@ public final class HttpServerConfiguration {
     private List<Header> defaultHeaders = null;
     private List<Authentication> defaultAuthentications = null;
     private List<Cookie> defaultCookies = null;
-    private CrossOriginResourceSharing defaultCrossOriginResourceSharing = null;
+    private CORSResponse defaultCORSResponse = null;
     private List<ReportingEndpoint> reportingEndpoints = null;
     private List<ContentSecurityPolicy> defaultContentSecurityPolicies = null;
     private List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly = null;
@@ -264,13 +264,13 @@ public final class HttpServerConfiguration {
         return defaultCookies;
     }
 
-    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(final CrossOriginResourceSharing defaultCrossOriginResourceSharing) {
-        this.defaultCrossOriginResourceSharing = defaultCrossOriginResourceSharing;
+    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(final CORSResponse defaultCORSResponse) {
+        this.defaultCORSResponse = defaultCORSResponse;
         return this;
     }
 
-    public CrossOriginResourceSharing getDefaultCrossOriginResourceSharing() {
-        return defaultCrossOriginResourceSharing;
+    public CORSResponse getDefaultCrossOriginResourceSharing() {
+        return defaultCORSResponse;
     }
 
     public HttpServerConfiguration addDefaultReportingEndpoints(final ReportingEndpoint reportingEndpoint) {

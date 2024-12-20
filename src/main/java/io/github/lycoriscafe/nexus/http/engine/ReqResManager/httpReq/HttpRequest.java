@@ -21,6 +21,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
+import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -43,6 +44,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private Map<String, String> parameters;
     private List<Header> headers;
     private List<Cookie> cookies;
+    private CORSRequest corsRequest;
     private Authorization authorization;
 
     public HttpRequest(final RequestConsumer requestConsumer,
@@ -96,6 +98,14 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     public List<Cookie> getCookies() {
         return cookies;
+    }
+
+    public void setCorsRequest(final CORSRequest corsRequest) {
+        this.corsRequest = corsRequest;
+    }
+
+    public CORSRequest getCorsRequest() {
+        return corsRequest;
     }
 
     public void setAuthorization(final Authorization authorization) {

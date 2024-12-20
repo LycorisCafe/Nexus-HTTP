@@ -25,6 +25,7 @@ public enum AuthScheme {
     /**
      * Basic authentication scheme.
      *
+     * @see AuthScheme
      * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic
      * @since v1.0.0
      */
@@ -32,6 +33,7 @@ public enum AuthScheme {
     /**
      * Bearer authentication scheme.
      *
+     * @see AuthScheme
      * @see io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer
      * @since v1.0.0
      */

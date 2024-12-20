@@ -16,8 +16,30 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
+/**
+ * Cookie name prefix.
+ *
+ * @see Cookie
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#cookie_prefixes>Cookie Prefixes (MDN Docs)</a>
+ * @since v1.0.0
+ */
 public enum CookiePrefix {
+    /**
+     * If a cookie name has this prefix, it's accepted in a {@code Set-Cookie} header only if it's also marked with the {@code Secure} attribute, was
+     * sent from a secure origin, does not include a {@code Domain} attribute, and has the {@code Path} attribute set to {@code /}. In other words,
+     * the cookie is domain-locked.
+     *
+     * @see Cookie
+     * @since v1.0.0
+     */
     HOST("__Host-"),
+    /**
+     * If a cookie name has this prefix, it's accepted in a {@code Set-Cookie} header only if it's marked with the {@code Secure} attribute and was
+     * sent from a secure origin. This is weaker than the {@code __Host-} prefix.
+     *
+     * @see Cookie
+     * @since v1.0.0
+     */
     SECURE("__Secure-");
 
     private final String prefix;
@@ -26,6 +48,13 @@ public enum CookiePrefix {
         this.prefix = prefix;
     }
 
+    /**
+     * Get prefix value for include in HTTP header.
+     *
+     * @return Formatted prefix value
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getPrefix() {
         return prefix;
     }

@@ -19,7 +19,24 @@ package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Cookie for HTTP request/response.
+ * <pre>
+ *     {@code
+ *     // Example codes
+ *     var cookie1 = new Cookie("MySweetCookie", "Yum Yum Yum");
+ *     var cookie2 = new Cookie("MyAnotherCookie", "cookie!!!")
+ *          .setMaxAge(3600L);
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see <a href="https://datatracker.ietf.org/doc/rfc6265">HTTP State Management Mechanism (rfc6265)</a>
+ * @since v1.0.0
+ */
 public final class Cookie {
     private final String name;
     private final String value;
@@ -32,100 +49,256 @@ public final class Cookie {
     private CookieSameSite sameSite;
     private CookiePrefix prefix;
 
+    /**
+     * Create an instance of <code>Cookie</code>
+     *
+     * @param cookieName  Cookie name
+     * @param cookieValue Cookie value
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie(final String cookieName,
                   final String cookieValue) {
         name = cookieName;
         value = cookieValue;
     }
 
+    /**
+     * Get name of the cookie.
+     *
+     * @return Name of the cookie
+     * @see #Cookie(String, String)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get value of the cookie.
+     *
+     * @return Value of the cookie
+     * @see #Cookie(String, String)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Set <code>Expires</code> directive value. The argument pass to this method should be HTTP date formatted string.
+     *
+     * @param expires HTTP date formatted string
+     * @return Same <code>Cookie</code> instance
+     * @see <a href="https://datatracker.ietf.org/doc/html/rfc9110#name-date-time-formats">HTTP Semantics (rfc9110) - 5.6.7. Date/Time Formats</a>
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setExpires(final String expires) {
         this.expires = expires;
         return this;
     }
 
+    /**
+     * Get <code>Expires</code> directive value.
+     *
+     * @return Directive value
+     * @see #setExpires(String)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getExpires() {
         return expires;
     }
 
+    /**
+     * Set <code>Max-Age</code> directive value.
+     *
+     * @param maxAge Value in seconds
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setMaxAge(final long maxAge) {
         this.maxAge = maxAge;
         return this;
     }
 
+    /**
+     * Get <code>Max-Age</code> directive value.
+     *
+     * @return Directive value
+     * @see #setMaxAge(long)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public long getMaxAge() {
         return maxAge;
     }
 
+    /**
+     * Set <code>Secure</code> directive.
+     *
+     * @param secure Directive status
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setSecure(final boolean secure) {
         this.secure = secure;
         return this;
     }
 
+    /**
+     * Get <code>Secure</code> directive status.
+     *
+     * @return Directive status
+     * @see #setSecure(boolean)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public boolean isSecure() {
         return secure;
     }
 
+    /**
+     * Set <code>HttpOnly</code> directive.
+     *
+     * @param httpOnly Directive status
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setHttpOnly(final boolean httpOnly) {
         this.httpOnly = httpOnly;
         return this;
     }
 
+    /**
+     * Get <code>HttpOnly</code> directive status.
+     *
+     * @return Directive status
+     * @see #setHttpOnly(boolean)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public boolean isHttpOnly() {
         return httpOnly;
     }
 
+    /**
+     * Set <code>Domain</code> directive velue.
+     *
+     * @param domain Directive value
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setDomain(final String domain) {
         this.domain = domain;
         return this;
     }
 
+    /**
+     * Get <code>Domain</code> directive value.
+     *
+     * @return Directive value
+     * @see #setDomain(String)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getDomain() {
         return domain;
     }
 
+    /**
+     * Set <code>Path</code> directive value.
+     *
+     * @param path Directive value
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
     public Cookie setPath(final String path) {
         this.path = path;
         return this;
     }
 
+    /**
+     * Get <code>Path</code> directive value.
+     *
+     * @return Directive value
+     * @see #setPath(String)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public String getPath() {
         return path;
     }
 
-    public Cookie setSameSite(final CookieSameSite sameSite) throws CookieException {
-        if (this.sameSite == null) {
-            throw new CookieException(
-                    "Same Site cannot be null. If you need this to be null, just ignore this method.");
-        }
-        this.sameSite = sameSite;
+    /**
+     * Set <code>SameSite</code> directive value.
+     *
+     * @param sameSite Directive value
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
+    public Cookie setSameSite(final CookieSameSite sameSite) {
+        this.sameSite = Objects.requireNonNull(sameSite);
+        if (sameSite == CookieSameSite.NONE) setSecure(true);
         return this;
     }
 
+    /**
+     * Get <code>SameSite</code> directive value.
+     *
+     * @return Directive value
+     * @see #setSameSite(CookieSameSite)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public CookieSameSite getSameSite() {
         return sameSite;
     }
 
-    public Cookie setPrefix(final CookiePrefix prefix) throws CookieException {
-        if (prefix == null) {
-            throw new CookieException(
-                    "Cookie prefix cannot be null. If you need this to be null, just ignore this method.");
-        }
-        this.prefix = prefix;
+    /**
+     * Set cookie name prefix.
+     *
+     * @param prefix Name prefix
+     * @return Same <code>Cookie</code> instance
+     * @see Cookie
+     * @since v1.0.0
+     */
+    public Cookie setPrefix(final CookiePrefix prefix) {
+        this.prefix = Objects.requireNonNull(prefix);
         return this;
     }
 
+    /**
+     * Get cookie name prefix
+     *
+     * @return Name prefix
+     * @see #setPrefix(CookiePrefix)
+     * @see Cookie
+     * @since v1.0.0
+     */
     public CookiePrefix getPrefix() {
         return prefix;
     }
 
+    /**
+     * Process incoming cookies.
+     *
+     * @param headerValue <code>Cookie</code> header values came along with <code>HttpRequest</code>
+     * @return <code>List</code> of <code>Cookie</code> that come along with the request
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+     * @see Cookie
+     * @since v1.0.0
+     */
     public static List<Cookie> parseIncomingCookies(final String headerValue) {
         String[] keyVal = headerValue.split(";", 0);
         List<Cookie> cookies = new NonDuplicateList<>();
@@ -136,6 +309,16 @@ public final class Cookie {
         return cookies;
     }
 
+    /**
+     * Process outgoing cookies.
+     *
+     * @param cookies <code>List</code> of <code>Cookie</code> that send along with <code>HttpResponse</code>
+     * @return <code>Set-Cookie</code> header string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @see Cookie
+     * @since v1.0.0
+     */
     public static String processOutgoingCookies(final List<Cookie> cookies) {
         if (cookies == null || cookies.isEmpty()) return "";
 

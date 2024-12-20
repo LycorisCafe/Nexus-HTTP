@@ -43,7 +43,7 @@ public final class BasicAuthentication extends Authentication {
     private final String realm;
 
     /**
-     * Create an instance of 'Basic' authentication.
+     * Create an instance for 'Basic' authentication.
      *
      * @param realm Realm for the target resource
      * @see BasicAuthentication

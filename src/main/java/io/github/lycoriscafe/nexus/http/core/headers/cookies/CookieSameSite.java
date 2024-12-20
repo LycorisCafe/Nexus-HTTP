@@ -16,9 +16,42 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
+/**
+ * Cookie <code>SameSite</code> values.
+ *
+ * @see Cookie
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#controlling_third-party_cookies_with_samesite">Controlling third-party
+ * cookies with <code>SameSite</code> (MDN Docs)</a>
+ * @since v1.0.0
+ */
 public enum CookieSameSite {
+    /**
+     * {@code Strict} causes the browser to only send the cookie in response to requests originating from the cookie's origin site. This should be
+     * used when you have cookies relating to functionality that will always be behind an initial navigation, such as authentication or storing
+     * shopping cart information.
+     *
+     * @see CookieSameSite
+     * @since v1.0.0
+     */
     STRICT("Strict"),
+    /**
+     * {@code Lax} is similar, except the browser also sends the cookie when the user navigates to the cookie's origin site (even if the user is
+     * coming from a different site). This is useful for cookies affecting the display of a site — for example you might have partner product
+     * information along with an affiliate link on your website. When that link is followed to the partner website, they might want to set a cookie
+     * stating that the affiliate link was followed, which displays a reward banner and provides a discount if the product is purchased.
+     *
+     * @see CookieSameSite
+     * @since v1.0.0
+     */
     LAX("Lax"),
+    /**
+     * {@code None} specifies that cookies are sent on both originating and cross-site requests. This is useful if you want to send cookies along with
+     * requests made from third-party content embedded in other sites, for example, ad-tech or analytics providers. Note that if {@code SameSite=None}
+     * is set then the {@code Secure} attribute must also be set — {@code SameSite=None} requires a secure context.
+     *
+     * @see CookieSameSite
+     * @since v1.0.0
+     */
     NONE("None");
 
     private final String value;
@@ -27,6 +60,13 @@ public enum CookieSameSite {
         this.value = value;
     }
 
+    /**
+     * Get <code>SameSite</code> value for include in HTTP header.
+     *
+     * @return Formatted <code>SameSite</code> value
+     * @see CookieSameSite
+     * @since v1.0.0
+     */
     public String getValue() {
         return value;
     }
