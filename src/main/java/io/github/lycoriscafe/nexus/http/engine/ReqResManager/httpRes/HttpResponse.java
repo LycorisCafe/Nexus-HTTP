@@ -40,7 +40,7 @@ public final class HttpResponse {
     private final long requestId;
     private final RequestConsumer requestConsumer;
 
-    private final HttpStatusCode httpStatusCode;
+    private HttpStatusCode httpStatusCode = HttpStatusCode.OK;
     private List<Header> headers;
     private List<Cookie> cookies;
     private List<ReportingEndpoint> reportingEndpoints;
@@ -56,15 +56,10 @@ public final class HttpResponse {
     private boolean dropConnection;
 
     public HttpResponse(final long requestId,
-                        final RequestConsumer requestConsumer,
-                        final HttpStatusCode httpStatusCode) {
-        if (requestId < 0) {
-            throw new IllegalStateException("invalid response id passed");
-        }
-
+                        final RequestConsumer requestConsumer) {
+        if (requestId < 0) throw new IllegalStateException("invalid response id passed");
         this.requestId = requestId;
         this.requestConsumer = Objects.requireNonNull(requestConsumer);
-        this.httpStatusCode = Objects.requireNonNull(httpStatusCode);
 
         headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
         cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
@@ -84,7 +79,12 @@ public final class HttpResponse {
         return requestConsumer;
     }
 
-    public HttpStatusCode getHttpStatusCode() {
+    public HttpResponse setStatusCode(final HttpStatusCode httpStatusCode) {
+        this.httpStatusCode = Objects.requireNonNull(httpStatusCode);
+        return this;
+    }
+
+    public HttpStatusCode getStatusCode() {
         return httpStatusCode;
     }
 

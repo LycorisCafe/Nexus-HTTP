@@ -46,11 +46,11 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     @Override
     public void finalizeRequest() {
         for (int i = 0; i < getHeaders().size(); i++) {
-            if (getHeaders().get(i).name().equalsIgnoreCase("content-type")) {
+            if (getHeaders().get(i).getName().equalsIgnoreCase("content-type")) {
                 if (!getEncodings()) return;
                 if (!chunked) if (!getContentLength()) return;
 
-                String value = getHeaders().get(i).value().toLowerCase(Locale.US).trim();
+                String value = getHeaders().get(i).getValue().toLowerCase(Locale.US).trim();
                 try {
                     content = switch (value) {
                         case String x when x.startsWith("multipart/form-data") -> MultipartFormData.process(getRequestId(), getRequestConsumer(),
@@ -74,9 +74,9 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
     private boolean getEncodings() {
         for (int i = 0; i < getHeaders().size(); i++) {
-            String headerName = getHeaders().get(i).name().toLowerCase(Locale.US);
+            String headerName = getHeaders().get(i).getName().toLowerCase(Locale.US);
             if (headerName.equals("transfer-encoding") || headerName.equals("content-encoding")) {
-                String[] values = getHeaders().get(i).value().toLowerCase(Locale.US).split(",", 0);
+                String[] values = getHeaders().get(i).getValue().toLowerCase(Locale.US).split(",", 0);
                 switch (headerName) {
                     case "transfer-encoding" -> {
                         if (values.length == 1 && values[0].equals("chunked")) {
@@ -104,9 +104,9 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
 
     private boolean getContentLength() {
         for (int i = 0; i < getHeaders().size(); i++) {
-            if (getHeaders().get(i).name().equalsIgnoreCase("content-length")) {
+            if (getHeaders().get(i).getName().equalsIgnoreCase("content-length")) {
                 try {
-                    contentLength = Integer.parseInt(getHeaders().get(i).value());
+                    contentLength = Integer.parseInt(getHeaders().get(i).getValue());
                     if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
                         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large");
                         return false;

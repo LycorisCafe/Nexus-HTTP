@@ -18,9 +18,10 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
 import io.github.lycoriscafe.nexus.http.core.headers.cache.CacheControl;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+
+import java.util.Objects;
 
 /**
  * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be returned from the target
@@ -39,31 +40,34 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
  * @since v1.0.0
  */
 public final class BearerTokenResponse {
-    private final String bearerToken;
+    private String bearerToken;
     private Long expiresIn;
     private String refreshToken;
     private String scope;
 
     /**
-     * Create and instance of <code>BearerTokenResponse</code>.
-     *
-     * @param bearerToken Generated bearer token
-     * @see BearerTokenResponse
-     * @since v1.0.0
-     */
-    public BearerTokenResponse(final String bearerToken) {
-        this.bearerToken = bearerToken;
-    }
-
-    /**
      * Get provided access token.
      *
      * @return Access token
+     * @see #setBearerToken(String)
      * @see BearerTokenResponse
      * @since v1.0.0
      */
     public String getBearerToken() {
         return bearerToken;
+    }
+
+    /**
+     * Set bearer token.
+     *
+     * @param bearerToken Generated bearer token
+     * @return Same <code>BearerTokenResponse</code> instance
+     * @see BearerTokenResponse
+     * @since v1.0.0
+     */
+    public BearerTokenResponse setBearerToken(final String bearerToken) {
+        this.bearerToken = Objects.requireNonNull(bearerToken);
+        return this;
     }
 
     /**
@@ -155,7 +159,7 @@ public final class BearerTokenResponse {
     public static HttpResponse parse(final BearerTokenResponse response,
                                      final long requestId,
                                      final RequestConsumer requestConsumer) {
-        return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK)
+        return new HttpResponse(requestId, requestConsumer)
                 .setCashControl(new CacheControl().setNoStore(true))
                 .setContent(new Content("application/json", "{\"access_token\":\"" + response.getBearerToken() + "\"," +
                         "\"token_type\":\"Bearer\"" + ((response.getExpiresIn() != null) ? ",\"expires_in\":" + response.getExpiresIn() : "") +

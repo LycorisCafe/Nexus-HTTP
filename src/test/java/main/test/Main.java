@@ -28,7 +28,6 @@ import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
@@ -51,28 +50,29 @@ public class Main {
     }
 
     @GET("/")
-    public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest) {
-        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("text/plan", "Hello world"))
+    public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest,
+                                             final HttpResponse httpResponse) {
+        return httpResponse.setContent(new Content("text/plan", "Hello world"))
                 .setCookie(new Cookie("testCookie", "testCookieValue"));
     }
 
     @GET("/test")
     @Authenticated
-    public static HttpResponse authTestEndpoint(final HttpGetRequest httpGetRequest) {
-        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("text/plan", "Test Endpoint!").setContentEncodingGzipped(true));
+    public static HttpResponse authTestEndpoint(final HttpGetRequest httpGetRequest,
+                                                final HttpResponse httpResponse) {
+        return httpResponse.setContent(new Content("text/plan", "Test Endpoint!").setContentEncodingGzipped(true));
     }
 
     @GET("/img")
     @Authenticated
-    public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest) {
-        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
-                .setContent(new Content("video/mp4", Paths.get("D:\\Media\\c97123a510d037aabd51db740738cf1a.mp4")));
+    public static HttpResponse imgEndpoint(final HttpGetRequest httpGetRequest,
+                                           final HttpResponse httpResponse) {
+        return httpResponse.setContent(new Content("video/mp4", Paths.get("D:\\Media\\c97123a510d037aabd51db740738cf1a.mp4")));
     }
 
     @BearerEndpoint(@POST("/generateToken"))
-    public static BearerTokenResponse tokenEndpoint(final BearerTokenRequest bearerTokenRequest) {
-        return new BearerTokenResponse("abcdefg");
+    public static BearerTokenResponse tokenEndpoint(final BearerTokenRequest bearerTokenRequest,
+                                                    final BearerTokenResponse bearerTokenResponse) {
+        return bearerTokenResponse.setBearerToken("abcd");
     }
 }

@@ -119,7 +119,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     public void finalizeRequest() {
         String parsedEndpoint = ReqMaster.parseEndpoint(getEndpoint());
         if (!getEndpoint().equals(parsedEndpoint)) {
-            getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT)
+            getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.PERMANENT_REDIRECT)
                     .setHeader(new Header("Location", parsedEndpoint)));
             return;
         }
@@ -157,12 +157,12 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     }
 
                     if (reqEndpoint.isAuthenticated() && getAuthorization() == null) {
-                        getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.UNAUTHORIZED)
+                        getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAUTHORIZED)
                                 .setAuthentications(getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
                         return;
                     }
 
-                    Object response = reqEndpoint.getMethod().invoke(null, this);
+                    Object response = reqEndpoint.getMethod().invoke(null, this, new HttpResponse(getRequestId(), getRequestConsumer()));
                     if (response instanceof HttpResponse httpResponse) {
                         getRequestConsumer().send(httpResponse);
                     } else {
@@ -182,17 +182,17 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
     private void processStatusAnnotation(final ReqEndpoint reqEndpoint) {
         getRequestConsumer().send(switch (reqEndpoint.getStatusAnnotation()) {
-            case FOUND -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.FOUND).setHeader(
-                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case GONE -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.GONE);
-            case MOVED_PERMANENTLY -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.MOVED_PERMANENTLY).setHeader(
-                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case PERMANENT_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.PERMANENT_REDIRECT).setHeader(
-                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case TEMPORARY_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.TEMPORARY_REDIRECT).setHeader(
-                    new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case FOUND -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.FOUND)
+                    .setHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case GONE -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.GONE);
+            case MOVED_PERMANENTLY -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.MOVED_PERMANENTLY)
+                    .setHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case PERMANENT_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.PERMANENT_REDIRECT)
+                    .setHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
+            case TEMPORARY_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.TEMPORARY_REDIRECT)
+                    .setHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case UNAVAILABLE_FOR_LEGAL_REASONS -> {
-                var response = new HttpResponse(getRequestId(), getRequestConsumer(), HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
+                var response = new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
                 if (reqEndpoint.getStatusAnnotationValue() != null) {
                     response.setHeader(new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
                 }
@@ -214,9 +214,9 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
                 if (bearerTokenRequest == null) return;
 
-                Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest);
-                if (response instanceof BearerTokenResponse httpResponse) {
-                    getRequestConsumer().send(BearerTokenResponse.parse(httpResponse, getRequestId(), getRequestConsumer()));
+                Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest, new BearerTokenResponse());
+                if ((response instanceof BearerTokenResponse bearerTokenResponse) && bearerTokenResponse.getBearerToken() != null) {
+                    getRequestConsumer().send(BearerTokenResponse.parse(bearerTokenResponse, getRequestId(), getRequestConsumer()));
                 } else {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid bearer response provided");
                 }

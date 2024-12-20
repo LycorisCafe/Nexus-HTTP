@@ -153,7 +153,7 @@ public final class RequestConsumer implements Runnable {
                                final HttpStatusCode httpStatusCode,
                                final String errorMessage) {
         logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
-        HttpResponse httpResponse = new HttpResponse(requestId, this, httpStatusCode).setDropConnection(true);
+        HttpResponse httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
         if (getServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
             httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
         }

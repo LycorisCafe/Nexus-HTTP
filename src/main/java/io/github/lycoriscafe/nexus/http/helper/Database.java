@@ -18,9 +18,11 @@ package io.github.lycoriscafe.nexus.http.helper;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
@@ -167,21 +169,31 @@ public final class Database {
                     try {
                         Class<?> clazz = Class.forName(subResult.getString(2));
                         AuthScheme authScheme = (subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6)));
-                        Class<?> methodParamType = (authScheme == null) ? switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
-                            case DELETE -> HttpDeleteRequest.class;
-                            case GET -> HttpGetRequest.class;
-                            case HEAD -> HttpHeadRequest.class;
-                            case OPTIONS -> HttpOptionsRequest.class;
-                            case PATCH -> HttpPatchRequest.class;
-                            case POST -> HttpPostRequest.class;
-                            case PUT -> HttpPutRequest.class;
-                        } : switch (authScheme) {
-                            case BASIC -> null;
-                            case BEARER -> BearerTokenRequest.class;
-                        };
+                        Class<?> requestParamType = null;
+                        Class<?> responseParamType = null;
+                        if (authScheme == null) {
+                            requestParamType = switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
+                                case DELETE -> HttpDeleteRequest.class;
+                                case GET -> HttpGetRequest.class;
+                                case HEAD -> HttpHeadRequest.class;
+                                case OPTIONS -> HttpOptionsRequest.class;
+                                case PATCH -> HttpPatchRequest.class;
+                                case POST -> HttpPostRequest.class;
+                                case PUT -> HttpPutRequest.class;
+                            };
+                            responseParamType = HttpResponse.class;
+                        } else {
+                            switch (authScheme) {
+                                case BASIC -> {}
+                                case BEARER -> {
+                                    requestParamType = BearerTokenRequest.class;
+                                    responseParamType = BearerTokenResponse.class;
+                                }
+                            }
+                        }
 
                         endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
-                                masterResult.getBoolean(4), clazz, clazz.getMethod(subResult.getString(3), methodParamType),
+                                masterResult.getBoolean(4), clazz, clazz.getMethod(subResult.getString(3), requestParamType, responseParamType),
                                 subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
                                 subResult.getString(5), authScheme);
                     } finally {

@@ -20,7 +20,6 @@ import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 
@@ -29,7 +28,7 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpRespons
 public class AuthClass {
     @GET("/")
     public static HttpResponse sayAuthHello(final HttpGetRequest httpGetRequest) {
-        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer(), HttpStatusCode.OK)
+        return new HttpResponse(httpGetRequest.getRequestId(), httpGetRequest.getRequestConsumer())
                 .setContent(new Content("text/plain", "Hello World!"));
     }
 }
