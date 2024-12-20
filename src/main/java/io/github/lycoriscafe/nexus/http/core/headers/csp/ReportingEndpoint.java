@@ -17,28 +17,79 @@
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Reporting Endpoint for CSP. Instance of ths class will process as a link to <code>REPORT_TO</code> CSP directive.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     var reportingEndpoint = new ReportingEndpoint("myEndpoint", "/sampleEndpoint");
+ *     }
+ *     {@code
+ *     // Usage with ContentSecurityPolicy or ContentSecurityPolicyReportOnly
+ *     var reportingEndpoint = new ReportingEndpoint("myEndpoint", "/sampleEndpoint");
+ *     var csp = new ContentSecurityPolicy(REPORT_TO, "myEndpoint");
+ *     }
+ * </pre>
+ *
+ * @see ContentSecurityPolicy
+ * @see ContentSecurityPolicyReportOnly
+ * @see CSPDirective
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
+ * @since v1.0.0
+ */
 public final class ReportingEndpoint {
     private final String name;
     private final String value;
 
+    /**
+     * Create instance of <code>ReportingEndpoint</code>.
+     *
+     * @param name  Endpoint name
+     * @param value Endpoint value
+     * @see ReportingEndpoint
+     * @since v1.0.0
+     */
     public ReportingEndpoint(final String name,
                              final String value) {
-        if (name == null || value == null) {
-            throw new NullPointerException("name/value cannot be null");
-        }
-        this.name = name;
-        this.value = value;
+        this.name = Objects.requireNonNull(name);
+        this.value = Objects.requireNonNull(value);
     }
 
+    /**
+     * Get provided endpoint name.
+     *
+     * @return Endpoint name
+     * @see ReportingEndpoint
+     * @since v1.0.0
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Get provided endpoint value.
+     *
+     * @return Endpoint value
+     * @see ReportingEndpoint
+     * @since v1.0.0
+     */
     public String getValue() {
         return value;
     }
 
+    /**
+     * Process provided <code>List</code> of <code>ReportingEndpoint</code> as a HTTP header, <code>Reporting-Endpoints</code>.
+     *
+     * @param reportingEndpoints <code>List</code> of <code>ReportingEndpoint</code>
+     * @return Processed <code>Reporting-Endpoints</code> HTTP header string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see ReportingEndpoint
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @since v1.0.0
+     */
     public static String processOutgoingReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {
         if (reportingEndpoints == null || reportingEndpoints.isEmpty()) return "";
         StringBuilder output = new StringBuilder().append("Reporting-Endpoints:");

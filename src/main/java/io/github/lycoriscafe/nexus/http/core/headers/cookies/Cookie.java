@@ -244,6 +244,7 @@ public final class Cookie {
      * @param sameSite Directive value
      * @return Same <code>Cookie</code> instance
      * @see Cookie
+     * @see CookieSameSite
      * @since v1.0.0
      */
     public Cookie setSameSite(final CookieSameSite sameSite) {
@@ -258,6 +259,7 @@ public final class Cookie {
      * @return Directive value
      * @see #setSameSite(CookieSameSite)
      * @see Cookie
+     * @see CookieSameSite
      * @since v1.0.0
      */
     public CookieSameSite getSameSite() {
@@ -270,6 +272,7 @@ public final class Cookie {
      * @param prefix Name prefix
      * @return Same <code>Cookie</code> instance
      * @see Cookie
+     * @see CookiePrefix
      * @since v1.0.0
      */
     public Cookie setPrefix(final CookiePrefix prefix) {
@@ -283,6 +286,7 @@ public final class Cookie {
      * @return Name prefix
      * @see #setPrefix(CookiePrefix)
      * @see Cookie
+     * @see CookiePrefix
      * @since v1.0.0
      */
     public CookiePrefix getPrefix() {

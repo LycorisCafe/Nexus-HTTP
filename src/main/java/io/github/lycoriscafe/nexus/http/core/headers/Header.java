@@ -19,23 +19,93 @@ package io.github.lycoriscafe.nexus.http.core.headers;
 import java.util.List;
 import java.util.Objects;
 
-public record Header(String name,
-                     String value) {
+/**
+ * General HTTP header for requests/responses. This is a primary level type that converts provided name and value directly to an HTTP header and so.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     var header = new Header("My-Header", "myValue=value");
+ *     }
+ *     {@code
+ *     <!-- Example code -->
+ *     My-Header: myValue=value
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc9110">HTTP Semantics (rfc 9110)</a>
+ * @since v1.0.0
+ */
+public final class Header {
+    private final String name;
+    private final String value;
+
+    /**
+     * Create an instance of <code>Header</code>.
+     *
+     * @param name  Header name
+     * @param value Header value
+     * @see Header
+     * @since v1.0.0
+     */
     public Header(final String name,
                   final String value) {
         this.name = Objects.requireNonNull(name);
         this.value = Objects.requireNonNull(value);
     }
 
+    /**
+     * Get provided header name
+     *
+     * @return Header name
+     * @see Header
+     * @since v1.0.0
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * Get provided header value
+     *
+     * @return Header value
+     * @see Header
+     * @since v1.0.0
+     */
+    public String getValue() {
+        return value;
+    }
+
+    /**
+     * Process incoming non-specific header (not defined in server) in to primary <code>Header</code>.
+     *
+     * @param headerParts Key value pair
+     * @return New <code>Header</code> instance
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see Header
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+     * @since v1.0.0
+     */
     public static Header parseIncomingHeader(final String[] headerParts) {
         return new Header(headerParts[0], headerParts[1].trim());
     }
 
+    /**
+     * Process outgoing <code>Header</code>s to HTTP header strings.
+     *
+     * @param headers <code>List</code> fo <code>Header</code> instances
+     * @return HTTP headers string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see Header
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @since v1.0.0
+     */
     public static String parseOutgoingHeaders(final List<Header> headers) {
         if (headers == null || headers.isEmpty()) return "";
         StringBuilder output = new StringBuilder();
         for (Header header : headers) {
-            output.append(header.name()).append(": ").append(header.value()).append("\r\n");
+            output.append(header.getName()).append(": ").append(header.getValue()).append("\r\n");
         }
         return output.toString();
     }

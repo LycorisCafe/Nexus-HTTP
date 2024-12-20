@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import java.util.List;
 
 /**
- * Cross Origin Resource Sharing (CORS) for HTTP response.
+ * Cross Origin Resource Sharing (CORS) for HTTP responses.
  * <pre>
  *     {@code
  *     // Example code

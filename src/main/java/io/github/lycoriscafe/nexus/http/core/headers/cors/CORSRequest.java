@@ -22,36 +22,106 @@ import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import java.util.List;
 import java.util.Locale;
 
+/**
+ * Cross Origin Resource Sharing (CORS) for HTTP requests.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     // 'httpRequest' is an endpoint parameter (HttpGetRequest, ...)
+ *     var corsRequest = httpRequest.getCorsRequest();
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross Origin Resource Sharing (MDN Docs)</a>
+ * @since v1.0.0
+ */
 public final class CORSRequest {
     private String origin;
     private HttpRequestMethod accessControlRequestMethod;
     private List<String> accessControlRequestHeaders;
 
+    /**
+     * Get CORS <code>Origin</code>.
+     *
+     * @return Origin
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public String getOrigin() {
         return origin;
     }
 
+    /**
+     * Set CORS <code>Origin</code>
+     *
+     * @param origin Origin
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public void setOrigin(final String origin) {
         this.origin = origin;
     }
 
+    /**
+     * Get CORS <code>Access-Control-Request-Method</code>.
+     *
+     * @return Request method
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public HttpRequestMethod getAccessControlRequestMethod() {
         return accessControlRequestMethod;
     }
 
+    /**
+     * Set CORS <code>Access-Control-Request-Method</code>
+     *
+     * @param accessControlRequestMethod Request method
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public void setAccessControlRequestMethod(final HttpRequestMethod accessControlRequestMethod) {
         this.accessControlRequestMethod = accessControlRequestMethod;
     }
 
+    /**
+     * Get CORS <code>Access-Control-Request-Headers</code>.
+     *
+     * @return <code>List</code> of request headers
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public List<String> getAccessControlRequestHeaders() {
         return accessControlRequestHeaders;
     }
 
-    public void setAccessControlRequestHeader(final String accessControlRequestHeader) {
+    /**
+     * Add a value to CORS <code>Access-Control-Request-Headers</code>.
+     *
+     * @param accessControlRequestHeader Request header
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see CORSRequest
+     * @since v1.0.0
+     */
+    public void addAccessControlRequestHeader(final String accessControlRequestHeader) {
         if (accessControlRequestHeaders == null) accessControlRequestHeaders = new NonDuplicateList<>();
         accessControlRequestHeaders.add(accessControlRequestHeader);
     }
 
+    /**
+     * Process incoming CORS header to <code>CORSRequest</code> instance.
+     *
+     * @param request Temporary <code>CORSRequest</code> hold in <code>RequestProcessor</code>
+     * @param values  Full CORS request header split to key and value pair
+     * @return New or existing <code>CORSRequest</code>
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see io.github.lycoriscafe.nexus.http.engine.RequestProcessor RequestProcessor
+     * @see CORSRequest
+     * @since v1.0.0
+     */
     public static CORSRequest processIncomingCors(CORSRequest request,
                                                   final String[] values) {
         if (request == null) request = new CORSRequest();
@@ -61,7 +131,7 @@ public final class CORSRequest {
             case "access-control-request-headers" -> {
                 String[] headers = values[1].split(",", 0);
                 for (String header : headers) {
-                    request.setAccessControlRequestHeader(header.trim());
+                    request.addAccessControlRequestHeader(header.trim());
                 }
             }
         }

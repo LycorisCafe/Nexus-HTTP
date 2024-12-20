@@ -18,7 +18,33 @@ package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 import java.util.List;
 
+/**
+ * Content Security Policy Report Only (CSP - Report Only) for HTTP responses.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     var csp = new ContentSecurityPolicyReportOnly(IMG_SRC, List.of("sampleData"));
+ *     }
+ * </pre>
+ *
+ * @apiNote When using <code>REPORT_TO</code> directive, you should specify it by passing an instance of <code>ReportingEndpoint</code> to the
+ * <code>HttpResponse</code>.
+ * @see ReportingEndpoint
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
+ * @since v1.0.0
+ */
 public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
+    /**
+     * Create instance of <code>ContentSecurityPolicyReportOnly</code>.
+     *
+     * @param directive CSP directive
+     * @param values    <code>List</code> of CSP directive values
+     * @see CSPDirective
+     * @see ContentSecurityPolicy
+     * @see ContentSecurityPolicyReportOnly
+     * @since v1.0.0
+     */
     public ContentSecurityPolicyReportOnly(final CSPDirective directive,
                                            final List<String> values) {
         super(directive, values);

@@ -17,28 +17,81 @@
 package io.github.lycoriscafe.nexus.http.core.headers.csp;
 
 import java.util.List;
+import java.util.Objects;
 
+/**
+ * Content Security Policy (CSP) for HTTP responses.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     var csp = new ContentSecurityPolicy(IMG_SRC, List.of("sampleData"));
+ *     }
+ * </pre>
+ *
+ * @apiNote When using <code>REPORT_TO</code> directive, you should specify it by passing an instance of <code>ReportingEndpoint</code> to the
+ * <code>HttpResponse</code>.
+ * @see ReportingEndpoint
+ * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
+ * @since v1.0.0
+ */
 public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnly {
     private final CSPDirective directive;
     private final List<String> values;
 
+    /**
+     * Create instance of <code>ContentSecurityPolicy</code>.
+     *
+     * @param directive CSP directive
+     * @param values    <code>List</code> of CSP directive values
+     * @see CSPDirective
+     * @see ContentSecurityPolicy
+     * @since v1.0.0
+     */
     public ContentSecurityPolicy(final CSPDirective directive,
                                  final List<String> values) {
-        if (directive == null || values == null || values.isEmpty()) {
-            throw new NullPointerException("directive/values cannot be null");
-        }
-        this.directive = directive;
-        this.values = values;
+        this.directive = Objects.requireNonNull(directive);
+        this.values = Objects.requireNonNull(values);
+        if (values.isEmpty()) throw new IllegalArgumentException("Values cannot be empty");
     }
 
+    /**
+     * Get provided CSP directive.
+     *
+     * @return CSP directive
+     * @see CSPDirective
+     * @see ContentSecurityPolicy
+     * @since v1.0.0
+     */
     public CSPDirective getDirective() {
         return directive;
     }
 
+    /**
+     * Get provided values for CSP directive.
+     *
+     * @return <code>List</code> of CSP directive values
+     * @see CSPDirective
+     * @see ContentSecurityPolicy
+     * @since v1.0.0
+     */
     public List<String> getValues() {
         return values;
     }
 
+    /**
+     * Process <code>Content-Security-Policy</code> header from provided <code>List</code> of <code>ContentSecurityPolicy</code> or
+     * <code>ContentSecurityPolicyReportOnly</code> instances.
+     *
+     * @param contentSecurityPolicies <code>List</code> of <code>ContentSecurityPolicy</code> or <code>ContentSecurityPolicyReportOnly</code>
+     *                                instances
+     * @param reportOnly              Are the instances <code>ContentSecurityPolicyReportOnly</code>?
+     * @return Processed <code>Content-Security-Policy</code> HTTP header.
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see ContentSecurityPolicy
+     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @since v1.0.0
+     */
     public static String processOutgoingCsp(final List<? extends ContentSecurityPolicy> contentSecurityPolicies,
                                             final boolean reportOnly) {
         if (contentSecurityPolicies == null || contentSecurityPolicies.isEmpty()) return "";
