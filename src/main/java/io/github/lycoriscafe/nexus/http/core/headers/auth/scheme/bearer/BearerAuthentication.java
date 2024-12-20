@@ -29,11 +29,18 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  *
  *      <!-- General header format with error specified -->
  *      HTTP/1.1 401 Unauthorized
- *      WWW-Authenticate: Bearer error="specifiedError"
+ *      WWW-Authenticate: Bearer error="invalid_token"
  *
  *      <!-- General header format -->
  *      HTTP/1.1 401 Unauthorized
  *      WWW-Authenticate: Bearer realm="example", error="invalid_token", error_description="The access token expired"
+ *      }
+ *      {@code
+ *      // Example codes
+ *      var bearerAuth1 = new BearerAuthentication("specifiedRealm");
+ *      var bearerAuth2 = new BearerAuthentication(BearerError.INVALID_TOKEN);
+ *      var bearerAuth3 = new BearerAuthentication(BearerError.INVALID_TOKEN)
+ *          .setErrorDescription("The access token expired");
  *      }
  * </pre>
  *
@@ -79,6 +86,7 @@ public final class BearerAuthentication extends Authentication {
      * Get authentication error of the provided instance.
      *
      * @return Specified authentication error
+     * @see #setError(BearerError)
      * @see BearerError
      * @see BearerAuthentication
      * @since v1.0.0
@@ -107,6 +115,7 @@ public final class BearerAuthentication extends Authentication {
      * Get realm of the provided instance.
      *
      * @return Specified realm
+     * @see #setRealm(String)
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -133,6 +142,7 @@ public final class BearerAuthentication extends Authentication {
      * Get scope of the provided instance.
      *
      * @return Specified scope
+     * @see #setScope(String)
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -157,6 +167,7 @@ public final class BearerAuthentication extends Authentication {
      * Get error description of the provided instance.
      *
      * @return Specified error description
+     * @see #setErrorDescription(String)
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -181,6 +192,7 @@ public final class BearerAuthentication extends Authentication {
      * Get error URI of the provided instance.
      *
      * @return Specified Error URI
+     * @see #setErrorURI(String)
      * @see BearerAuthentication
      * @since v1.0.0
      */

@@ -54,6 +54,7 @@ public final class CacheControl {
      * Get <code>max-age</code> directive value.
      *
      * @return <code>max-age</code> directive value
+     * @see #setMaxAge(long)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -78,6 +79,7 @@ public final class CacheControl {
      * Get <code>s-max-age</code> directive value.
      *
      * @return <code>s-max-age</code> directive value
+     * @see #setSMaxAge(long)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -102,6 +104,7 @@ public final class CacheControl {
      * Get <code>no-cache</code> directive status.
      *
      * @return <code>no-cache</code> directive status
+     * @see #setNoCache(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -126,6 +129,7 @@ public final class CacheControl {
      * Get <code>must-revalidate</code> directive status.
      *
      * @return <code>must-revalidate</code> directive status
+     * @see #setMustRevalidate(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -150,6 +154,7 @@ public final class CacheControl {
      * Get <code>proxy-revalidate</code> directive status.
      *
      * @return <code>proxy-revalidate</code> directive status
+     * @see #setProxyRevalidate(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -174,6 +179,7 @@ public final class CacheControl {
      * Get <code>no-store</code> directive status.
      *
      * @return <code>no-store</code> directive status
+     * @see #setNoStore(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -198,10 +204,11 @@ public final class CacheControl {
      * Get <code>private</code> directive status.
      *
      * @return <code>private</code> directive status
+     * @see #setPrivate(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
-    public boolean isPrivate_() {
+    public boolean isPrivate() {
         return private_;
     }
 
@@ -213,7 +220,7 @@ public final class CacheControl {
      * @see CacheControl
      * @since v1.0.0
      */
-    public CacheControl setPrivate_(final boolean private_) {
+    public CacheControl setPrivate(final boolean private_) {
         this.private_ = private_;
         return this;
     }
@@ -222,10 +229,11 @@ public final class CacheControl {
      * Get <code>public</code> directive status.
      *
      * @return <code>public</code> directive status
+     * @see #setPublic(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
-    public boolean isPublic_() {
+    public boolean isPublic() {
         return public_;
     }
 
@@ -237,7 +245,7 @@ public final class CacheControl {
      * @see CacheControl
      * @since v1.0.0
      */
-    public CacheControl setPublic_(final boolean public_) {
+    public CacheControl setPublic(final boolean public_) {
         this.public_ = public_;
         return this;
     }
@@ -246,6 +254,7 @@ public final class CacheControl {
      * Get <code>must-understand</code> directive status.
      *
      * @return <code>must-understand</code> directive status
+     * @see #setMustUnderstand(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -271,6 +280,7 @@ public final class CacheControl {
      * Get <code>no-transform</code> directive status.
      *
      * @return <code>no-transform</code> directive status
+     * @see #setNoTransform(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -295,6 +305,7 @@ public final class CacheControl {
      * Get <code>immutable</code> directive status.
      *
      * @return <code>immutable</code> directive status
+     * @see #setImmutable(boolean)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -319,6 +330,7 @@ public final class CacheControl {
      * Get provided <code>stale-while-revalidate</code> directive value.
      *
      * @return <code>stale-while-revalidate</code> directive value
+     * @see #setStaleWhileRevalidate(long)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -343,6 +355,7 @@ public final class CacheControl {
      * Get <code>stale-if-error</code> directive value.
      *
      * @return <code>stale-if-error</code> directive value
+     * @see #setStaleIfError(long)
      * @see CacheControl
      * @since v1.0.0
      */
@@ -368,6 +381,9 @@ public final class CacheControl {
      *
      * @param cacheControl <code>CacheControl</code> instance
      * @return <code>Cache-Control</code> header string
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see CacheControl
+     * @since v1.0.0
      */
     public static String processOutgoingCacheControl(final CacheControl cacheControl) {
         if (cacheControl == null) return "";
@@ -403,12 +419,12 @@ public final class CacheControl {
             output.append(" ").append("no-store");
             anyDirectives = true;
         }
-        if (cacheControl.isPrivate_()) {
+        if (cacheControl.isPrivate()) {
             if (anyDirectives) output.append(",");
             output.append(" ").append("private");
             anyDirectives = true;
         }
-        if (cacheControl.isPublic_()) {
+        if (cacheControl.isPublic()) {
             if (anyDirectives) output.append(",");
             output.append(" ").append("public");
             anyDirectives = true;

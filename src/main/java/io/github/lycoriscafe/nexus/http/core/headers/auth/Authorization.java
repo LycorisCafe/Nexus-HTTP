@@ -54,6 +54,15 @@ public class Authorization {
         return authScheme;
     }
 
+    /**
+     * Process <code>Authorization</code> header values to <code>Authorization</code> types.
+     *
+     * @param auth <code>Authorization</code> header values
+     * @return New instance of <code>Authorization</code> type
+     * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
+     * @see Authorization
+     * @since v1.0.0
+     */
     public static Authorization processIncomingAuth(final String auth) {
         String[] parts = auth.trim().split(" ", 2);
         return switch (parts[0].trim().toLowerCase(Locale.US)) {

@@ -25,6 +25,14 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 /**
  * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be returned from the target
  * endpoint. The endpoint must be annotated with <code>@BearerEndpoint</code>.
+ * <pre>
+ *     {@code
+ *     // Example code
+ *     var tokenResponse = new BearerTokenResponse("abcdefg1234567")
+ *          .setRefreshToken("xyzxyz123098")
+ *          .setExpiresIn(3600L);
+ *     }
+ * </pre>
  *
  * @see BearerEndpoint
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
@@ -32,7 +40,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
  */
 public final class BearerTokenResponse {
     private final String bearerToken;
-    private long expiresIn = -1L;
+    private Long expiresIn;
     private String refreshToken;
     private String scope;
 
@@ -62,10 +70,11 @@ public final class BearerTokenResponse {
      * Get provided token expire time.
      *
      * @return Token expire time
+     * @see #setExpiresIn(long)
      * @see BearerTokenResponse
      * @since v1.0.0
      */
-    public long getExpiresIn() {
+    public Long getExpiresIn() {
         return expiresIn;
     }
 
@@ -86,6 +95,7 @@ public final class BearerTokenResponse {
      * Get provided refresh token.
      *
      * @return Refresh token
+     * @see #setRefreshToken(String)
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -110,6 +120,7 @@ public final class BearerTokenResponse {
      * Get provided token scope
      *
      * @return Scope of the token
+     * @see #setScope(String)
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -147,7 +158,7 @@ public final class BearerTokenResponse {
         return new HttpResponse(requestId, requestConsumer, HttpStatusCode.OK)
                 .setCashControl(new CacheControl().setNoStore(true))
                 .setContent(new Content("application/json", "{\"access_token\":\"" + response.getBearerToken() + "\"," +
-                        "\"token_type\":\"Bearer\"" + ((response.getExpiresIn() > -1L) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
+                        "\"token_type\":\"Bearer\"" + ((response.getExpiresIn() != null) ? ",\"expires_in\":" + response.getExpiresIn() : "") +
                         (response.getRefreshToken() != null ? ",\"refresh_token\":\"" + response.getRefreshToken() + "\"" : "") +
                         (response.getScope() != null ? ",\"scope\":\"" + response.getScope() + "\"" : "") + "}"));
     }

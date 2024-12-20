@@ -30,6 +30,33 @@ import java.util.Objects;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
+/**
+ * HTTP request/response content.
+ * <pre>
+ *     {@code
+ *     // Example code 1
+ *     String jsonString = "{\"key\" : \"value\"}";
+ *     var content = new Content("application/json", jsonString);
+ *     }
+ *     {@code
+ *     // Example code 2
+ *     var content = new Content("video/mp4", Paths.get("path/to/mp4/video"))
+ *          .setTransferEncodingChunked(true)
+ *          .setDownloadName("SampleVideo.mp4");
+ *     }
+ * </pre>
+ *
+ * @apiNote This version of API only supports <code>Transfer-Encoding</code> <b>chunked</b> and <code>Content-Encoding</code> <b>gzip</b> for incoming
+ * and outgoing content related encodings. <code>Content negotiation</code>, <code>Conditional requests</code> and <code>Range requests</code> are not
+ * yet supported by the server itself, but the API users can implement it appropriately in their code.
+ * @see #Content(String, Path)
+ * @see #Content(String, byte[])
+ * @see #Content(String, String)
+ * @see #Content(String, InputStream)
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc9110#name-representation-data-and-met">HTTP Semantics (rfc9110) - 8. Representation Data and
+ * Metadata</a>
+ * @since v1.0.0
+ */
 public final class Content {
     private final String contentType;
     private String downloadName;
@@ -37,74 +64,260 @@ public final class Content {
     private boolean contentEncodingGzipped;
     private final Object data;
 
+    /**
+     * Parent constructor for instancing <code>Content</code>.
+     *
+     * @param contentType <code>Content-Type</code> of the provided data
+     * @param data        Data that received/going to send
+     * @apiNote Only used for in-API tasks.
+     * @see Content
+     * @since v1.0.0
+     */
     Content(final String contentType,
             final Object data) {
         this.contentType = Objects.requireNonNull(contentType, "content type cannot be null");
         this.data = Objects.requireNonNull(data, "content data cannot be null");
     }
 
+    /**
+     * Create an instance of <code>Content</code> by providing <code>Path</code> as data.
+     * <pre>
+     *     {@code
+     *     // Example code
+     *     Path someVideoPath = Paths.get("path/to/a/video");
+     *     var content = new Content("video/mp4", someVideoPath);
+     *     }
+     * </pre>
+     *
+     * @param contentType <code>Content-Type</code> of the provided data
+     * @param data        <code>Path</code> of data
+     * @see Path
+     * @see Content
+     * @since v1.0.0
+     */
     public Content(final String contentType,
                    final Path data) {
         this(contentType, (Object) data);
     }
 
+    /**
+     * Create an instance of <code>Content</code> by providing <code>byte[]</code> as data.
+     * <pre>
+     *     {@code
+     *     // Example code
+     *     byte[] someByteArray = ...
+     *     var content = new Content("application/octet-stream", someByteArray);
+     *     }
+     * </pre>
+     *
+     * @param contentType <code>Content-Type</code> of the provided data
+     * @param data        <code>byte[]</code> of data
+     * @see Content
+     * @since v1.0.0
+     */
     public Content(final String contentType,
                    final byte[] data) {
         this(contentType, (Object) data);
     }
 
+    /**
+     * Create an instance of <code>Content</code> by providing <code>String</code> as data.
+     * <pre>
+     *     {@code
+     *     // Example code
+     *     String someString = "this is a sample string";
+     *     var content = new Content("text/plain", someString);
+     *     }
+     * </pre>
+     *
+     * @param contentType <code>Content-Type</code> of the provided data
+     * @param data        <code>String</code> of data
+     * @see Content
+     * @since v1.0.0
+     */
     public Content(final String contentType,
                    final String data) {
         this(contentType, (Object) (data.getBytes(StandardCharsets.UTF_8)));
     }
 
+    /**
+     * Create an instance of <code>Content</code> by providing <code>InputStream</code> as data.
+     * <pre>
+     *     {@code
+     *     // Example code
+     *     var inputStream = new FileInputStream("path/to/a/pdf/file");
+     *     var content = new Content("application/pdf", inputStream);
+     *     }
+     * </pre>
+     *
+     * @param contentType <code>Content-Type</code> of the provided data
+     * @param data        <code>InputStream</code> of data
+     * @see Content
+     * @since v1.0.0
+     */
     public Content(final String contentType,
                    final InputStream data) {
         this(contentType, (Object) data);
         setTransferEncodingChunked(true);
     }
 
+    /**
+     * Get provided content type.
+     *
+     * @return Provided content type
+     * @see Content
+     * @since v1.0.0
+     */
     public String getContentType() {
         return contentType;
     }
 
+    /**
+     * Set name for content downloading. If this is set, the <code>Content-Disposition: attachment; filename="fileName"</code> header will present in
+     * the request and browsers will pop a download window.
+     * <pre>
+     *     {@code
+     *     // Example code
+     *     var path = Paths.get("SampleFile.exe");
+     *     var content = new Content("application/octet-stream", path)
+     *          .setDownloadName("SampleFile.exe");
+     *     }
+     * </pre>
+     *
+     * @param downloadName Content name for downloading process
+     * @return Same <code>Content</code> instance
+     * @see Content
+     * @since v1.0.0
+     */
     public Content setDownloadName(final String downloadName) {
-        this.downloadName = Objects.requireNonNull(downloadName, "download name cannot be null");
+        this.downloadName = Objects.requireNonNull(downloadName);
         return this;
     }
 
+    /**
+     * Get provided download name.
+     *
+     * @return Download name
+     * @see #setDownloadName(String)
+     * @see Content
+     * @since v1.0.0
+     */
     public String getDownloadName() {
         return downloadName;
     }
 
+    /**
+     * Set <code>Transfer-Encoding</code> to <b>'chunked'</b>. When this is enabled, default chunk size will get by the
+     * <code>HttpServerConfiguration</code>.
+     *
+     * @param transferEncodingChunked Set/Unset <code>Transfer-Encoding</code> to <b>'chunked'</b>
+     * @return Same <code>Content</code> instance
+     * @see HttpServerConfiguration#setMaxChunkSize(int)
+     * @see Content
+     * @since v1.0.0
+     */
     public Content setTransferEncodingChunked(final boolean transferEncodingChunked) {
         this.transferEncodingChunked = transferEncodingChunked;
         return this;
     }
 
+    /**
+     * Get is <code>Transfer-Encoding</code> set to <b>'chunked'</b>.
+     *
+     * @return <code>Transfer-Encoding</code> <b>chunked</b> status
+     * @see #setTransferEncodingChunked(boolean)
+     * @see Content
+     * @since v1.0.0
+     */
     public boolean isTransferEncodingChunked() {
         return transferEncodingChunked;
     }
 
+    /**
+     * Set <code>Content-Encoding</code> to <b>gzip</b>.
+     *
+     * @param contentEncodingGzipped Set/Unset <code>Content-Encoding</code> to <b>gzip</b>
+     * @return Same <code>Content</code> instance
+     * @see Content
+     * @since v1.0.0
+     */
     public Content setContentEncodingGzipped(final boolean contentEncodingGzipped) {
         if (data instanceof InputStream) throw new IllegalStateException("input stream with gzip not yet supported");
         this.contentEncodingGzipped = contentEncodingGzipped;
         return this;
     }
 
+    /**
+     * Get is <code>Content-Encoding</code> set to <b>gzip</b>.
+     *
+     * @return <code>Content-Encoding</code> <b>gzip</b> status
+     * @see #setContentEncodingGzipped(boolean)
+     * @see Content
+     * @since v1.0.0
+     */
     public boolean isContentEncodingGzipped() {
         return contentEncodingGzipped;
     }
 
+    /**
+     * Set content data
+     *
+     * @param data Content data
+     * @apiNote This method is only for the in-API tasks.
+     * @see Content
+     * @since v1.0.0
+     */
     private void setData(final Object data) {
         Objects.requireNonNull(data);
     }
 
+    /**
+     * Get content data. This method always return an <code>Object</code>. API users need to implement their own way to handle data by using the
+     * <code>Content-Type</code>.
+     *
+     * @return Data as <code>Object</code>
+     * @apiNote When receiving,
+     * <ul>
+     *  <li><code>multipart/form-data</code>, the data should be cast to <code>List</code> of <code>MultiPartFormData></code>.</li>
+     *  <li><code>application/x-www-form-urlencoded</code>, the data should cast to <code>UrlEncodedData</code>.</li>
+     *  <li><code>Transfer-Encoding: chunked</code>, the data should cast to <code>Path</code>.</li>
+     *  <li>Others should cast to <code>byte[]</code>.</li>
+     * </ul>
+     * @see #getContentType()
+     * @see MultiPartFormData
+     * @see UrlEncodedData
+     * @see Path
+     * @see Content
+     * @since v1.0.0
+     */
     public Object getData() {
         return data;
     }
 
+    /**
+     * Used for read content data from socket connection.
+     *
+     * @apiNote This class is public but not useful for the API users. Only used for in-API tasks.
+     * @see Content
+     * @since v1.0.0
+     */
     public static class ReadOperations {
+        /**
+         * General process task for incoming content.
+         *
+         * @param requestId       <code>HttpRequest</code> id
+         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+         * @param contentType     <code>Content-Type</code>
+         * @param contentLength   <code>Content-Length</code>
+         * @param chunked         <code>Transfer-Encoding</code> chunked?
+         * @param gzipped         <code>Content-Encoding</code> gzipped?
+         * @return New instance of <code>Content</code>
+         * @throws IOException Error while reading data from the socket input stream
+         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @see RequestConsumer
+         * @see Content
+         * @since v1.0.0
+         */
         public static Content process(final long requestId,
                                       final RequestConsumer requestConsumer,
                                       final String contentType,
@@ -132,6 +345,19 @@ public final class Content {
             return new Content(contentType, data);
         }
 
+        /**
+         * Read chunked content from the socket input stream.
+         *
+         * @param requestId       <code>HttpRequest</code> id
+         * @param path            <code>Path</code> that going to store the chunked content
+         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+         * @return Read process success or fail status
+         * @throws IOException Error while reading data from the socket input stream
+         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @see RequestConsumer
+         * @see Path
+         * @since v1.0.0
+         */
         private static boolean readChunked(final long requestId,
                                            final Path path,
                                            final RequestConsumer requestConsumer) throws IOException {
@@ -173,6 +399,17 @@ public final class Content {
             return true;
         }
 
+        /**
+         * Decompress gzip content.
+         *
+         * @param content         Received content
+         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+         * @return Type of decompressed data
+         * @throws IOException Error while decompressing data
+         * @see RequestConsumer
+         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @since v1.0.0
+         */
         private static Object readGzip(final Object content,
                                        final RequestConsumer requestConsumer) throws IOException {
             switch (content) {
@@ -200,8 +437,28 @@ public final class Content {
         }
     }
 
-    // TODO content encoding (gzip) has bugs
+    /**
+     * Used to write content data to socket connection.
+     *
+     * @apiNote This class is public but not useful for the API users. Only used for in-API tasks.
+     * @see Content
+     * @since v1.0.0
+     */
     public static class WriteOperations {
+        // TODO content encoding (gzip) has bugs
+
+        /**
+         * Process headers and data (like gzip) to send along with the <code>HttpResponse</code>.
+         *
+         * @param httpServerConfiguration <code>HttpServerConfiguration</code>
+         * @param content                 <code>Content</code> that need to be processed
+         * @return HTTP content related headers
+         * @throws IOException Error while processing content
+         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+         * @see io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration HttpServerConfiguration
+         * @see Content
+         * @since v1.0.0
+         */
         public static String processOutgoingContent(final HttpServerConfiguration httpServerConfiguration,
                                                     final Content content) throws IOException {
             if (content == null) return "Content-Length: 0\r\n";
@@ -257,6 +514,17 @@ public final class Content {
             return result.toString();
         }
 
+        /**
+         * Write pre-processed content data to the socket output stream.
+         *
+         * @param requestConsumer <code>RequestConsumer</code>
+         * @param content         Pre-processed <code>Content</code>
+         * @throws IOException Error while writing data to the socket output stream
+         * @see #processOutgoingContent(HttpServerConfiguration, Content)
+         * @see RequestConsumer
+         * @see Content
+         * @since v1.0.0
+         */
         public static void writeContent(final RequestConsumer requestConsumer,
                                         final Content content) throws IOException {
             try (InputStream inputStream = switch (content.getData()) {

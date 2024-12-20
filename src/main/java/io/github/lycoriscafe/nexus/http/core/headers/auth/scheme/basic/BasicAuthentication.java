@@ -27,6 +27,10 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  *      HTTP/1.1 401 Unauthorized
  *      WWW-Authenticate: Basic realm="specifiedRealm", charset="UTF-8"
  *      }
+ *      {@code
+ *      // Example code
+ *      var basicAuth = new BasicAuthentication("my realm");
+ *      }
  * </pre>
  *
  * @see BasicAuthorization

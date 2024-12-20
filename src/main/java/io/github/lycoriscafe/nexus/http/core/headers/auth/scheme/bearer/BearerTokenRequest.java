@@ -60,6 +60,7 @@ public final class BearerTokenRequest {
      * Get other parameters come along with the token request (without <code>grant_type</code>).
      *
      * @return Other parameters
+     * @see #setParams(Map)
      * @see BearerTokenRequest
      * @since v1.0.0
      */
