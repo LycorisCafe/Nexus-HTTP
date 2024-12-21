@@ -20,12 +20,12 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * Content type <code>multipart/form-data</code> for <b>incoming content</b>. If request has header <code>Content-Type: multipart/form-data</code>,
@@ -200,17 +200,16 @@ public final class MultipartFormData {
         if (content == null) return null;
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[]) content.getData());
-        BufferedReader bufferedInputStream = new BufferedReader(new InputStreamReader(inputStream));
         List<MultipartFormData> data = new NonDuplicateList<>();
         while (true) {
-            String line = bufferedInputStream.readLine();
-            if (line.equals(boundary + "--")) break;
-            if (!line.equals(boundary)) {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid boundary");
-                return null;
-            }
+            String line;
+            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
 
-            String[] segmentData = bufferedInputStream.readLine().split(":", 2)[1].trim().split(";", 0);
+            if (line.equals(boundary + "--")) break;
+            if (!line.equals(boundary)) return invalidFormSegment(requestConsumer, requestId);
+
+            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
+            String[] segmentData = line.split(":", 2)[1].trim().split(";", 0);
             if (segmentData.length < 2) {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
                 return null;
@@ -228,7 +227,8 @@ public final class MultipartFormData {
                         case "name" -> multiPartFormData.setName(keyVal[1].trim().replaceAll("\"", ""));
                         case "filename" -> {
                             multiPartFormData.setFileName(keyVal[1].trim().replaceAll("\"", ""));
-                            String[] contentType = bufferedInputStream.readLine().split(":", 0);
+                            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
+                            String[] contentType = line.split(":", 0);
                             if (contentType.length > 2 || contentType.length == 0 || !contentType[0].equalsIgnoreCase("content-type")) {
                                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
                                 return null;
@@ -240,29 +240,70 @@ public final class MultipartFormData {
                 }
             }
 
-            if (!bufferedInputStream.readLine().isEmpty()) {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
-                return null;
-            }
+            if ((line = readLine(inputStream)) == null || line.isEmpty()) return invalidFormSegment(requestConsumer, requestId);
 
-            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-            byte[] buffer = new byte[2];
-            byte[] terminator = "\r\n".getBytes(StandardCharsets.UTF_8);
-
-            if (inputStream.read(buffer) != 2) {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
-                return null;
-            }
-
-            while (buffer != terminator) {
-                byteArrayOutputStream.write(buffer[0]);
-                buffer[0] = buffer[1];
-                buffer[1] = (byte) inputStream.read();
-            }
-
+            ByteArrayOutputStream byteArrayOutputStream = readByte(inputStream);
+            if (byteArrayOutputStream == null) return invalidFormSegment(requestConsumer, requestId);
             multiPartFormData.setData(byteArrayOutputStream.toByteArray());
         }
 
         return new Content("multipart/form-data", data);
+    }
+
+    /**
+     * Send {@code 400 Bad Request} if the form data ins invalid.
+     *
+     * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
+     * @param requestId       Request id bound to the HTTP request
+     * @return <b>Always return null</b>
+     * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
+     * @since v1.0.0
+     */
+    private static Content invalidFormSegment(final RequestConsumer requestConsumer,
+                                              final long requestId) {
+        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
+        return null;
+    }
+
+    /**
+     * Read string line from the given input stream. The line terminator always will {@code \r\n}.
+     *
+     * @param inputStream {@code InputStream} that data should be read from
+     * @return String (charset UTF-8)
+     * @throws IOException Error while reading data from the input stream
+     * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
+     * @since v1.0.0
+     */
+    private static String readLine(final InputStream inputStream) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = readByte(inputStream);
+        return byteArrayOutputStream == null ? null :
+                byteArrayOutputStream.size() == 0 ? "" : byteArrayOutputStream.toString(StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Read byte line from the given input stream. The line terminator always will {@code \r\n}.
+     *
+     * @param inputStream {@code InputStream} that data should be read from
+     * @return {@code ByteArrayOutputStream} that can easily convert to {@code String} or {@code byte[]}
+     * @throws IOException Error while reading data from the input stream
+     * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
+     * @since v1.0.0
+     */
+    private static ByteArrayOutputStream readByte(final InputStream inputStream) throws IOException {
+        byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        byte[] terminatePoint = new byte[2];
+
+        int c = inputStream.read(terminatePoint, 0, 2);
+        if (c != 2) return null;
+
+        while (!Arrays.equals(lineTerminator, terminatePoint)) {
+            int b = inputStream.read();
+            if (b == -1) return null;
+            byteArrayOutputStream.write(terminatePoint[0]);
+            terminatePoint[0] = terminatePoint[1];
+            terminatePoint[1] = (byte) b;
+        }
+        return byteArrayOutputStream;
     }
 }
