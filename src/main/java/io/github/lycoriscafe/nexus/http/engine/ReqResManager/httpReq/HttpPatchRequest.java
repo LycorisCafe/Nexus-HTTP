@@ -28,6 +28,13 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
  * @since v1.0.0
  */
 public final class HttpPatchRequest extends HttpPostRequest {
+    /**
+     * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
+     * @param requestId       Request id bound to the HTTP request
+     * @param requestMethod   HTTP request method of the request
+     * @see HttpPatchRequest
+     * @since v1.0.0
+     */
     public HttpPatchRequest(final RequestConsumer requestConsumer,
                             final long requestId,
                             final HttpRequestMethod requestMethod) {

@@ -27,18 +27,32 @@ import java.util.Locale;
 /**
  * HTTP GET request method.
  *
+ * @apiNote Since {@code GET} request method don't accept content, all request headers beginning with {@code Content-} must be avoided.
  * @see GET
+ * @see #finalizeRequest()
  * @see HttpRequest
  * @since v1.0.0
  */
-public sealed class HttpGetRequest extends HttpRequest
-        permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
+public sealed class HttpGetRequest extends HttpRequest permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
+    /**
+     * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
+     * @param requestId       Request id bound to the HTTP request
+     * @param requestMethod   HTTP request method of the request
+     * @see HttpGetRequest
+     * @since v1.0.0
+     */
     public HttpGetRequest(final RequestConsumer requestConsumer,
                           final long requestId,
                           final HttpRequestMethod requestMethod) {
         super(requestConsumer, requestId, requestMethod);
     }
 
+    /**
+     * This method will process the content related operations. Since {@code GET}, {@code DELETE}, {@code HEAD} and {@code OPTIONS} request methods
+     * are not supporting the content related operations, it will cause a connection drop.
+     *
+     * @since v1.0.0
+     */
     @Override
     public void finalizeRequest() {
         if (getHeaders() != null) {

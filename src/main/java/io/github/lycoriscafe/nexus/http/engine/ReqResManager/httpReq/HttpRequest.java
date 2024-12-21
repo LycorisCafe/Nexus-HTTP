@@ -61,8 +61,6 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     private Authorization authorization;
 
     /**
-     * Create an instance of {@code HttpRequest}.
-     *
      * @param requestConsumer {@code RequestConsumer} of incoming HTTP request
      * @param requestId       Unique identification for HTTP request
      * @param requestMethod   HTTP request method
@@ -315,7 +313,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
                     if (reqEndpoint.isAuthenticated() && getAuthorization() == null) {
                         getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAUTHORIZED)
-                                .setAuthentications(getRequestConsumer().getServerConfiguration().getDefaultAuthentications()));
+                                .setAuthentications(getRequestConsumer().getHttpServerConfiguration().getDefaultAuthentications()));
                         return;
                     }
 

@@ -28,16 +28,42 @@ import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * Process raw data read from {@code RequestConsumer}.
+ *
+ * @see RequestConsumer
+ * @since v1.0.0
+ */
 public final class RequestProcessor {
     private final RequestConsumer requestConsumer;
 
+    /**
+     * Create an instance of {@code RequestProcessor}.
+     *
+     * @param requestConsumer {@code RequestConsumer} bound to this instance
+     * @see RequestProcessor
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public RequestProcessor(final RequestConsumer requestConsumer) {
         this.requestConsumer = Objects.requireNonNull(requestConsumer);
     }
 
+    /**
+     * Process headers of the read request, divide them into appropriate request method classes and call request finalizers.
+     *
+     * @param requestId   HTTP request id given by {@code RequestConsumer}
+     * @param requestLine Request method line that contains request method, URI and HTTP version
+     * @param headers     List of header fields
+     * @see HttpRequest
+     * @see RequestConsumer
+     * @see RequestProcessor
+     * @since v1.0.0
+     */
     public void process(final long requestId,
                         final String requestLine,
                         final List<String> headers) {
+        if (requestId == -1L) return;
         String[] request = requestLine.split(" ");
 
         if (!request[2].trim().equals("HTTP/1.1")) {
@@ -65,7 +91,7 @@ public final class RequestProcessor {
             case 1 -> httpRequest.setEndpoint(decodeUri(uriParts[0]));
             case 2 -> {
                 httpRequest.setEndpoint(decodeUri(uriParts[0]));
-                httpRequest.setParameters(decodeParams(uriParts[1]));
+                httpRequest.setParameters(decodeQueryParams(uriParts[1]));
             }
             default -> {
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid query parameters provided");
@@ -90,7 +116,16 @@ public final class RequestProcessor {
         httpRequest.finalizeRequest();
     }
 
-    private static Map<String, String> decodeParams(final String params) {
+    /**
+     * Process URI query parameters.
+     *
+     * @param params Full query string that need to be processed
+     * @return Map of query key, value pairs
+     * @see #process(long, String, List)
+     * @see RequestProcessor
+     * @since v1.0.0
+     */
+    private static Map<String, String> decodeQueryParams(final String params) {
         Map<String, String> decodedParams = new HashMap<>();
         String[] parts = params.split("&", 0);
         for (String part : parts) {
@@ -100,6 +135,14 @@ public final class RequestProcessor {
         return decodedParams;
     }
 
+    /**
+     * Process received URI to normal string by removing ASCII integers and escapes.
+     *
+     * @param uri URI string that need to be decoded
+     * @return Decoded URI string
+     * @see RequestProcessor
+     * @since v1.0.0
+     */
     private static String decodeUri(final String uri) {
         return URLDecoder.decode(uri.trim(), StandardCharsets.UTF_8);
     }

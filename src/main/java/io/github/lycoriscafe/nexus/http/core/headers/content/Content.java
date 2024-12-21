@@ -321,7 +321,7 @@ public final class Content {
                                       final boolean gzipped) throws IOException {
             Object data = null;
             if (chunked) {
-                data = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()), "nexus-content-", null);
+                data = Files.createTempFile(Paths.get(requestConsumer.getHttpServerConfiguration().getTempDirectory()), "nexus-content-", null);
                 if (!readChunked(requestId, (Path) data, requestConsumer)) return null;
             }
 
@@ -369,19 +369,19 @@ public final class Content {
                 int chunkSize = Integer.parseInt(line, 16);
                 if (chunkSize == 0) break;
                 totalChunkSize += chunkSize;
-                if (totalChunkSize > requestConsumer.getServerConfiguration().getMaxChunkedContentLength()) {
+                if (totalChunkSize > requestConsumer.getHttpServerConfiguration().getMaxChunkedContentLength()) {
                     requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE, "max chunked size exceeded");
                     return false;
                 }
 
                 while (true) {
-                    if (chunkSize <= requestConsumer.getServerConfiguration().getMaxChunkSize()) {
+                    if (chunkSize <= requestConsumer.getHttpServerConfiguration().getMaxChunkSize()) {
                         Files.write(path, inputStream.readNBytes(chunkSize), StandardOpenOption.APPEND);
                         break;
                     } else {
-                        Files.write(path, inputStream.readNBytes(requestConsumer.getServerConfiguration()
+                        Files.write(path, inputStream.readNBytes(requestConsumer.getHttpServerConfiguration()
                                 .getMaxChunkSize()), StandardOpenOption.APPEND);
-                        chunkSize -= requestConsumer.getServerConfiguration().getMaxChunkSize();
+                        chunkSize -= requestConsumer.getHttpServerConfiguration().getMaxChunkSize();
                     }
                 }
 
@@ -409,12 +409,13 @@ public final class Content {
                                        final RequestConsumer requestConsumer) throws IOException {
             switch (content) {
                 case Path path -> {
-                    Path temp = Files.createTempFile(Paths.get(requestConsumer.getServerConfiguration().getTempDirectory()), "nexus-content-", null);
-                    try (var gzipInputStream = new GZIPInputStream(new FileInputStream(path.toFile()), requestConsumer.getServerConfiguration()
+                    Path temp = Files.createTempFile(Paths.get(requestConsumer.getHttpServerConfiguration()
+                            .getTempDirectory()), "nexus-content-", null);
+                    try (var gzipInputStream = new GZIPInputStream(new FileInputStream(path.toFile()), requestConsumer.getHttpServerConfiguration()
                             .getMaxChunkSize());
                          var fileOutputStream = new FileOutputStream(temp.toFile())) {
                         int c;
-                        byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
+                        byte[] buffer = new byte[requestConsumer.getHttpServerConfiguration().getMaxChunkSize()];
                         while ((c = gzipInputStream.read(buffer)) != -1) {
                             fileOutputStream.write(buffer, 0, c);
                         }
@@ -423,7 +424,7 @@ public final class Content {
                 }
                 case byte[] bytes -> {
                     try (var gzipInputStream = new GZIPInputStream(requestConsumer.getSocket()
-                            .getInputStream(), requestConsumer.getServerConfiguration().getMaxChunkSize())) {
+                            .getInputStream(), requestConsumer.getHttpServerConfiguration().getMaxChunkSize())) {
                         return gzipInputStream.read(bytes);
                     }
                 }
@@ -530,7 +531,7 @@ public final class Content {
             }) {
 
                 int c;
-                byte[] buffer = new byte[requestConsumer.getServerConfiguration().getMaxChunkSize()];
+                byte[] buffer = new byte[requestConsumer.getHttpServerConfiguration().getMaxChunkSize()];
                 while ((c = inputStream.read(buffer)) != -1) {
                     if (content.isTransferEncodingChunked()) {
                         requestConsumer.getSocket().getOutputStream().write((Integer.toHexString(c) + "\r\n").getBytes(StandardCharsets.UTF_8));

@@ -37,12 +37,27 @@ import java.util.Locale;
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
     private Content content;
 
+    /**
+     * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
+     * @param requestId       Request id bound to the HTTP request
+     * @param requestMethod   HTTP request method of the request
+     * @see HttpPostRequest
+     * @since v1.0.0
+     */
     public HttpPostRequest(final RequestConsumer requestConsumer,
                            final long requestId,
                            final HttpRequestMethod requestMethod) {
         super(requestConsumer, requestId, requestMethod);
     }
 
+    /**
+     * Get request content.
+     *
+     * @return Received {@code Content}
+     * @see Content
+     * @see HttpRequest
+     * @since v1.0.0
+     */
     public Content getContent() {
         return content;
     }
@@ -51,6 +66,12 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     private boolean gzipped;
     private Integer contentLength = null;
 
+    /**
+     * Process content reading related operations.
+     *
+     * @see Content.ReadOperations
+     * @since v1.0.0
+     */
     @Override
     public void finalizeRequest() {
         for (int i = 0; i < getHeaders().size(); i++) {
@@ -96,7 +117,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                     }
                     case "content-encoding" -> {
                         if (values.length == 1 && values[0].equals("gzip")) {
-                            chunked = true;
+                            gzipped = true;
                         } else {
                             getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only gzip content encoding supported");
                             return false;
@@ -115,7 +136,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
             if (getHeaders().get(i).getName().equalsIgnoreCase("content-length")) {
                 try {
                     contentLength = Integer.parseInt(getHeaders().get(i).getValue());
-                    if (contentLength > getRequestConsumer().getServerConfiguration().getMaxContentLength()) {
+                    if (contentLength > getRequestConsumer().getHttpServerConfiguration().getMaxContentLength()) {
                         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large");
                         return false;
                     }

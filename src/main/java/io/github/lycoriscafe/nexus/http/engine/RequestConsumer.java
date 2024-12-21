@@ -16,6 +16,7 @@
 
 package io.github.lycoriscafe.nexus.http.engine;
 
+import io.github.lycoriscafe.nexus.http.HttpServer;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
@@ -31,6 +32,15 @@ import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+/**
+ * Base of the server. The basic request receiving and response sending operations are done by this class. Every receiving connection will have an
+ * instance of this class. Also, instance of this class will be able to handle {@code Long.MAX_VALUE - 1} times of requests in keep-alive connection.
+ * Connection related settings can be found at {@code HttpServerConfiguration}.
+ *
+ * @see HttpServerConfiguration
+ * @see Long#MAX_VALUE
+ * @since v1.0.0
+ */
 public final class RequestConsumer implements Runnable {
     private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
 
@@ -49,6 +59,19 @@ public final class RequestConsumer implements Runnable {
     private long requestId = 0L;
     private long responseId = 0L;
 
+    /**
+     * Create an instance of the {@code RequestConsumer}.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} passed to {@code HttpServer}.
+     * @param database            {@code Database} initialized by {@code HttpServer}
+     * @param socket              {@code Socket} initialized by {@code HttpServer}
+     * @throws IOException Error while setting socket timeout
+     * @apiNote Connection timeout specified by {@code HttpServerConfiguration} will handle in here.
+     * @see HttpServer
+     * @see HttpServerConfiguration
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public RequestConsumer(final HttpServerConfiguration serverConfiguration,
                            final Database database,
                            final Socket socket) throws IOException {
@@ -62,33 +85,69 @@ public final class RequestConsumer implements Runnable {
         responseQue = new TreeMap<>();
     }
 
+    /**
+     * Calculate and return unique request identifier for this socket connection. this method can generate {@code 0} to {@code Long.MAX_VALUE} times
+     * of ids.
+     *
+     * @return Unique request identifier
+     * @see Long#MAX_VALUE
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     private long getRequestId() {
-        if (requestId == Long.MAX_VALUE) {
-            try {
-                wait();
-                return -1L;
-            } catch (InterruptedException e) {
-                // just wait for drop the connection
-            }
-        }
+        if (requestId == Long.MAX_VALUE) return -1L;
         if (requestId + 2 == Long.MAX_VALUE) {
             dropConnection(Long.MAX_VALUE, HttpStatusCode.INTERNAL_SERVER_ERROR, "connection reset");
         }
         return requestId++;
     }
 
-    public HttpServerConfiguration getServerConfiguration() {
+    /**
+     * Get server based {@code HttpServerConfiguration}.
+     *
+     * @return Server based {@code HttpServerConfiguration}
+     * @see HttpServerConfiguration
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
+    public HttpServerConfiguration getHttpServerConfiguration() {
         return serverConfiguration;
     }
 
+    /**
+     * Get server based {@code Database}.
+     *
+     * @return Server based {@code Database}
+     * @see Database
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public Database getDatabase() {
         return database;
     }
 
+    /**
+     * Get initialized socket for this connection by {@code HttpServer}.
+     *
+     * @return Initialized socket.
+     * @see Socket
+     * @see HttpServer
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public Socket getSocket() {
         return socket;
     }
 
+    /**
+     * Method to read character stream with direct socket input stream. The point is efficient and speed reading of bytes and convert into string. The
+     * line terminator always will {@code \r\n}.
+     *
+     * @return String, read using socket input stream and converted (charset UTF-8)
+     * @throws IOException Error while reading data from socket input stream
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public String readLine() throws IOException {
         byteArrayOutputStream.reset();
 
@@ -110,6 +169,13 @@ public final class RequestConsumer implements Runnable {
         return byteArrayOutputStream.size() == 0 ? "" : byteArrayOutputStream.toString(StandardCharsets.UTF_8);
     }
 
+    /**
+     * Base method to read request data, decode and pass into the {@code RequestProcessor}.
+     *
+     * @see RequestProcessor
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     @Override
     public void run() {
         logger.atTrace().log("client connection received");
@@ -149,28 +215,44 @@ public final class RequestConsumer implements Runnable {
         logger.atTrace().log("client connection terminated");
     }
 
+    /**
+     * Prepare HTTP request to drop the connection. This method is used to error reporting in-API exception occurred. The {@code errorMessage}
+     * settings can be found in {@code HttpServerConfiguration}.
+     *
+     * @param requestId      Request id bound to the request that throws an exception
+     * @param httpStatusCode HTTP status code
+     * @param errorMessage   Detailed error message
+     * @see HttpServerConfiguration#setAddErrorMessageToResponseHeaders(boolean)
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode,
                                final String errorMessage) {
         logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
-        HttpResponse httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
-        if (getServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
+        var httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
+        if (getHttpServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
             httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
         }
         send(httpResponse);
     }
 
+    /**
+     * Base response writer method. Response headers are write to the socket output stream by this method, but content related write operations are
+     * handled by the {@code Content} class. This method is constructed to support {@code HTTP Pipelining}.
+     *
+     * @param httpResponse {@code HttpResponse} that should be sent
+     * @see Content.WriteOperations#writeContent(RequestConsumer, Content)
+     * @see RequestConsumer
+     * @since v1.0.0
+     */
     public synchronized void send(final HttpResponse httpResponse) {
-        if (socket.isClosed()) {
-            return;
-        }
+        if (socket.isClosed()) return;
         responseQue.put(httpResponse.getRequestId(), httpResponse);
-// TODO rethink the logic
+
         List<Long> keySet = responseQue.keySet().stream().toList();
         for (Long key : keySet) {
-            if (key > responseId) {
-                break;
-            }
+            if (key > responseId) break;
 
             HttpResponse response = responseQue.get(key);
             if (response.getRequestId() == responseId) {
@@ -182,14 +264,9 @@ public final class RequestConsumer implements Runnable {
                     outputStream.write(headers.getBytes(StandardCharsets.UTF_8));
                     outputStream.flush();
 
-                    if (response.getContent() != null) {
-                        Content.WriteOperations.writeContent(this, response.getContent());
-                    }
+                    if (response.getContent() != null) Content.WriteOperations.writeContent(this, response.getContent());
 
-                    if (response.isDropConnection()) {
-                        socket.close();
-                        notify();
-                    }
+                    if (response.isDropConnection()) socket.close();
                 } catch (IOException e) {
                     logger.atDebug().log(e.getMessage());
                 }

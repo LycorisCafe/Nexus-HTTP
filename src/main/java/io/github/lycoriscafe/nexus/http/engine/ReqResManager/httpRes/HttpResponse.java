@@ -80,14 +80,14 @@ public final class HttpResponse {
         this.requestId = requestId;
         this.requestConsumer = Objects.requireNonNull(requestConsumer);
 
-        headers = requestConsumer.getServerConfiguration().getDefaultHeaders();
-        cookies = requestConsumer.getServerConfiguration().getDefaultCookies();
-        contentSecurityPolicies = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicies();
-        contentSecurityPolicyReportOnly = requestConsumer.getServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
-        strictTransportSecurity = requestConsumer.getServerConfiguration().getDefaultStrictTransportSecurity();
-        xContentTypeOptionsNoSniff = requestConsumer.getServerConfiguration().isDefaultXContentTypeOptionsNoSniff();
-        corsResponse = requestConsumer.getServerConfiguration().getDefaultCors();
-        cacheControl = requestConsumer.getServerConfiguration().getDefaultCacheControl();
+        headers = requestConsumer.getHttpServerConfiguration().getDefaultHeaders();
+        cookies = requestConsumer.getHttpServerConfiguration().getDefaultCookies();
+        contentSecurityPolicies = requestConsumer.getHttpServerConfiguration().getDefaultContentSecurityPolicies();
+        contentSecurityPolicyReportOnly = requestConsumer.getHttpServerConfiguration().getDefaultContentSecurityPolicyReportOnly();
+        strictTransportSecurity = requestConsumer.getHttpServerConfiguration().getDefaultStrictTransportSecurity();
+        xContentTypeOptionsNoSniff = requestConsumer.getHttpServerConfiguration().isDefaultXContentTypeOptionsNoSniff();
+        corsResponse = requestConsumer.getHttpServerConfiguration().getDefaultCors();
+        cacheControl = requestConsumer.getHttpServerConfiguration().getDefaultCacheControl();
     }
 
     /**
@@ -680,7 +680,7 @@ public final class HttpResponse {
                     .append(CORSResponse.processOutgoingCORS(getCorsResponse()))
                     .append(Authentication.processOutgoingAuthentications(getAuthentications()))
                     .append(CacheControl.processOutgoingCacheControl(getCacheControl()))
-                    .append(Content.WriteOperations.processOutgoingContent(getRequestConsumer().getServerConfiguration(), getContent()));
+                    .append(Content.WriteOperations.processOutgoingContent(getRequestConsumer().getHttpServerConfiguration(), getContent()));
             if (isXContentTypeOptionsNoSniff()) output.append("X-Content-Type-Options: nosniff").append("\r\n");
             return output.append("\r\n").toString();
         } catch (Exception e) {
