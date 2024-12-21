@@ -16,6 +16,12 @@
 
 package io.github.lycoriscafe.nexus.http.core.statusCodes;
 
+/**
+ * HTTP status codes.
+ *
+ * @see <a href="https://datatracker.ietf.org/doc/rfc9110">HTTP Semantics (rfc 9110)</a>
+ * @since v1.0.0
+ */
 public enum HttpStatusCode {
     CONTINUE("100 Continue"),
     SWITCHING_PROTOCOLS("101 Switching Protocols"),
@@ -85,6 +91,13 @@ public enum HttpStatusCode {
         this.statusCode = statusCode;
     }
 
+    /**
+     * Get formatted HTTP status code to set to the response.
+     *
+     * @return Formatted HTTP status code
+     * @see HttpStatusCode
+     * @since v1.0.0
+     */
     public String getStatusCode() {
         return statusCode;
     }

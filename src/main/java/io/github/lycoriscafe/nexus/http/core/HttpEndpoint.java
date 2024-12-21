@@ -18,9 +18,46 @@ package io.github.lycoriscafe.nexus.http.core;
 
 import java.lang.annotation.*;
 
+/**
+ * Mark class as an HTTP endpoints holding class.
+ * <pre>
+ *     {@code
+ *     @HttpEndpoint
+ *     public class HttpEndpointsClass {
+ *          @GET("/sampleGetEndpoint")
+ *          public static HttpResponse sampleGetEndpoint(HttpGetRequest request,
+ *                                                       HttpResponse response) {
+ *              // The real endpoint will http://hsot:port/sampleGetEndpoint
+ *              // ...
+ *              return response;
+ *          }
+ *     }
+ *     }
+ *     {@code
+ *     @HttpEndpoint("/api/v1.0.0")
+ *     public class HttpEndpointsClass {
+ *          @GET("/sampleGetEndpoint")
+ *          public static HttpResponse sampleGetEndpoint(HttpGetRequest request,
+ *                                                       HttpResponse response) {
+ *              // The real endpoint will http://hsot:port/api/v1.0.0/sampleGetEndpoint
+ *              // ...
+ *              return response;
+ *          }
+ *     }
+ *     }
+ * </pre>
+ *
+ * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations
+ * @since v1.0.0
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface HttpEndpoint {
+    /**
+     * @return Extended endpoint value
+     * @see HttpEndpoint
+     * @since v1.0.0
+     */
     String value() default "";
 }

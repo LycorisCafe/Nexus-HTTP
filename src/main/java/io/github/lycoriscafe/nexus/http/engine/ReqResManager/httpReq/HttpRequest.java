@@ -193,8 +193,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     .setHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
             case UNAVAILABLE_FOR_LEGAL_REASONS -> {
                 var response = new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
-                if (reqEndpoint.getStatusAnnotationValue() != null) {
-                    response.setHeader(new Header("Link", reqEndpoint.getStatusAnnotationValue() + "; rel=\"blocked-by\""));
+                if (!reqEndpoint.getStatusAnnotationValue().isEmpty()) {
+                    response.setHeader(new Header("Link", "<" + reqEndpoint.getStatusAnnotationValue() + ">; rel=\"blocked-by\""));
                 }
                 yield response;
             }

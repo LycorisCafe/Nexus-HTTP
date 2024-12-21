@@ -16,11 +16,51 @@
 
 package io.github.lycoriscafe.nexus.http.core.requestMethods.annotations;
 
+import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+
 import java.lang.annotation.*;
 
+/**
+ * Mark endpoint method as an HTTP {@code GET} request method endpoint. There are few points that API users should follow.
+ * <ul>
+ *     <li>Annotated method must be {@code public} and {@code static}.</li>
+ *     <li>Annotated method must use return type as {@code HttpResponse}.</li>
+ *     <li>Annotated method must have 2 parameters. {@code HttpGetRequest} and {@code HttpResponse} respectively.</li>
+ *     <li>The class holding the annotated method must be annotated with {@code HttpEndpoint}.</li>
+ * </ul>
+ * When doing the in-method processing it's recommended to return the same {@code HttpResponse} that got as a method parameter with any changes (for
+ * more info, see {@code HttpResponse} class).
+ * <pre>
+ *     {@code
+ *     @GET("/sampleGetEndpoint")
+ *     public static HttpResponse sampleGetEndpoint(HttpGetRequest request,
+ *                                                  HttpResponse response) {
+ *         // ...
+ *         return response;
+ *     }
+ *     }
+ * </pre>
+ *
+ * @apiNote Make sure to change the HTTP status code appropriately when returning the {@code HttpResponse}. The default value is {@code 200 OK}.
+ * @see HttpGetRequest
+ * @see HttpResponse
+ * @see HttpStatusCode
+ * @see HttpResponse#setStatusCode(HttpStatusCode)
+ * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations
+ * @see HttpEndpoint
+ * @since v1.0.0
+ */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface GET {
+    /**
+     * @return Request endpoint value
+     * @see GET
+     * @since v1.0.0
+     */
     String value();
 }
