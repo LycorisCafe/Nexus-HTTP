@@ -17,8 +17,16 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PATCH;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * HTTP PATCH request method.
+ *
+ * @see PATCH
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public final class HttpPatchRequest extends HttpPostRequest {
     public HttpPatchRequest(final RequestConsumer requestConsumer,
                             final long requestId,

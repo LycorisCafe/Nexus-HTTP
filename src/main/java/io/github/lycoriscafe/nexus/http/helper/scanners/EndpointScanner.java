@@ -79,6 +79,10 @@ public final class EndpointScanner {
                         endpointValue = m.getAnnotation(PATCH.class).value();
                         reqMethod = HttpRequestMethod.PATCH;
                     }
+                    case Method m when m.isAnnotationPresent(HEAD.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        endpointValue = m.getAnnotation(HEAD.class).value();
+                        reqMethod = HttpRequestMethod.HEAD;
+                    }
                     case Method m when m.isAnnotationPresent(BearerEndpoint.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(BearerEndpoint.class).value().value();
                         reqMethod = HttpRequestMethod.POST;

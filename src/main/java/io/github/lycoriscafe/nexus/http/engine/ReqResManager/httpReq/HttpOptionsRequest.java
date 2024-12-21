@@ -17,8 +17,16 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.OPTIONS;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * HTTP OPTIONS request method.
+ *
+ * @see OPTIONS
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public final class HttpOptionsRequest extends HttpGetRequest {
     public HttpOptionsRequest(final RequestConsumer requestConsumer,
                               final long requestId,

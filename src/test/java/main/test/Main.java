@@ -17,7 +17,6 @@
 package main.test;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
-import io.github.lycoriscafe.nexus.http.HttpServerException;
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic.BasicAuthentication;
@@ -39,7 +38,7 @@ import java.sql.SQLException;
 
 @HttpEndpoint
 public class Main {
-    public static void main(String[] args) throws ScannerException, SQLException, IOException, HttpServerException {
+    public static void main(String[] args) throws ScannerException, SQLException, IOException {
         HttpServerConfiguration httpServerConfiguration = new HttpServerConfiguration("main.test")
                 .setPort(2004)
                 .setStaticFilesDirectory(null)
@@ -53,7 +52,7 @@ public class Main {
     public static HttpResponse helloEndpoint(final HttpGetRequest httpGetRequest,
                                              final HttpResponse httpResponse) {
         return httpResponse.setContent(new Content("text/plan", "Hello world"))
-                .setCookie(new Cookie("testCookie", "testCookieValue"));
+                .addCookie(new Cookie("testCookie", "testCookieValue"));
     }
 
     @GET("/test")

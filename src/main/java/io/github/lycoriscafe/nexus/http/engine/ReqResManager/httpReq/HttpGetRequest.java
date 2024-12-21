@@ -18,11 +18,19 @@ package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.util.Locale;
 
+/**
+ * HTTP GET request method.
+ *
+ * @see GET
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public sealed class HttpGetRequest extends HttpRequest
         permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
     public HttpGetRequest(final RequestConsumer requestConsumer,
@@ -36,8 +44,7 @@ public sealed class HttpGetRequest extends HttpRequest
         if (getHeaders() != null) {
             for (Header header : getHeaders()) {
                 if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST,
-                            "content cannot be processed with provided request method");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content cannot be processed with provided request method");
                     return;
                 }
             }

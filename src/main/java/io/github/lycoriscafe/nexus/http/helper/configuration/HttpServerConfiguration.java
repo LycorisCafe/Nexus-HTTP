@@ -55,7 +55,7 @@ public final class HttpServerConfiguration {
     private List<Header> defaultHeaders = null;
     private List<Authentication> defaultAuthentications = null;
     private List<Cookie> defaultCookies = null;
-    private CORSResponse defaultCORSResponse = null;
+    private CORSResponse defaultCcorsResponse = null;
     private List<ReportingEndpoint> reportingEndpoints = null;
     private List<ContentSecurityPolicy> defaultContentSecurityPolicies = null;
     private List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly = null;
@@ -118,9 +118,9 @@ public final class HttpServerConfiguration {
         return threadType;
     }
 
-    public HttpServerConfiguration setTempDirectory(final String tempDirectory) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setTempDirectory(final String tempDirectory) {
         Objects.requireNonNull(tempDirectory);
-        if (tempDirectory.isBlank()) throw new HttpServerConfigurationException("temp directory cannot be empty/blank");
+        if (tempDirectory.isBlank()) throw new IllegalStateException("temp directory cannot be empty/blank");
         this.tempDirectory = tempDirectory;
         return this;
     }
@@ -175,9 +175,9 @@ public final class HttpServerConfiguration {
         return maxHeaderSize;
     }
 
-    public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxHeadersPerRequest(final int maxHeadersPerRequest) {
         if (maxHeadersPerRequest < 2) {
-            throw new HttpServerConfigurationException("max headers per request cannot be less than 2");
+            throw new IllegalStateException("max headers per request cannot be less than 2");
         }
         this.maxHeadersPerRequest = maxHeadersPerRequest;
         return this;
@@ -187,9 +187,9 @@ public final class HttpServerConfiguration {
         return maxHeadersPerRequest;
     }
 
-    public HttpServerConfiguration setMaxIncomingConnections(final int maxIncomingConnections) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxIncomingConnections(final int maxIncomingConnections) {
         if (maxIncomingConnections < 1) {
-            throw new HttpServerConfigurationException("max incoming connection count cannot be less than 1");
+            throw new IllegalStateException("max incoming connection count cannot be less than 1");
         }
         this.maxIncomingConnections = maxIncomingConnections;
         return this;
@@ -199,9 +199,9 @@ public final class HttpServerConfiguration {
         return maxIncomingConnections;
     }
 
-    public HttpServerConfiguration setMaxContentLength(final int maxContentLength) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxContentLength(final int maxContentLength) {
         if (maxContentLength < 1) {
-            throw new HttpServerConfigurationException("max content length cannot be less than 1 (bytes)");
+            throw new IllegalStateException("max content length cannot be less than 1 (bytes)");
         }
         this.maxContentLength = maxContentLength;
         return this;
@@ -211,9 +211,9 @@ public final class HttpServerConfiguration {
         return maxContentLength;
     }
 
-    public HttpServerConfiguration setMaxChunkedContentLength(final int maxChunkedContentLength) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxChunkedContentLength(final int maxChunkedContentLength) {
         if (maxChunkedContentLength < 1) {
-            throw new HttpServerConfigurationException("max chunked content length cannot be less than 1 (bytes)");
+            throw new IllegalStateException("max chunked content length cannot be less than 1 (bytes)");
         }
         this.maxChunkedContentLength = maxChunkedContentLength;
         return this;
@@ -223,9 +223,9 @@ public final class HttpServerConfiguration {
         return maxChunkedContentLength;
     }
 
-    public HttpServerConfiguration setMaxChunkSize(final int maxChunkSize) throws HttpServerConfigurationException {
+    public HttpServerConfiguration setMaxChunkSize(final int maxChunkSize) {
         if (maxChunkSize < 1) {
-            throw new HttpServerConfigurationException("max chunk size cannot be less than 1 (bytes)");
+            throw new IllegalStateException("max chunk size cannot be less than 1 (bytes)");
         }
         this.maxChunkSize = maxChunkSize;
         return this;
@@ -233,6 +233,13 @@ public final class HttpServerConfiguration {
 
     public int getMaxChunkSize() {
         return maxChunkSize;
+    }
+
+    public HttpServerConfiguration addDefaultHeader(final Header defaultHeader) {
+        Objects.requireNonNull(defaultHeader);
+        if (defaultHeaders == null) defaultHeaders = new NonDuplicateList<>();
+        defaultHeaders.add(defaultHeader);
+        return this;
     }
 
     public HttpServerConfiguration setDefaultHeaders(final List<Header> defaultHeaders) {
@@ -245,8 +252,14 @@ public final class HttpServerConfiguration {
     }
 
     public HttpServerConfiguration addDefaultAuthentication(final Authentication defaultAuthentication) {
+        Objects.requireNonNull(defaultAuthentication);
         if (defaultAuthentications == null) defaultAuthentications = new NonDuplicateList<>();
         defaultAuthentications.add(defaultAuthentication);
+        return this;
+    }
+
+    public HttpServerConfiguration setDefaultAuthentications(final List<Authentication> defaultAuthentications) {
+        this.defaultAuthentications = defaultAuthentications;
         return this;
     }
 
@@ -254,9 +267,15 @@ public final class HttpServerConfiguration {
         return defaultAuthentications;
     }
 
-    public HttpServerConfiguration addDefaultCookies(final Cookie defaultCookie) {
+    public HttpServerConfiguration addDefaultCookie(final Cookie defaultCookie) {
+        Objects.requireNonNull(defaultCookie);
         if (defaultCookies == null) defaultCookies = new NonDuplicateList<>();
         defaultCookies.add(defaultCookie);
+        return this;
+    }
+
+    public HttpServerConfiguration setDefaultCookies(final List<Cookie> defaultCookies) {
+        this.defaultCookies = defaultCookies;
         return this;
     }
 
@@ -264,18 +283,24 @@ public final class HttpServerConfiguration {
         return defaultCookies;
     }
 
-    public HttpServerConfiguration setDefaultCrossOriginResourceSharing(final CORSResponse defaultCORSResponse) {
-        this.defaultCORSResponse = defaultCORSResponse;
+    public HttpServerConfiguration setDefaultCors(final CORSResponse defaultCorsResponse) {
+        this.defaultCcorsResponse = defaultCorsResponse;
         return this;
     }
 
-    public CORSResponse getDefaultCrossOriginResourceSharing() {
-        return defaultCORSResponse;
+    public CORSResponse getDefaultCors() {
+        return defaultCcorsResponse;
     }
 
-    public HttpServerConfiguration addDefaultReportingEndpoints(final ReportingEndpoint reportingEndpoint) {
+    public HttpServerConfiguration addDefaultReportingEndpoint(final ReportingEndpoint reportingEndpoint) {
+        Objects.requireNonNull(reportingEndpoint);
         if (reportingEndpoints == null) reportingEndpoints = new NonDuplicateList<>();
         reportingEndpoints.add(reportingEndpoint);
+        return this;
+    }
+
+    public HttpServerConfiguration setDefaultReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {
+        this.reportingEndpoints = reportingEndpoints;
         return this;
     }
 
@@ -283,9 +308,15 @@ public final class HttpServerConfiguration {
         return reportingEndpoints;
     }
 
-    public HttpServerConfiguration addDefaultContentSecurityPolicies(final ContentSecurityPolicy defaultContentSecurityPolicy) {
+    public HttpServerConfiguration addDefaultContentSecurityPolicy(final ContentSecurityPolicy defaultContentSecurityPolicy) {
+        Objects.requireNonNull(defaultContentSecurityPolicy);
         if (defaultContentSecurityPolicies == null) defaultContentSecurityPolicies = new NonDuplicateList<>();
         defaultContentSecurityPolicies.add(defaultContentSecurityPolicy);
+        return this;
+    }
+
+    public HttpServerConfiguration setDefaultContentSecurityPolicies(final List<ContentSecurityPolicy> defaultContentSecurityPolicies) {
+        this.defaultContentSecurityPolicies = defaultContentSecurityPolicies;
         return this;
     }
 
@@ -294,8 +325,14 @@ public final class HttpServerConfiguration {
     }
 
     public HttpServerConfiguration addDefaultContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
+        Objects.requireNonNull(defaultContentSecurityPolicyReportOnly);
         if (this.defaultContentSecurityPolicyReportOnly == null) this.defaultContentSecurityPolicyReportOnly = new NonDuplicateList<>();
         this.defaultContentSecurityPolicyReportOnly.add(defaultContentSecurityPolicyReportOnly);
+        return this;
+    }
+
+    public HttpServerConfiguration setDefaultContentSecurityPolicyReportOnly(final List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly) {
+        this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
         return this;
     }
 

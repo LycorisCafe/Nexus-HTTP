@@ -20,12 +20,20 @@ import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.headers.content.MultipartFormData;
 import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 import java.io.IOException;
 import java.util.Locale;
 
+/**
+ * HTTP POST request method.
+ *
+ * @see POST
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
     private Content content;
 

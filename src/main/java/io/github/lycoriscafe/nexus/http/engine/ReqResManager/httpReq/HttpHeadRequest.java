@@ -17,8 +17,16 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.HEAD;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * HTTP HEAD request method.
+ *
+ * @see HEAD
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public final class HttpHeadRequest extends HttpGetRequest {
     public HttpHeadRequest(final RequestConsumer requestConsumer,
                            final long requestId,

@@ -17,8 +17,16 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.DELETE;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * HTTP DELETE request method.
+ *
+ * @see DELETE
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public final class HttpDeleteRequest extends HttpGetRequest {
     public HttpDeleteRequest(final RequestConsumer requestConsumer,
                              final long requestId,

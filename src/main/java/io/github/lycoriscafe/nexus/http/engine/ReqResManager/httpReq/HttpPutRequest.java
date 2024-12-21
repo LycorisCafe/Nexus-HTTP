@@ -17,8 +17,16 @@
 package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PUT;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
+/**
+ * HTTP PUT request method.
+ *
+ * @see PUT
+ * @see HttpRequest
+ * @since v1.0.0
+ */
 public final class HttpPutRequest extends HttpPostRequest {
     public HttpPutRequest(final RequestConsumer requestConsumer,
                           final long requestId,

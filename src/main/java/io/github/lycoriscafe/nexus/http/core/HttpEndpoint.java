@@ -16,6 +16,8 @@
 
 package io.github.lycoriscafe.nexus.http.core;
 
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+
 import java.lang.annotation.*;
 
 /**
@@ -47,7 +49,9 @@ import java.lang.annotation.*;
  *     }
  * </pre>
  *
+ * @apiNote For more settings, please take a look at {@code HttpServerConfiguration}.
  * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations
+ * @see HttpServerConfiguration
  * @since v1.0.0
  */
 @Documented
