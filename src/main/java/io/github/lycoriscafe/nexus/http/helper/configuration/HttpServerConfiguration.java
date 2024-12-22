@@ -591,6 +591,7 @@ public final class HttpServerConfiguration {
      * Add heads one-by-one to send with every response.
      *
      * @param defaultHeader Default header
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Header
      * @see #setDefaultHeaders(List)
      * @see HttpResponse#addHeader(Header)
@@ -608,6 +609,7 @@ public final class HttpServerConfiguration {
      * Set headers to send with every response.
      *
      * @param defaultHeaders List of default headers
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Header
      * @see #addDefaultHeader(Header)
      * @see HttpResponse#setHeaders(List)
@@ -637,6 +639,7 @@ public final class HttpServerConfiguration {
      * Add authentication challenges one-by-one to send with every response.
      *
      * @param defaultAuthentication Default authentication challenge
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Authentication
      * @see #setDefaultAuthentications(List)
      * @see HttpResponse#addAuthentication(Authentication)
@@ -654,6 +657,7 @@ public final class HttpServerConfiguration {
      * Set authentication challenges to send with every response.
      *
      * @param defaultAuthentications List of default authentication challenges
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Authentication
      * @see #addDefaultAuthentication(Authentication)
      * @see HttpResponse#setAuthentications(List)
@@ -683,6 +687,7 @@ public final class HttpServerConfiguration {
      * Add cookies one-by-one to send with every response.
      *
      * @param defaultCookie Default cookie
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Cookie
      * @see #setDefaultCookies(List)
      * @see HttpResponse#addCookie(Cookie)
@@ -700,6 +705,7 @@ public final class HttpServerConfiguration {
      * Set cookies to send with every response.
      *
      * @param defaultCookies List of default cookies
+     * @return Same {@code HttpServerConfiguration} instance
      * @see Cookie
      * @see #addDefaultCookie(Cookie)
      * @see HttpResponse#setCookies(List)
@@ -729,6 +735,7 @@ public final class HttpServerConfiguration {
      * Set cross-origin resource sharing to send with every response.
      *
      * @param defaultCorsResponse Default cross-origin resource sharing
+     * @return Same {@code HttpServerConfiguration} instance
      * @see CORSResponse
      * @see HttpResponse#setCorsResponse(CORSResponse)
      * @see HttpServerConfiguration
@@ -756,6 +763,7 @@ public final class HttpServerConfiguration {
      * Add reporting endpoints one-by-one to send with every response.
      *
      * @param reportingEndpoint Default reporting endpoint
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ReportingEndpoint
      * @see #setDefaultReportingEndpoints(List)
      * @see HttpResponse#addReportingEndpoint(ReportingEndpoint)
@@ -773,6 +781,7 @@ public final class HttpServerConfiguration {
      * Set reporting endpoints to send with every response.
      *
      * @param reportingEndpoints List of default reporting endpoints
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ReportingEndpoint
      * @see #addDefaultReportingEndpoint(ReportingEndpoint)
      * @see HttpResponse#setReportingEndpoints(List)
@@ -802,6 +811,7 @@ public final class HttpServerConfiguration {
      * Add content security policies one-by-one to send with every response.
      *
      * @param defaultContentSecurityPolicy Default content security policy
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ContentSecurityPolicy
      * @see #setDefaultContentSecurityPolicies(List)
      * @see HttpResponse#addContentSecurityPolicy(ContentSecurityPolicy)
@@ -819,6 +829,7 @@ public final class HttpServerConfiguration {
      * Set content security policies to sed with every response.
      *
      * @param defaultContentSecurityPolicies List of default content security policies
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ContentSecurityPolicy
      * @see #addDefaultContentSecurityPolicy(ContentSecurityPolicy)
      * @see HttpResponse#setContentSecurityPolicies(List)
@@ -848,6 +859,7 @@ public final class HttpServerConfiguration {
      * Add content security policy report-only one-by-one to send with every response.
      *
      * @param defaultContentSecurityPolicyReportOnly Default content security policy report-only
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ContentSecurityPolicyReportOnly
      * @see #setDefaultContentSecurityPolicyReportOnly(List)
      * @see HttpResponse#addContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
@@ -865,6 +877,7 @@ public final class HttpServerConfiguration {
      * Set content security policy report-only to sed with every response.
      *
      * @param defaultContentSecurityPolicyReportOnly List of default content security policy report-only
+     * @return Same {@code HttpServerConfiguration} instance
      * @see ContentSecurityPolicyReportOnly
      * @see #addDefaultContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
      * @see HttpResponse#setContentSecurityPolicyReportOnly(List)
@@ -894,6 +907,7 @@ public final class HttpServerConfiguration {
      * Set strict transport security to send with every response.
      *
      * @param defaultStrictTransportSecurity Default strict transport security
+     * @return Same {@code HttpServerConfiguration} instance
      * @see StrictTransportSecurity
      * @see HttpResponse#setStrictTransportSecurity(StrictTransportSecurity)
      * @see HttpServerConfiguration
@@ -921,6 +935,7 @@ public final class HttpServerConfiguration {
      * Set cache control to send with every response.
      *
      * @param cacheControl Default cache control
+     * @return Same {@code HttpServerConfiguration} instance
      * @see CacheControl
      * @see HttpResponse#setCashControl(CacheControl)
      * @see HttpServerConfiguration
@@ -948,6 +963,7 @@ public final class HttpServerConfiguration {
      * Set x content type noSniff status to every response.
      *
      * @param xContentTypeOptionsNoSniff NoSniff status
+     * @return Same {@code HttpServerConfiguration} instance
      * @see HttpResponse#setXContentTypeOptionsNoSniff(boolean)
      * @see HttpServerConfiguration
      * @since v1.0.0
@@ -973,6 +989,7 @@ public final class HttpServerConfiguration {
      * Set detailed message to every exception redirect.
      *
      * @param addErrorMessageToResponseHeaders Message status
+     * @return Same {@code HttpServerConfiguration} instance
      * @see HttpServerConfiguration
      * @since v1.0.0
      */

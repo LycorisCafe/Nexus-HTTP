@@ -52,7 +52,7 @@ public final class HttpServer {
     private final Database database;
 
     /**
-     * Create instance for a HTTP server.
+     * Create instance for an HTTP server.
      *
      * @param httpServerConfiguration {@code HttpServerConfiguration} instance
      * @throws SQLException     Error while initializing database connection

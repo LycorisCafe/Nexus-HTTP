@@ -53,13 +53,6 @@ public enum BearerError {
 
     private final String value;
 
-    /**
-     * Bearer error.
-     *
-     * @param value String for set in header
-     * @see BearerError
-     * @since v1.0.0
-     */
     BearerError(String value) {
         this.value = value;
     }

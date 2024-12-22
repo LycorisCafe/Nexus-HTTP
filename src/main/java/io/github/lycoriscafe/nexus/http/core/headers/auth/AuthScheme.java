@@ -53,13 +53,6 @@ public enum AuthScheme {
 
     private final String value;
 
-    /**
-     * Auth Scheme.
-     *
-     * @param value String value to set in header
-     * @see AuthScheme
-     * @since v1.0.0
-     */
     AuthScheme(String value) {
         this.value = value;
     }

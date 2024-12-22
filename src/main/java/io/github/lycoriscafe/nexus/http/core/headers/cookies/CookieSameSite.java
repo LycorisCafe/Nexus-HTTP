@@ -56,13 +56,6 @@ public enum CookieSameSite {
 
     private final String value;
 
-    /**
-     * Cookie Same Site.
-     *
-     * @param value String value to sent in header
-     * @see CookieSameSite
-     * @since v1.0.0
-     */
     CookieSameSite(String value) {
         this.value = value;
     }

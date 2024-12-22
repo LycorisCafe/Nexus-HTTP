@@ -34,7 +34,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gpg.key_name>351581E8DDAD82301A899F8A26615D7FFE82A80C</gpg.key_name>
+        <gpg.key_name>53D6343ADD375807F4CAF21204CF9748DA106AA5</gpg.key_name>
     </properties>
 
     <dependencies>
@@ -114,7 +114,7 @@
                 <plugin>
                     <groupId>org.sonatype.central</groupId>
                     <artifactId>central-publishing-maven-plugin</artifactId>
-                    <version>0.5.0</version>
+                    <version>0.6.0</version>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -144,6 +144,7 @@
                             <goal>jar</goal>
                         </goals>
                         <configuration>
+                            <doclint>all,-missing</doclint>
                             <tags>
                                 <tag>
                                     <name>apiNote</name>
