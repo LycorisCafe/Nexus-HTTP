@@ -16,7 +16,21 @@
 
 package io.github.lycoriscafe.nexus.http.helper.scanners;
 
+/**
+ * Throw exceptions caught while scanning processes.
+ *
+ * @see EndpointScanner
+ * @see FileScanner
+ * @since v1.0.0
+ */
 public class ScannerException extends Exception {
+    /**
+     * Scanner exception.
+     *
+     * @param message Exception message to throw
+     * @see ScannerException
+     * @since v1.0.0
+     */
     public ScannerException(String message) {
         super(message);
     }

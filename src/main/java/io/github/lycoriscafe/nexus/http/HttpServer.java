@@ -37,6 +37,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Base class for initialize a server.
+ *
+ * @since v1.0.0
+ */
 public final class HttpServer {
     private final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
@@ -46,6 +51,17 @@ public final class HttpServer {
     private ExecutorService executorService;
     private final Database database;
 
+    /**
+     * Create instance for a HTTP server.
+     *
+     * @param httpServerConfiguration {@code HttpServerConfiguration} instance
+     * @throws SQLException     Error while initializing database connection
+     * @throws IOException      Error while reading/writing directories
+     * @throws ScannerException Error while scanning for endpoints
+     * @see HttpServerConfiguration
+     * @see HttpServer
+     * @since v1.0.0
+     */
     public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException, ScannerException {
         serverConfiguration = Objects.requireNonNull(httpServerConfiguration);
         database = new Database(serverConfiguration);
@@ -62,11 +78,29 @@ public final class HttpServer {
         FileScanner.scan(serverConfiguration, database);
     }
 
+    /**
+     * Initialize executor service for client connections.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} instance bound to the server
+     * @return {@code ExecutorService} with fixed thread-pool
+     * @see HttpServerConfiguration
+     * @see ExecutorService
+     * @see HttpServer
+     * @since v1.0.0
+     */
     private static ExecutorService initializeExecutorService(final HttpServerConfiguration serverConfiguration) {
         return Executors.newFixedThreadPool(serverConfiguration.getMaxIncomingConnections(), serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
                 Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
     }
 
+    /**
+     * Start HTTP server with given {@code HttpServerConfiguration} settings.
+     *
+     * @see HttpServerConfiguration
+     * @see #shutdown()
+     * @see HttpServer
+     * @since v1.0.0
+     */
     public void initialize() {
         if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
 
@@ -86,6 +120,15 @@ public final class HttpServer {
         });
     }
 
+    /**
+     * Shutdown HTTP server.
+     *
+     * @throws IOException          Error while stop the server
+     * @throws InterruptedException Executor services related exceptions
+     * @see #initialize()
+     * @see HttpServer
+     * @since v1.0.0
+     */
     public void shutdown() throws IOException, InterruptedException {
         if (!serverThread.isAlive()) throw new IllegalStateException("http server already shutdown");
         if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) executorService.shutdownNow();

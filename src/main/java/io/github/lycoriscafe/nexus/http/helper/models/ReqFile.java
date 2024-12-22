@@ -17,11 +17,31 @@
 package io.github.lycoriscafe.nexus.http.helper.models;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
 
+/**
+ * Static file endpoint model for communicate endpoint data to/from endpoint methods to/from database.
+ *
+ * @see FileScanner
+ * @see ReqMaster
+ * @see Database
+ * @since v1.0.0
+ */
 public final class ReqFile extends ReqMaster {
     private final String lastModified;
     private final String eTag;
 
+    /**
+     * Create instance of {@code ReqFile}.
+     *
+     * @param location      Static file location as HTTP URI
+     * @param authenticated Is endpoint authenticated?
+     * @param lastModified  Last modified date in HTTP date format
+     * @param eTag          Calculated MD5 E-Tag
+     * @see ReqFile
+     * @since v1.0.0
+     */
     public ReqFile(final String location,
                    final boolean authenticated,
                    final String lastModified,
@@ -31,10 +51,24 @@ public final class ReqFile extends ReqMaster {
         this.eTag = eTag;
     }
 
+    /**
+     * Get provided last modified date in HTTP date format.
+     *
+     * @return Last modified date
+     * @see ReqFile
+     * @since v1.0.0
+     */
     public String getLastModified() {
         return lastModified;
     }
 
+    /**
+     * Get provided calculated MD5 E-Tag
+     *
+     * @return MD5 E-Tag
+     * @see ReqFile
+     * @since v1.0.0
+     */
     public String getETag() {
         return eTag;
     }

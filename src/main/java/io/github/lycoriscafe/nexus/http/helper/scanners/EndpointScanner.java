@@ -40,9 +40,28 @@ import java.util.Set;
 import static org.reflections.scanners.Scanners.SubTypes;
 import static org.reflections.scanners.Scanners.TypesAnnotated;
 
+/**
+ * Method endpoint scanner.
+ *
+ * @see ReqEndpoint
+ * @see Database
+ * @since v1.0.0
+ */
 public final class EndpointScanner {
     private static final Logger logger = LoggerFactory.getLogger(EndpointScanner.class);
 
+    /**
+     * Scan for available {@code HttpEndpoint} authenticated classes and it's annotated method. Then pass them into the database.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} instance bound to the server
+     * @param database            {@code Database} instance bound to the server
+     * @throws SQLException     Error while writing data to the database
+     * @throws ScannerException Error while scanning for the endpoints
+     * @see HttpServerConfiguration
+     * @see Database
+     * @see EndpointScanner
+     * @since v1.0.0
+     */
     public static void scan(final HttpServerConfiguration serverConfiguration,
                             final Database database) throws SQLException, ScannerException {
         logger.atTrace().log("beginning endpoints scanning...");

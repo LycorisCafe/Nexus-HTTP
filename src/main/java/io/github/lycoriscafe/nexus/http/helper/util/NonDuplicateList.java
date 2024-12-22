@@ -18,7 +18,23 @@ package io.github.lycoriscafe.nexus.http.helper.util;
 
 import java.util.ArrayList;
 
+/**
+ * {@code ArrayList<E>} with no duplicates!
+ *
+ * @param <E> Generic type element
+ * @see ArrayList
+ * @since v1.0.0
+ */
 public final class NonDuplicateList<E> extends ArrayList<E> {
+    /**
+     * Check for element presence and if absent add to the {@code ArrayList}.
+     *
+     * @param e element whose presence in this collection is to be ensured
+     * @return If element added, {@code true} else {@code false}
+     * @see ArrayList#add(Object)
+     * @see NonDuplicateList
+     * @since v1.0.0
+     */
     @Override
     public boolean add(final E e) {
         if (!contains(e)) {

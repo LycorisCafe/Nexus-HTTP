@@ -36,18 +36,50 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Database for store endpoint details.
+ *
+ * @see ReqMaster
+ * @since v1.0.0
+ */
 public final class Database {
     private final Connection databaseConnection;
 
+    /**
+     * Create instance of {@code Database} and initialize connection according to {@code HttpServerConfiguration} settings.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
+     * @throws SQLException Error while establishing the database connection
+     * @throws IOException  Error while writing database to disk
+     * @see Database
+     * @since v1.0.0
+     */
     public Database(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
         Objects.requireNonNull(serverConfiguration);
         databaseConnection = initializeDatabaseConnection(serverConfiguration);
     }
 
+    /**
+     * Get initialized database connection.
+     *
+     * @return Database connection.
+     * @see Database
+     * @since v1.0.0
+     */
     public Connection getDatabaseConnection() {
         return databaseConnection;
     }
 
+    /**
+     * Initialize database connection.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
+     * @return Established connection
+     * @throws SQLException Error while establishing the database connection
+     * @throws IOException  Error while writing database to disk
+     * @see Database
+     * @since v1.0.0
+     */
     public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
         Connection conn;
         if (serverConfiguration.getDatabaseLocation() == null) {
@@ -66,6 +98,14 @@ public final class Database {
         return conn;
     }
 
+    /**
+     * Construct database structure.
+     *
+     * @param conn Established database connection
+     * @throws SQLException Error while writing to the database
+     * @see Database
+     * @since v1.0.0
+     */
     private static void buildDatabase(final Connection conn) throws SQLException {
         Objects.requireNonNull(conn);
         String[] queries = {"PRAGMA foreign_keys = ON;",
@@ -103,6 +143,16 @@ public final class Database {
         }
     }
 
+    /**
+     * Add endpoint data to the database.
+     *
+     * @param model {@code ReqMaster} or it's child instance
+     * @throws SQLException     Error while writing data to the database
+     * @throws ScannerException More than 1 endpoint with the same URi found error
+     * @see ReqMaster
+     * @see Database
+     * @since v1.0.0
+     */
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
         Objects.requireNonNull(model);
 
@@ -150,6 +200,19 @@ public final class Database {
         }
     }
 
+    /**
+     * Get all {@code ReqMaster} instances for requested URI.
+     *
+     * @param httpRequest {@code HttpRequest} instance
+     * @return All possible {@code ReqMaster} models
+     * @throws SQLException           Error while reading from the database
+     * @throws ClassNotFoundException Error while casting the class
+     * @throws NoSuchMethodException  Error while casting the method
+     * @see HttpRequest
+     * @see ReqMaster
+     * @see Database
+     * @since v1.0.0
+     */
     public List<ReqMaster> getEndpointData(final HttpRequest httpRequest) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         Objects.requireNonNull(httpRequest);
 

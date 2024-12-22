@@ -19,9 +19,19 @@ package io.github.lycoriscafe.nexus.http.helper.models;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.helper.Database;
+import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 
 import java.lang.reflect.Method;
 
+/**
+ * Method endpoint model for communicate endpoint data to/from endpoint methods to/from database.
+ *
+ * @see EndpointScanner
+ * @see ReqMaster
+ * @see Database
+ * @since v1.0.0
+ */
 public final class ReqEndpoint extends ReqMaster {
     private final Class<?> className;
     private final Method methodName;
@@ -29,6 +39,20 @@ public final class ReqEndpoint extends ReqMaster {
     private final String statusAnnotationValue;
     private final AuthScheme authSchemeAnnotation;
 
+    /**
+     * Create instance of {@code ReqEndpoint}.
+     *
+     * @param requestEndpoint       Endpoint URI
+     * @param reqMethod             HTTP request method
+     * @param authenticated         Is endpoint authenticated?
+     * @param className             Target class
+     * @param methodName            Target method
+     * @param statusAnnotation      Available status annotation
+     * @param statusAnnotationValue Available status annotation value
+     * @param authSchemeAnnotation  Available authentication scheme annotation
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public ReqEndpoint(final String requestEndpoint,
                        final HttpRequestMethod reqMethod,
                        final boolean authenticated,
@@ -45,22 +69,57 @@ public final class ReqEndpoint extends ReqMaster {
         this.authSchemeAnnotation = authSchemeAnnotation;
     }
 
+    /**
+     * Get provided target class.
+     *
+     * @return Target class.
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public Class<?> getClazz() {
         return className;
     }
 
+    /**
+     * Get provided target method.
+     *
+     * @return Target method
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public Method getMethod() {
         return methodName;
     }
 
+    /**
+     * Get provided available status annotation.
+     *
+     * @return Available status annotation
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public HttpStatusCode getStatusAnnotation() {
         return statusAnnotation;
     }
 
+    /**
+     * Get provided available status annotation value.
+     *
+     * @return Available status annotation value
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public String getStatusAnnotationValue() {
         return statusAnnotationValue;
     }
 
+    /**
+     * Get provided available authentication scheme annotation.
+     *
+     * @return Available authentication scheme annotation
+     * @see ReqEndpoint
+     * @since v1.0.0
+     */
     public AuthScheme getAuthSchemeAnnotation() {
         return authSchemeAnnotation;
     }

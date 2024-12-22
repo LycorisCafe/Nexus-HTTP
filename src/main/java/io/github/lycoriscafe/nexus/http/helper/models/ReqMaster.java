@@ -17,12 +17,31 @@
 package io.github.lycoriscafe.nexus.http.helper.models;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
+import io.github.lycoriscafe.nexus.http.helper.Database;
 
+/**
+ * Parent model for communicate endpoint data to/from endpoint methods to/from database.
+ *
+ * @see ReqEndpoint
+ * @see ReqFile
+ * @see Database
+ * @since v1.0.0
+ */
 public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     private final String requestEndpoint;
     private final HttpRequestMethod reqMethod;
     private final boolean authenticated;
 
+    /**
+     * Create instance of {@code ReqMaster}.
+     *
+     * @param requestEndpoint Endpoint URI
+     * @param reqMethod       HTTP request method
+     * @param authenticated   Is endpoint authenticated?
+     * @see HttpRequestMethod
+     * @see ReqMaster
+     * @since v1.0.0
+     */
     public ReqMaster(final String requestEndpoint,
                      final HttpRequestMethod reqMethod,
                      final boolean authenticated) {
@@ -31,18 +50,47 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
         this.authenticated = authenticated;
     }
 
+    /**
+     * Get provided endpoint URI.
+     *
+     * @return Endpoint URI
+     * @see ReqMaster
+     * @since v1.0.0
+     */
     public String getRequestEndpoint() {
         return requestEndpoint;
     }
 
+    /**
+     * Get provided HTTP request method.
+     *
+     * @return HTTP request method
+     * @see ReqMaster
+     * @since v1.0.0
+     */
     public HttpRequestMethod getReqMethod() {
         return reqMethod;
     }
 
+    /**
+     * Get endpoint authenticated status.
+     *
+     * @return Endpoint authenticated status
+     * @see ReqMaster
+     * @since v1.0.0
+     */
     public boolean isAuthenticated() {
         return authenticated;
     }
 
+    /**
+     * Process endpoint URI. Basically, rebuild the URI by removing unnecessary {@code /}.
+     *
+     * @param requestEndpoint Endpoint URI
+     * @return Reconstructed endpoint URI
+     * @see ReqMaster
+     * @since v1.0.0
+     */
     public static String parseEndpoint(final String requestEndpoint) {
         String[] parts = requestEndpoint.split("/", 0);
         StringBuilder reconstructed = new StringBuilder("/");

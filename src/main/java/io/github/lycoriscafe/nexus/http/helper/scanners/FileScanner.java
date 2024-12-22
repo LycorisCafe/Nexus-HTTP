@@ -31,7 +31,25 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Locale;
 
+/**
+ * Static files' scanner.
+ *
+ * @see ReqFile
+ * @see Database
+ * @since v1.0.0
+ */
 public final class FileScanner {
+    /**
+     * Check for errors for static files directory and pass it to scan method.
+     *
+     * @param serverConfiguration {@code HttpServerConfiguration} instance bound to the sever
+     * @param database            {@code Database} instance bound to the server
+     * @throws ScannerException Error while scanning for static files
+     * @see HttpServerConfiguration
+     * @see Database
+     * @see FileScanner
+     * @since v1.0.0
+     */
     public static void scan(final HttpServerConfiguration serverConfiguration,
                             final Database database) throws ScannerException {
         if (serverConfiguration.getStaticFilesDirectory() == null) return;
@@ -41,6 +59,15 @@ public final class FileScanner {
         deepScan(dir, database, serverConfiguration);
     }
 
+    /**
+     * Scan for available static files in the provided static files directory, recursively.
+     *
+     * @param directory           Static files' directory
+     * @param database            {@code Database} instance bound to the server
+     * @param serverConfiguration {@code HttpServerConfiguration} instance bound to the server
+     * @see FileScanner
+     * @since v1.0.0
+     */
     private static void deepScan(final Path directory,
                                  final Database database,
                                  final HttpServerConfiguration serverConfiguration) {
@@ -61,6 +88,16 @@ public final class FileScanner {
         }
     }
 
+    /**
+     * Calculate each static file E-Tag by calculating their MD5.
+     *
+     * @param path Path to the target static file
+     * @return Calculated {@code MD5}
+     * @throws NoSuchAlgorithmException Impossible!
+     * @throws IOException              Error while calculating {@code MD5}
+     * @see FileScanner
+     * @since v1.0.0
+     */
     private static String calculateETag(Path path) throws NoSuchAlgorithmException, IOException {
         MessageDigest messageDigest = MessageDigest.getInstance("MD5");
         try (BufferedInputStream reader = new BufferedInputStream(new FileInputStream(path.toString()))) {
