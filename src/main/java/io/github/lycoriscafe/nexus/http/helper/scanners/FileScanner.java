@@ -29,7 +29,6 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 
 /**
  * Static files' scanner.
@@ -79,7 +78,7 @@ public final class FileScanner {
                 }
 
                 String endpointName = Path.of(serverConfiguration.getStaticFilesDirectory()).relativize(path).toString().replaceAll("\\\\", "/");
-                database.addEndpointData(new ReqFile(serverConfiguration.isIgnoreEndpointCases() ? endpointName.toLowerCase(Locale.US) : endpointName, false,
+                database.addEndpointData(new ReqFile(endpointName, false,
                         // TODO http date format
                         Files.getLastModifiedTime(path, LinkOption.NOFOLLOW_LINKS).toString(), calculateETag(path)));
             }

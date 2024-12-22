@@ -65,7 +65,6 @@ public final class HttpServer {
      */
     public HttpServer(final HttpServerConfiguration httpServerConfiguration) throws SQLException, IOException, ScannerException {
         serverConfiguration = Objects.requireNonNull(httpServerConfiguration);
-        database = new Database(serverConfiguration);
 
         Path tempPath = Paths.get(httpServerConfiguration.getTempDirectory());
         if (!Files.exists(tempPath)) Files.createDirectory(tempPath);
@@ -75,6 +74,7 @@ public final class HttpServer {
             if (!Files.exists(staticPath) || !Files.isDirectory(staticPath)) throw new IllegalStateException("static path cannot be found");
         }
 
+        database = new Database(serverConfiguration);
         EndpointScanner.scan(serverConfiguration, database);
         FileScanner.scan(serverConfiguration, database);
     }

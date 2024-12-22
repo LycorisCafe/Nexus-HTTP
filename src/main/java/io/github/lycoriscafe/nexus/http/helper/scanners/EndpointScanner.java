@@ -35,7 +35,6 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.sql.SQLException;
-import java.util.Locale;
 import java.util.Set;
 
 import static org.reflections.scanners.Scanners.SubTypes;
@@ -144,8 +143,8 @@ public final class EndpointScanner {
                 };
 
                 String endpointUri = serverConfiguration.getUrlPrefix() + "/" + clazz.getAnnotation(HttpEndpoint.class).value() + "/" + endpointValue;
-                database.addEndpointData(new ReqEndpoint((serverConfiguration.isIgnoreEndpointCases() ? endpointUri : endpointUri.toLowerCase(Locale.US)),
-                        reqMethod, authenticated, clazz, method, statusAnnotation, statusAnnotationValue, authSchemeAnnotation));
+                database.addEndpointData(new ReqEndpoint(endpointUri, reqMethod, authenticated, clazz, method, statusAnnotation, statusAnnotationValue,
+                        authSchemeAnnotation));
                 LogFormatter.log(logger.atDebug(), "Endpoint found (" + reqMethod + ") @ " + clazz.getName() + "#" + method.getName());
             }
         }

@@ -29,8 +29,10 @@ import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
-import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,24 +78,20 @@ public final class Database {
      * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
      * @return Established connection
      * @throws SQLException Error while establishing the database connection
-     * @throws IOException  Error while writing database to disk
      * @see Database
      * @since v1.0.0
      */
     public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
-        Connection conn;
-        if (serverConfiguration.getDatabaseLocation() == null) {
-            conn = DriverManager.getConnection("jdbc:sqlite::memory:");
-        } else {
-            String databaseName = "NexusHttp" + (serverConfiguration.getPort() == 0 ? "R" + (int) (Math.random() * 100) : serverConfiguration.getPort()) + ".db";
-            String database = serverConfiguration.getDatabaseLocation()
-                    .isEmpty() ? databaseName : serverConfiguration.getDatabaseLocation() + "/" + databaseName;
-            File file = new File(database);
-            if (file.exists()) {
-                if (!file.delete()) throw new IOException("Failed to delete file: " + file.getAbsolutePath());
+        Connection conn = switch (serverConfiguration.getDatabaseType()) {
+            case TEMPORARY -> {
+                String dbName = serverConfiguration.getTempDirectory() + "/NexusHttp" + (serverConfiguration.getPort() == 0 ?
+                        (int) (Math.random() * 100) : serverConfiguration.getPort()) + ".db";
+                Path path = Paths.get(dbName);
+                if (Files.exists(path)) Files.delete(path);
+                yield DriverManager.getConnection("jdbc:sqlite:" + dbName);
             }
-            conn = DriverManager.getConnection("jdbc:sqlite:" + database);
-        }
+            case MEMORY -> DriverManager.getConnection("jdbc:sqlite::memory:");
+        };
         buildDatabase(conn);
         return conn;
     }
@@ -154,8 +152,6 @@ public final class Database {
      * @since v1.0.0
      */
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
-        Objects.requireNonNull(model);
-
         PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster WHERE endpoint = ?");
         preQuery.setString(1, model.getRequestEndpoint());
         ResultSet preResultSet = preQuery.executeQuery();
@@ -214,9 +210,7 @@ public final class Database {
      * @since v1.0.0
      */
     public List<ReqMaster> getEndpointData(final HttpRequest httpRequest) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        Objects.requireNonNull(httpRequest);
-
-        PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ?");
+        PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? COLLATE NOCASE");
         masterQuery.setString(1, httpRequest.getEndpoint());
 
         ResultSet masterResult = masterQuery.executeQuery();

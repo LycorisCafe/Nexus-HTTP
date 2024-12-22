@@ -53,9 +53,8 @@ public final class HttpServerConfiguration {
     private String urlExtension = "";
     private String tempDirectory = "NexusTemp";
     private String staticFilesDirectory = null;
-    private String databaseLocation = null;
+    private DatabaseType databaseType = DatabaseType.TEMPORARY;
 
-    private boolean ignoreEndpointCases = true;
     private int maxHeaderSize = 10_240;
     private int maxHeadersPerRequest = 20;
     private int maxIncomingConnections = 100;
@@ -364,55 +363,31 @@ public final class HttpServerConfiguration {
     }
 
     /**
-     * Set database location for in-API tasks such as store routs. Default is {@code null} (it means in-memory database).
+     * Set database creation type. Default is {@code TEMPORARY}.
      *
-     * @param databaseLocation Database location (set null for setup in-memory database)
+     * @param databaseType Database type
      * @return Same {@code HttpServerConfiguration} instance
-     * @see Database#initializeDatabaseConnection(HttpServerConfiguration)
+     * @see DatabaseType
+     * @see Database
      * @see HttpServerConfiguration
      * @since v1.0.0
      */
-    public HttpServerConfiguration setDatabaseLocation(final String databaseLocation) {
-        this.databaseLocation = databaseLocation;
+    public HttpServerConfiguration setDatabaseType(final DatabaseType databaseType) {
+        this.databaseType = Objects.requireNonNull(databaseType);
         return this;
     }
 
     /**
-     * Get database location.
+     * Get database type.
      *
-     * @return Database location
-     * @see #setDatabaseLocation(String)
+     * @return Database type
+     * @see DatabaseType
+     * @see #setDatabaseType(DatabaseType)
      * @see HttpServerConfiguration
      * @since v1.0.0
      */
-    public String getDatabaseLocation() {
-        return databaseLocation;
-    }
-
-    /**
-     * Set ignore endpoint case-sensitive status. When this enabled, receiving URI(s) cases (simple/capital letters) will be ignored. Default is
-     * {@code true}.
-     *
-     * @param ignoreEndpointCases Ignore?
-     * @return Same {@code HttpServerConfiguration} instance
-     * @see HttpServerConfiguration
-     * @since v1.0.0
-     */
-    public HttpServerConfiguration setIgnoreEndpointCases(final boolean ignoreEndpointCases) {
-        this.ignoreEndpointCases = ignoreEndpointCases;
-        return this;
-    }
-
-    /**
-     * Get endpoint case-sensitive status.
-     *
-     * @return Endpoint case-sensitive status
-     * @see #setIgnoreEndpointCases(boolean)
-     * @see HttpServerConfiguration
-     * @since v1.0.0
-     */
-    public boolean isIgnoreEndpointCases() {
-        return ignoreEndpointCases;
+    public DatabaseType getDatabaseType() {
+        return databaseType;
     }
 
     /**
