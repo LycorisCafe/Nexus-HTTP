@@ -115,8 +115,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         if (values.length == 1 && values[0].equals("chunked")) {
                             chunked = true;
                         } else {
-                            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only chunked transfer encoding supported");
+                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only chunked transfer encoding supported", logger);
                             return false;
                         }
                     }
@@ -124,8 +123,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         if (values.length == 1 && values[0].equals("gzip")) {
                             gzipped = true;
                         } else {
-                            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only gzip content encoding supported");
+                            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only gzip content encoding supported", logger);
                             return false;
                         }
                     }
@@ -143,22 +141,19 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 try {
                     contentLength = Integer.parseInt(getHeaders().get(i).getValue());
                     if (contentLength > getRequestConsumer().getHttpServerConfiguration().getMaxContentLength()) {
-                        logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.CONTENT_TOO_LARGE);
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large");
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large", logger);
                         return false;
                     }
                     getHeaders().remove(getHeaders().get(i));
                     return true;
                 } catch (NumberFormatException e) {
-                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content length");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content length", logger);
                     return false;
                 }
             }
         }
 
-        logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.LENGTH_REQUIRED);
-        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED, "content length required");
+        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED, "content length required", logger);
         return false;
     }
 }

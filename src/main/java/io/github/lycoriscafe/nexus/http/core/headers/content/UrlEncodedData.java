@@ -72,8 +72,7 @@ public final class UrlEncodedData extends HashMap<String, String> {
                                   final boolean chunked,
                                   final boolean gzipped) throws IOException {
         if (chunked) {
-            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported");
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported", logger);
             return null;
         }
 

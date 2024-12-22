@@ -62,8 +62,7 @@ public sealed class HttpGetRequest extends HttpRequest permits HttpDeleteRequest
         if (getHeaders() != null) {
             for (Header header : getHeaders()) {
                 if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
-                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content cannot be processed with provided request method");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content cannot be processed with provided request method", logger);
                     return;
                 }
             }

@@ -286,8 +286,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         try {
             List<ReqMaster> data = requestConsumer.getDatabase().getEndpointData(this);
             if (data.isEmpty()) {
-                logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found");
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found", logger);
                 return;
             }
 
@@ -300,8 +299,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             }
 
             if (endpointDetails == null) {
-                logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.METHOD_NOT_ALLOWED);
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED, "request method not allowed");
+                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.METHOD_NOT_ALLOWED, "request method not allowed", logger);
                 return;
             }
 
@@ -327,8 +325,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     if (response instanceof HttpResponse httpResponse) {
                         getRequestConsumer().send(httpResponse);
                     } else {
-                        logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.INTERNAL_SERVER_ERROR);
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid http response provided");
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid http response provided", logger);
                     }
                 }
                 case ReqFile reqFile -> {
@@ -337,8 +334,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 default -> throw new IllegalStateException("Unexpected value: " + endpointDetails);
             }
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.INTERNAL_SERVER_ERROR);
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while processing request/response");
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while processing request/response", logger);
             throw new RuntimeException(e);
         }
     }
@@ -392,8 +388,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             case BEARER -> {
                 HttpPostRequest request = (HttpPostRequest) this;
                 if (request.getContent() == null || !request.getContent().getContentType().equals("application/x-www-form-urlencoded")) {
-                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content type must be application/x-www-form-urlencoded");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content type must be application/x-www-form-urlencoded", logger);
                     return;
                 }
 
@@ -404,14 +399,10 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 if ((response instanceof BearerTokenResponse bearerTokenResponse) && bearerTokenResponse.getBearerToken() != null) {
                     getRequestConsumer().send(BearerTokenResponse.parse(bearerTokenResponse, getRequestId(), getRequestConsumer()));
                 } else {
-                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.INTERNAL_SERVER_ERROR);
-                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid bearer response provided");
+                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid bearer response provided", logger);
                 }
             }
-            default -> {
-                logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.NOT_IMPLEMENTED);
-                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED, "auth scheme not implemented");
-            }
+            default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED, "auth scheme not implemented", logger);
         }
     }
 }

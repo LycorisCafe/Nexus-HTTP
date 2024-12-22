@@ -196,8 +196,7 @@ public final class MultipartFormData {
                                   final boolean chunked,
                                   final boolean gzipped) throws IOException {
         if (chunked) {
-            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported for multipart/form-data");
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported for multipart/form-data", logger);
             return null;
         }
 
@@ -261,8 +260,7 @@ public final class MultipartFormData {
      */
     private static Content invalidFormSegment(final RequestConsumer requestConsumer,
                                               final long requestId) {
-        logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
+        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment", logger);
         return null;
     }
 

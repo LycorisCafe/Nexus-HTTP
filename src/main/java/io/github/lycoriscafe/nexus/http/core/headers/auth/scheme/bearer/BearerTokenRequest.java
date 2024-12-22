@@ -97,15 +97,15 @@ public final class BearerTokenRequest {
     public static BearerTokenRequest parse(final HttpPostRequest request) {
         UrlEncodedData params;
         if (!(request.getContent().getData() instanceof UrlEncodedData)) {
-            logger.atDebug().log("Drop request - RequestId:" + request.getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-            request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content type");
+            request.getRequestConsumer()
+                    .dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content type", logger);
             return null;
         }
         params = (UrlEncodedData) request.getContent().getData();
 
         if (!params.containsKey("grant_type")) {
-            logger.atDebug().log("Drop request - RequestId:" + request.getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-            request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing");
+            request.getRequestConsumer()
+                    .dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing", logger);
             return null;
         }
 

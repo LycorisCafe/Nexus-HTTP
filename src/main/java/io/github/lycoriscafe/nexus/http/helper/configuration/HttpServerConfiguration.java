@@ -133,8 +133,8 @@ public final class HttpServerConfiguration {
     }
 
     /**
-     * Get server port number. If you didn't specify it using {@code setPort(int)}, after initialize the server, default value will be updated to the
-     * actual port number.
+     * Get server port number. If you didn't specify the port number, a random system dependent port number will be chosen. It will print when server
+     * initialization.
      *
      * @return Server port number
      * @see #setPort(int)

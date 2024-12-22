@@ -27,6 +27,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
+import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.reflections.Reflections;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,7 +65,7 @@ public final class EndpointScanner {
      */
     public static void scan(final HttpServerConfiguration serverConfiguration,
                             final Database database) throws SQLException, ScannerException {
-        logger.atTrace().log("beginning endpoints scanning...");
+        LogFormatter.log(logger.atDebug(), "Begin endpoint scanning");
         Reflections reflections = new Reflections(serverConfiguration.getBasePackage());
         Set<Class<?>> classes = reflections.get(SubTypes.of(TypesAnnotated.with(HttpEndpoint.class)).asClass());
         for (Class<?> clazz : classes) {
@@ -72,7 +73,7 @@ public final class EndpointScanner {
                 AuthScheme authSchemeAnnotation = null;
                 boolean authenticated = clazz.isAnnotationPresent(Authenticated.class) || method.isAnnotationPresent(Authenticated.class);
                 if (serverConfiguration.getDefaultAuthentications() == null && authenticated) {
-                    throw new ScannerException("authenticated endpoint found but no default authentications provided");
+                    throw new ScannerException("Authenticated endpoint found but no default authentications provided");
                 }
 
                 String endpointValue;
@@ -112,10 +113,6 @@ public final class EndpointScanner {
                     }
                 }
 
-                if (endpointValue == null) {
-                    throw new ScannerException("null endpoint at : class - " + clazz.getName() + " , method - " + method.getName());
-                }
-
                 String statusAnnotationValue = null;
                 HttpStatusCode statusAnnotation = switch (method) {
                     case Method m when m.isAnnotationPresent(Gone.class) -> HttpStatusCode.GONE;
@@ -139,17 +136,19 @@ public final class EndpointScanner {
                         statusAnnotationValue = m.getAnnotation(UnavailableForLegalReasons.class).value();
                         yield HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS;
                     }
+                    case Method m when m.isAnnotationPresent(SeeOther.class) -> {
+                        statusAnnotationValue = m.getAnnotation(SeeOther.class).value();
+                        yield HttpStatusCode.SEE_OTHER;
+                    }
                     default -> null;
                 };
 
-                database.addEndpointData(new ReqEndpoint(serverConfiguration.getUrlPrefix() + (serverConfiguration.isIgnoreEndpointCases() ?
-                        clazz.getAnnotation(HttpEndpoint.class).value().toLowerCase(Locale.US) :
-                        clazz.getAnnotation(HttpEndpoint.class).value()) + (serverConfiguration.isIgnoreEndpointCases() ?
-                        endpointValue.toLowerCase(Locale.US) : endpointValue),
-                        reqMethod, authenticated, clazz, method, statusAnnotation, serverConfiguration.isIgnoreEndpointCases() ?
-                        statusAnnotationValue == null ? null : statusAnnotationValue.toLowerCase(Locale.US) : statusAnnotationValue, authSchemeAnnotation));
+                String endpointUri = serverConfiguration.getUrlPrefix() + "/" + clazz.getAnnotation(HttpEndpoint.class).value() + "/" + endpointValue;
+                database.addEndpointData(new ReqEndpoint((serverConfiguration.isIgnoreEndpointCases() ? endpointUri : endpointUri.toLowerCase(Locale.US)),
+                        reqMethod, authenticated, clazz, method, statusAnnotation, statusAnnotationValue, authSchemeAnnotation));
+                LogFormatter.log(logger.atDebug(), "Endpoint found (" + reqMethod + ") @ " + clazz.getName() + "#" + method.getName());
             }
         }
-        logger.atTrace().log("endpoint scanning done.");
+        LogFormatter.log(logger.atDebug(), "End endpoint scanning");
     }
 }

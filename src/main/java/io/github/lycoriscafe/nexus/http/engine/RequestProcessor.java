@@ -23,6 +23,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
+import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,12 +68,14 @@ public final class RequestProcessor {
     public void process(final long requestId,
                         final String requestLine,
                         final List<String> headers) {
-        if (requestId == -1L) return;
+        if (requestId == -1L) {
+            LogFormatter.log(logger.atDebug(), "Discarding received HTTP request - Max request id capped");
+            return;
+        }
         String[] request = requestLine.split(" ");
 
         if (!request[2].trim().equals("HTTP/1.1")) {
-            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED);
-            requestConsumer.dropConnection(requestId, HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED, "http version not supported");
+            requestConsumer.dropConnection(requestId, HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED, "http version not supported", logger);
             return;
         }
 
@@ -85,8 +88,7 @@ public final class RequestProcessor {
             case POST -> new HttpPostRequest(requestConsumer, requestId, HttpRequestMethod.POST);
             case PUT -> new HttpPutRequest(requestConsumer, requestId, HttpRequestMethod.PUT);
             case null -> {
-                logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.NOT_IMPLEMENTED);
-                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented");
+                requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented", logger);
                 yield null;
             }
         };
@@ -100,8 +102,7 @@ public final class RequestProcessor {
                 httpRequest.setParameters(decodeQueryParams(uriParts[1]));
             }
             default -> {
-                logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid query parameters provided");
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid query parameters provided", logger);
                 return;
             }
         }
@@ -120,6 +121,8 @@ public final class RequestProcessor {
         }
         httpRequest.setCorsRequest(corsRequest);
 
+        LogFormatter.log(logger.atTrace(), "Finalizing HTTP request - RequestId:" + httpRequest.getRequestId() + ", RequestMethod:" +
+                httpRequest.getRequestMethod() + ", RequestEndpoint:" + httpRequest.getEndpoint());
         httpRequest.finalizeRequest();
     }
 

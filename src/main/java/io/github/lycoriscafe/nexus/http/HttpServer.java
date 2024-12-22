@@ -23,6 +23,7 @@ import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
+import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -94,29 +95,29 @@ public final class HttpServer {
     }
 
     /**
-     * Start HTTP server with given {@code HttpServerConfiguration} settings.
+     * Start HTTP server with given {@code HttpServerConfiguration} settings. After initialization, a log wll print with the listening network
+     * interface {@code address} and {@code port} (interface address {@code 0.0.0.0} simply means server listening to all network interfaces).
      *
      * @see HttpServerConfiguration
      * @see #shutdown()
      * @see HttpServer
      * @since v1.0.0
      */
-    public void initialize() {
+    public synchronized HttpServer initialize() throws InterruptedException, IOException {
         if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
-        logger.atInfo().log("""
-                 _____ _____ __ __ _____ _____
-                |   | |   __|  |  |  |  |   __|
-                | | | |   __|-   -|  |  |__   |
-                |_|___|_____|__|__|_____|_____| HTTP v1.0
-                
-                """);
+
+        // Simple decoration
+        LogFormatter.log(logger.atInfo(), "_____ _____ __ __ _____ _____");
+        LogFormatter.log(logger.atInfo(), "|   | |   __|  |  |  |  |   __|");
+        LogFormatter.log(logger.atInfo(), "| | | |   __|-   -|  |  |__   |");
+        LogFormatter.log(logger.atInfo(), "|_|___|_____|__|__|_____|_____| HTTP v1.0");
+
         executorService = initializeExecutorService(serverConfiguration);
+        serverSocket = serverConfiguration.getInetAddress() == null ?
+                new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
+                new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
         serverThread = Thread.ofPlatform().start(() -> {
             try {
-                serverSocket = serverConfiguration.getInetAddress() == null ?
-                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
-                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
-                serverConfiguration.setPort(serverSocket.getLocalPort());
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }
@@ -124,6 +125,8 @@ public final class HttpServer {
                 throw new RuntimeException(e);
             }
         });
+        LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
+        return this;
     }
 
     /**
@@ -135,7 +138,7 @@ public final class HttpServer {
      * @see HttpServer
      * @since v1.0.0
      */
-    public void shutdown() throws IOException, InterruptedException {
+    public synchronized void shutdown() throws IOException, InterruptedException {
         if (!serverThread.isAlive()) throw new IllegalStateException("http server already shutdown");
         if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) executorService.shutdownNow();
         serverSocket.close();

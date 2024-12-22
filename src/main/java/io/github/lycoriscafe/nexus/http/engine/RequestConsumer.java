@@ -22,6 +22,7 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,7 +98,8 @@ public final class RequestConsumer implements Runnable {
     private long getRequestId() {
         if (requestId == Long.MAX_VALUE) return -1L;
         if (requestId + 2 == Long.MAX_VALUE) {
-            dropConnection(Long.MAX_VALUE, HttpStatusCode.INTERNAL_SERVER_ERROR, "connection reset");
+            LogFormatter.log(logger.atDebug(), "Maximum request id capped, requesting to drop connection as last response");
+            dropConnection(Long.MAX_VALUE, HttpStatusCode.INTERNAL_SERVER_ERROR, "connection reset", logger);
         }
         return requestId++;
     }
@@ -159,7 +161,7 @@ public final class RequestConsumer implements Runnable {
             if (b == -1) return null;
             byteArrayOutputStream.write(terminatePoint[0]);
             if (byteArrayOutputStream.size() > serverConfiguration.getMaxHeaderSize()) {
-                dropConnection(0, HttpStatusCode.CONTENT_TOO_LARGE, "provided header too large");
+                dropConnection(0, HttpStatusCode.CONTENT_TOO_LARGE, "provided header too large", logger);
                 return null;
             }
             terminatePoint[0] = terminatePoint[1];
@@ -178,7 +180,8 @@ public final class RequestConsumer implements Runnable {
      */
     @Override
     public void run() {
-        Thread.currentThread().setName("RequestConsumer");
+        LogFormatter.log(logger.atTrace(), "Client connection received - LocalIP:" + socket.getInetAddress().getHostAddress());
+        Thread.currentThread().setName("RequestConsumer@" + socket.getInetAddress().getHostAddress());
         try {
             String requestLine = null;
             List<String> headers = new ArrayList<>();
@@ -202,14 +205,14 @@ public final class RequestConsumer implements Runnable {
 
                 if (headers.size() > serverConfiguration.getMaxHeadersPerRequest()) {
                     // Handle max headers count exceeded
-                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, "request header fields too large");
+                    dropConnection(requestId, HttpStatusCode.REQUEST_HEADER_FIELDS_TOO_LARGE, "request header fields count too large", logger);
                     return;
                 }
 
                 headers.add(line);
             }
         } catch (IOException e) {
-            logger.atDebug().log(e.getMessage());
+            LogFormatter.log(logger.atDebug(), "Client connection terminated - " + e.getMessage());
         }
     }
 
@@ -226,7 +229,10 @@ public final class RequestConsumer implements Runnable {
      */
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode,
-                               final String errorMessage) {
+                               final String errorMessage,
+                               final Logger logger) {
+
+        LogFormatter.log(logger.atDebug(), "Connection drop - RequestId:" + requestId + ", StatusCode:" + httpStatusCode + ", ErrorMessage:" + errorMessage);
         var httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
         if (getHttpServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
             httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
@@ -246,6 +252,7 @@ public final class RequestConsumer implements Runnable {
     public synchronized void send(final HttpResponse httpResponse) {
         if (socket.isClosed()) return;
         responseQue.put(httpResponse.getRequestId(), httpResponse);
+        LogFormatter.log(logger.atTrace(), "HttpResponse added to the queue - RequestId:" + httpResponse.getRequestId());
 
         List<Long> keySet = responseQue.keySet().stream().toList();
         for (Long key : keySet) {
@@ -265,10 +272,11 @@ public final class RequestConsumer implements Runnable {
 
                     if (response.isDropConnection()) {
                         socket.close();
-                        logger.atDebug().log("Connection dropped by dropConnection() request");
+                        logger.atTrace().log("NEXUS-HTTP :: Connection dropped as per dropRequest()");
                     }
+                    LogFormatter.log(logger.atTrace(), "HttpResponse sent - RequestId:" + httpResponse.getRequestId());
                 } catch (IOException e) {
-                    logger.atDebug().log(e.getMessage());
+                    LogFormatter.log(logger.atDebug(), e.getMessage());
                 }
 
                 responseQue.remove(key);

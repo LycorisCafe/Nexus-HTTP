@@ -685,8 +685,7 @@ public final class HttpResponse {
             if (isXContentTypeOptionsNoSniff()) output.append("X-Content-Type-Options: nosniff").append("\r\n");
             return output.append("\r\n").toString();
         } catch (Exception e) {
-            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
-            requestConsumer.dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while parsing http response");
+            requestConsumer.dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while parsing http response", logger);
             return null;
         }
     }
