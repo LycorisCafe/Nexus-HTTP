@@ -51,7 +51,7 @@ import java.lang.annotation.*;
  *
  * @apiNote For more settings, please take a look at {@code HttpServerConfiguration}.
  * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations
- * @see HttpServerConfiguration
+ * @see HttpServerConfiguration#setUrlPrefix(String)
  * @since v1.0.0
  */
 @Documented

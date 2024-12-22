@@ -20,7 +20,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.cookies;
  * Cookie name prefix.
  *
  * @see Cookie
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#cookie_prefixes>Cookie Prefixes (MDN Docs)</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#cookie_prefixes">Cookie Prefixes (MDN Docs)</a>
  * @since v1.0.0
  */
 public enum CookiePrefix {

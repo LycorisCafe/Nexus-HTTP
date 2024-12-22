@@ -54,7 +54,8 @@ public final class Database {
             conn = DriverManager.getConnection("jdbc:sqlite::memory:");
         } else {
             String database = serverConfiguration.getDatabaseLocation()
-                    .isEmpty() ? "NexusHttp" + serverConfiguration.getPort() + ".db" : serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
+                    .isEmpty() ? "NexusHttp" + serverConfiguration.getPort() + ".db" :
+                    serverConfiguration.getDatabaseLocation() + "/NexusHttp" + serverConfiguration.getPort() + ".db";
             File file = new File(database);
             if (file.exists()) {
                 if (!file.delete()) throw new IOException("Failed to delete file: " + file.getAbsolutePath());

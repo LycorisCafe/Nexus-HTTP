@@ -76,7 +76,7 @@ public final class HttpServer {
                 serverSocket = serverConfiguration.getInetAddress() == null ?
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
-
+                serverConfiguration.setPort(serverSocket.getLocalPort());
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }

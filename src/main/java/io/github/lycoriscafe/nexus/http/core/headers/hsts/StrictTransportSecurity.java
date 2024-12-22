@@ -26,7 +26,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.hsts;
  * </pre>
  *
  * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
- * @see <a href="https://datatracker.ietf.org/doc/html/rfc6797>HTTP Strict Transport Security (HSTS) (rfc6797)</a>
+ * @see <a href="https://datatracker.ietf.org/doc/html/rfc6797">HTTP Strict Transport Security (HSTS) (rfc6797)</a>
  * @since v1.0.0
  */
 public final class StrictTransportSecurity {
