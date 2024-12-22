@@ -50,7 +50,7 @@ public final class Cookie {
     private CookiePrefix prefix;
 
     /**
-     * Create an instance of <code>Cookie</code>
+     * Create an instance of {@code Cookie}
      *
      * @param cookieName  Cookie name
      * @param cookieValue Cookie value
@@ -88,10 +88,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>Expires</code> directive value. The argument pass to this method should be HTTP date formatted string.
+     * Set {@code Expires} directive value. The argument pass to this method should be HTTP date formatted string.
      *
      * @param expires HTTP date formatted string
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see <a href="https://datatracker.ietf.org/doc/html/rfc9110#name-date-time-formats">HTTP Semantics (rfc9110) - 5.6.7. Date/Time Formats</a>
      * @see Cookie
      * @since v1.0.0
@@ -102,7 +102,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>Expires</code> directive value.
+     * Get {@code Expires} directive value.
      *
      * @return Directive value
      * @see #setExpires(String)
@@ -114,10 +114,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>Max-Age</code> directive value.
+     * Set {@code Max-Age} directive value.
      *
      * @param maxAge Value in seconds
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @since v1.0.0
      */
@@ -127,7 +127,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>Max-Age</code> directive value.
+     * Get {@code Max-Age} directive value.
      *
      * @return Directive value
      * @see #setMaxAge(long)
@@ -139,10 +139,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>Secure</code> directive.
+     * Set {@code Secure} directive.
      *
      * @param secure Directive status
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @since v1.0.0
      */
@@ -152,7 +152,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>Secure</code> directive status.
+     * Get {@code Secure} directive status.
      *
      * @return Directive status
      * @see #setSecure(boolean)
@@ -164,10 +164,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>HttpOnly</code> directive.
+     * Set {@code HttpOnly} directive.
      *
      * @param httpOnly Directive status
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @since v1.0.0
      */
@@ -177,7 +177,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>HttpOnly</code> directive status.
+     * Get {@code HttpOnly} directive status.
      *
      * @return Directive status
      * @see #setHttpOnly(boolean)
@@ -189,10 +189,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>Domain</code> directive velue.
+     * Set {@code Domain} directive velue.
      *
      * @param domain Directive value
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @since v1.0.0
      */
@@ -202,7 +202,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>Domain</code> directive value.
+     * Get {@code Domain} directive value.
      *
      * @return Directive value
      * @see #setDomain(String)
@@ -214,10 +214,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>Path</code> directive value.
+     * Set {@code Path} directive value.
      *
      * @param path Directive value
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @since v1.0.0
      */
@@ -227,7 +227,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>Path</code> directive value.
+     * Get {@code Path} directive value.
      *
      * @return Directive value
      * @see #setPath(String)
@@ -239,10 +239,10 @@ public final class Cookie {
     }
 
     /**
-     * Set <code>SameSite</code> directive value.
+     * Set {@code SameSite} directive value.
      *
      * @param sameSite Directive value
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @see CookieSameSite
      * @since v1.0.0
@@ -254,7 +254,7 @@ public final class Cookie {
     }
 
     /**
-     * Get <code>SameSite</code> directive value.
+     * Get {@code SameSite} directive value.
      *
      * @return Directive value
      * @see #setSameSite(CookieSameSite)
@@ -270,7 +270,7 @@ public final class Cookie {
      * Set cookie name prefix.
      *
      * @param prefix Name prefix
-     * @return Same <code>Cookie</code> instance
+     * @return Same {@code Cookie} instance
      * @see Cookie
      * @see CookiePrefix
      * @since v1.0.0
@@ -296,8 +296,8 @@ public final class Cookie {
     /**
      * Process incoming cookies.
      *
-     * @param headerValue <code>Cookie</code> header values came along with <code>HttpRequest</code>
-     * @return <code>List</code> of <code>Cookie</code> that come along with the request
+     * @param headerValue {@code Cookie} header values came along with {@code HttpRequest}
+     * @return {@code List} of {@code Cookie} that come along with the request
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
      * @see Cookie
@@ -316,8 +316,8 @@ public final class Cookie {
     /**
      * Process outgoing cookies.
      *
-     * @param cookies <code>List</code> of <code>Cookie</code> that send along with <code>HttpResponse</code>
-     * @return <code>Set-Cookie</code> header string
+     * @param cookies {@code List} of {@code Cookie} that send along with {@code HttpResponse}
+     * @return {@code Set-Cookie} header string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
      * @see Cookie

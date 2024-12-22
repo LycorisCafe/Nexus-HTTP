@@ -28,8 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Content type <code>multipart/form-data</code> for <b>incoming content</b>. If request has header <code>Content-Type: multipart/form-data</code>,
- * then the <code>Content.getData()</code> type should cast to {@code List<MultipartFormData>}.
+ * Content type {@code multipart/form-data} for <b>incoming content</b>. If request has header {@code Content-Type: multipart/form-data}, then the
+ * {@code Content.getData()} type should cast to {@code List<MultipartFormData>}.
  * <pre>
  *     {@code
  *     // 'request' is from endpoint parameter (HttpPostRequest, ...)
@@ -169,15 +169,15 @@ public final class MultipartFormData {
     }
 
     /**
-     * Process incoming <code>multipart/form-data</code> content type request.
+     * Process incoming {@code multipart/form-data} content type request.
      *
-     * @param requestId       <code>HttpRequest</code> id
-     * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+     * @param requestId       {@code HttpRequest} id
+     * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
      * @param boundary        Form data boundary
-     * @param contentLength   <code>Content-Length</code>
-     * @param chunked         <code>Transfer-Encoding</code> chunked?
-     * @param gzipped         <code>Content-Encoding</code> gzipped?
-     * @return New instance of <code>Content</code>
+     * @param contentLength   {@code Content-Length}
+     * @param chunked         {@code Transfer-Encoding} chunked?
+     * @param gzipped         {@code Content-Encoding} gzipped?
+     * @return New instance of {@code Content}
      * @throws IOException Error while reading data from socket input stream
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest

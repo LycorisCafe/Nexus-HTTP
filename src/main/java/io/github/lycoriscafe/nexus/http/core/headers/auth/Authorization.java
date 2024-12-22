@@ -31,7 +31,7 @@ public class Authorization {
     private final AuthScheme authScheme;
 
     /**
-     * Create an instance of <code>Authorization</code>.
+     * Create an instance of {@code Authorization}.
      *
      * @param authScheme Authentication scheme
      * @see Authorization
@@ -55,10 +55,10 @@ public class Authorization {
     }
 
     /**
-     * Process <code>Authorization</code> header values to <code>Authorization</code> types.
+     * Process {@code Authorization} header values to {@code Authorization} types.
      *
-     * @param auth <code>Authorization</code> header values
-     * @return New instance of <code>Authorization</code> type
+     * @param auth {@code Authorization} header values
+     * @return New instance of {@code Authorization} type
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Authorization
      * @since v1.0.0

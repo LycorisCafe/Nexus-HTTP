@@ -28,8 +28,8 @@ import java.util.Objects;
  *     }
  * </pre>
  *
- * @apiNote When using <code>REPORT_TO</code> directive, you should specify it by passing an instance of <code>ReportingEndpoint</code> to the
- * <code>HttpResponse</code>.
+ * @apiNote When using {@code REPORT_TO} directive, you should specify it by passing an instance of {@code ReportingEndpoint} to the
+ * {@code HttpResponse}.
  * @see ReportingEndpoint
  * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
@@ -40,10 +40,10 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
     private final List<String> values;
 
     /**
-     * Create instance of <code>ContentSecurityPolicy</code>.
+     * Create instance of {@code ContentSecurityPolicy}.
      *
      * @param directive CSP directive
-     * @param values    <code>List</code> of CSP directive values
+     * @param values    {@code List} of CSP directive values
      * @see CSPDirective
      * @see ContentSecurityPolicy
      * @since v1.0.0
@@ -70,7 +70,7 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
     /**
      * Get provided values for CSP directive.
      *
-     * @return <code>List</code> of CSP directive values
+     * @return {@code List} of CSP directive values
      * @see CSPDirective
      * @see ContentSecurityPolicy
      * @since v1.0.0
@@ -80,13 +80,12 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
     }
 
     /**
-     * Process <code>Content-Security-Policy</code> header from provided <code>List</code> of <code>ContentSecurityPolicy</code> or
-     * <code>ContentSecurityPolicyReportOnly</code> instances.
+     * Process {@code Content-Security-Policy} header from provided {@code List} of {@code ContentSecurityPolicy} or
+     * {@code ContentSecurityPolicyReportOnly} instances.
      *
-     * @param contentSecurityPolicies <code>List</code> of <code>ContentSecurityPolicy</code> or <code>ContentSecurityPolicyReportOnly</code>
-     *                                instances
-     * @param reportOnly              Are the instances <code>ContentSecurityPolicyReportOnly</code>?
-     * @return Processed <code>Content-Security-Policy</code> HTTP header.
+     * @param contentSecurityPolicies {@code List} of {@code ContentSecurityPolicy} or {@code ContentSecurityPolicyReportOnly} instances
+     * @param reportOnly              Are the instances {@code ContentSecurityPolicyReportOnly}?
+     * @return Processed {@code Content-Security-Policy} HTTP header.
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see ContentSecurityPolicy
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse

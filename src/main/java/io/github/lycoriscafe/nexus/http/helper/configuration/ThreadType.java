@@ -18,21 +18,27 @@ package io.github.lycoriscafe.nexus.http.helper.configuration;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
 
-/// Thread type for client connections.
-///
-/// @see Thread
-/// @see HttpServerConfiguration#setThreadType(ThreadType)
-/// @see HttpServer
-/// @since v1.0.0
+/**
+ * Thread type for client connections.
+ *
+ * @see Thread
+ * @see HttpServerConfiguration#setThreadType(ThreadType)
+ * @see HttpServer
+ * @since v1.0.0
+ */
 public enum ThreadType {
-    /// Platform thread (OS dependant)
-    ///
-    /// @see ThreadType
-    /// @since v1.0.0
+    /**
+     * Platform thread (OS dependant)
+     *
+     * @see ThreadType
+     * @since v1.0.0
+     */
     PLATFORM,
-    /// Virtual thread (JVM dependant - **Recommended**)
-    ///
-    /// @see ThreadType
-    /// @since v1.0.0
+    /**
+     * Virtual thread (JVM dependant - <b>Recommended</b>)
+     *
+     * @see ThreadType
+     * @since v1.0.0
+     */
     VIRTUAL
 }

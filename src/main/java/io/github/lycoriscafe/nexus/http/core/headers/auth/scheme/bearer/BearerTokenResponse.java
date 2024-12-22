@@ -24,8 +24,8 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import java.util.Objects;
 
 /**
- * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be returned from the target
- * endpoint. The endpoint must be annotated with <code>@BearerEndpoint</code>.
+ * When client requests to generate a {@code Bearer} access token to a resource, instance of this class will be returned from the target endpoint. The
+ * endpoint must be annotated with {@code @BearerEndpoint}.
  * <pre>
  *     {@code
  *     // Example code
@@ -61,7 +61,7 @@ public final class BearerTokenResponse {
      * Set bearer token.
      *
      * @param bearerToken Generated bearer token
-     * @return Same <code>BearerTokenResponse</code> instance
+     * @return Same {@code BearerTokenResponse} instance
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -86,7 +86,7 @@ public final class BearerTokenResponse {
      * Set token expire time
      *
      * @param expiresIn Expire time in seconds.
-     * @return Same <code>BearerTokenResponse</code> instance
+     * @return Same {@code BearerTokenResponse} instance
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -111,7 +111,7 @@ public final class BearerTokenResponse {
      * Set refresh token
      *
      * @param refreshToken Refresh token
-     * @return Same <code>BearerTokenResponse</code> instance
+     * @return Same {@code BearerTokenResponse} instance
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -136,7 +136,7 @@ public final class BearerTokenResponse {
      * Set scope of the token
      *
      * @param scope Scope of the token
-     * @return Same <code>BearerTokenResponse</code> instance
+     * @return Same {@code BearerTokenResponse} instance
      * @see BearerTokenResponse
      * @since v1.0.0
      */
@@ -146,12 +146,12 @@ public final class BearerTokenResponse {
     }
 
     /**
-     * Process token response as <code>HttpResponse</code>
+     * Process token response as {@code HttpResponse}
      *
-     * @param response        <code>BearerTokenResponse</code> that should be parsed
+     * @param response        {@code BearerTokenResponse} that should be parsed
      * @param requestId       Target client's request id
-     * @param requestConsumer Target client's <code>RequestConsumer</code>
-     * @return New instance of <code>HttpResponse</code> with processed content
+     * @param requestConsumer Target client's {@code RequestConsumer}
+     * @return New instance of {@code HttpResponse} with processed content
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see BearerTokenResponse
      * @since v1.0.0

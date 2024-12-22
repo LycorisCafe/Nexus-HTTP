@@ -44,10 +44,18 @@ public final class CORSResponse {
     private List<String> accessControlAllowHeaders;
 
     /**
-     * Set <code>Access-Control-Allow-Origin</code> header value.
+     * Create an instance of {@code CORSResponse}.
+     *
+     * @see CORSResponse
+     * @since v1.0.0
+     */
+    public CORSResponse() {}
+
+    /**
+     * Set {@code Access-Control-Allow-Origin} header value.
      *
      * @param accessControlAllowOrigin Allow origin
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -57,7 +65,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Allow-Origin</code> header value.
+     * Get {@code Access-Control-Allow-Origin} header value.
      *
      * @return Allowed origin
      * @see #setAccessControlAllowOrigin(String)
@@ -69,10 +77,10 @@ public final class CORSResponse {
     }
 
     /**
-     * Add a value to <code>Access-Control-Expose-Headers</code> header.
+     * Add a value to {@code Access-Control-Expose-Headers} header.
      *
      * @param accessControlExposeHeader Expose header
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -83,7 +91,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Expose-Headers</code> header values.
+     * Get {@code Access-Control-Expose-Headers} header values.
      *
      * @return Exposed headers
      * @see #addAccessControlExposeHeader(String)
@@ -95,10 +103,10 @@ public final class CORSResponse {
     }
 
     /**
-     * Set <code>Access-Control-Max-Age</code> header value in seconds.
+     * Set {@code Access-Control-Max-Age} header value in seconds.
      *
      * @param accessControlMaxAge Max age in seconds
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -108,7 +116,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Max-Age</code> header value.
+     * Get {@code Access-Control-Max-Age} header value.
      *
      * @return Max age
      * @see #setAccessControlMaxAge(long)
@@ -120,10 +128,10 @@ public final class CORSResponse {
     }
 
     /**
-     * Set <code>Access-Control-Allow-Credentials</code> header.
+     * Set {@code Access-Control-Allow-Credentials} header.
      *
      * @param accessControlAllowCredentials Allow credentials header status
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -133,7 +141,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Allow-Credentials</code> header status.
+     * Get {@code Access-Control-Allow-Credentials} header status.
      *
      * @return Allow credentials status
      * @see #setAccessControlAllowCredentials(boolean)
@@ -145,10 +153,10 @@ public final class CORSResponse {
     }
 
     /**
-     * Add a value to <code>Access-Control-Allow-Methods</code> header.
+     * Add a value to {@code Access-Control-Allow-Methods} header.
      *
      * @param accessControlAllowMethod Allow method
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -159,7 +167,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Allow-Method</code> header values.
+     * Get {@code Access-Control-Allow-Method} header values.
      *
      * @return Allowed methods
      * @see #addAccessControlAllowMethod(HttpRequestMethod)
@@ -171,10 +179,10 @@ public final class CORSResponse {
     }
 
     /**
-     * Add a value to <code>Access-Control-Allow-Headers</code> header.
+     * Add a value to {@code Access-Control-Allow-Headers} header.
      *
      * @param accessControlAllowHeader Allow header
-     * @return Same <code>CORSResponse</code> instance
+     * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
      */
@@ -185,7 +193,7 @@ public final class CORSResponse {
     }
 
     /**
-     * Get <code>Access-Control-Allow-Headers</code> header values.
+     * Get {@code Access-Control-Allow-Headers} header values.
      *
      * @return Allowed headers
      * @see #addAccessControlAllowHeader(String)

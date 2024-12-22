@@ -16,17 +16,20 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth;
 
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+
 import java.lang.annotation.*;
 
 /**
- * Mark endpoint as an authenticated resource. To access the endpoint, the <code>Authorization</code> header must present in the request.
+ * Mark endpoint as an authenticated resource. To access the endpoint, the {@code Authorization} header must present in the request.
  * <p>
  * The endpoint annotated with this,
  * <ul>
- *     <li>must <code>public</code> and <code>static</code></li>
+ *     <li>must {@code public} and {@code static}</li>
  *     <li>must annotate with any of request method annotation</li>
- *     <li>must return <code>HttpResponse</code> as <b>return</b> value</li>
- *     <li>must accept any type of <code>HttpRequest</code> as <b>only parameter</b></li>
+ *     <li>must return {@code HttpResponse} as <b>return</b> value</li>
+ *     <li>must accept any type of {@code HttpRequest} as <b>only parameter</b></li>
  * </ul>
  * <pre>
  *     {@code
@@ -46,8 +49,8 @@ import java.lang.annotation.*;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see HttpResponse
+ * @see HttpRequest
  * @see Authorization
  * @see AuthScheme
  * @see <a href="https://datatracker.ietf.org/doc/rfc7235">Hypertext Transfer Protocol (HTTP/1.1): Authentication (rfc 7235)</a>

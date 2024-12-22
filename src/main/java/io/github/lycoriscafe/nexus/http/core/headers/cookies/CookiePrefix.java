@@ -44,6 +44,13 @@ public enum CookiePrefix {
 
     private final String prefix;
 
+    /**
+     * Cookie Prefix.
+     *
+     * @param prefix String value to set in header
+     * @see CookiePrefix
+     * @since v1.0.0
+     */
     CookiePrefix(final String prefix) {
         this.prefix = prefix;
     }

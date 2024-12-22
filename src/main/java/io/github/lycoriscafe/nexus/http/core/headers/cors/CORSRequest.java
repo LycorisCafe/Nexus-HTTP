@@ -42,7 +42,15 @@ public final class CORSRequest {
     private List<String> accessControlRequestHeaders;
 
     /**
-     * Get CORS <code>Origin</code>.
+     * Create instance of {@code CORSRequest}.
+     *
+     * @see CORSRequest
+     * @since v1.0.0
+     */
+    public CORSRequest() {}
+
+    /**
+     * Get CORS {@code Origin}.
      *
      * @return Origin
      * @see CORSRequest
@@ -53,7 +61,7 @@ public final class CORSRequest {
     }
 
     /**
-     * Set CORS <code>Origin</code>
+     * Set CORS {@code Origin}
      *
      * @param origin Origin
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
@@ -65,7 +73,7 @@ public final class CORSRequest {
     }
 
     /**
-     * Get CORS <code>Access-Control-Request-Method</code>.
+     * Get CORS {@code Access-Control-Request-Method}.
      *
      * @return Request method
      * @see CORSRequest
@@ -76,7 +84,7 @@ public final class CORSRequest {
     }
 
     /**
-     * Set CORS <code>Access-Control-Request-Method</code>
+     * Set CORS {@code Access-Control-Request-Method}
      *
      * @param accessControlRequestMethod Request method
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
@@ -88,9 +96,9 @@ public final class CORSRequest {
     }
 
     /**
-     * Get CORS <code>Access-Control-Request-Headers</code>.
+     * Get CORS {@code Access-Control-Request-Headers}.
      *
-     * @return <code>List</code> of request headers
+     * @return {@code List} of request headers
      * @see CORSRequest
      * @since v1.0.0
      */
@@ -99,7 +107,7 @@ public final class CORSRequest {
     }
 
     /**
-     * Add a value to CORS <code>Access-Control-Request-Headers</code>.
+     * Add a value to CORS {@code Access-Control-Request-Headers}.
      *
      * @param accessControlRequestHeader Request header
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
@@ -112,11 +120,11 @@ public final class CORSRequest {
     }
 
     /**
-     * Process incoming CORS header to <code>CORSRequest</code> instance.
+     * Process incoming CORS header to {@code CORSRequest} instance.
      *
-     * @param request Temporary <code>CORSRequest</code> hold in <code>RequestProcessor</code>
+     * @param request Temporary {@code CORSRequest} hold in {@code RequestProcessor}
      * @param values  Full CORS request header split to key and value pair
-     * @return New or existing <code>CORSRequest</code>
+     * @return New or existing {@code CORSRequest}
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.RequestProcessor RequestProcessor
      * @see CORSRequest

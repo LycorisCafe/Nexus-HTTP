@@ -20,7 +20,7 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Reporting Endpoint for CSP. Instance of ths class will process as a link to <code>REPORT_TO</code> CSP directive.
+ * Reporting Endpoint for CSP. Instance of ths class will process as a link to {@code REPORT_TO} CSP directive.
  * <pre>
  *     {@code
  *     // Example code
@@ -45,7 +45,7 @@ public final class ReportingEndpoint {
     private final String value;
 
     /**
-     * Create instance of <code>ReportingEndpoint</code>.
+     * Create instance of {@code ReportingEndpoint}.
      *
      * @param name  Endpoint name
      * @param value Endpoint value
@@ -81,10 +81,10 @@ public final class ReportingEndpoint {
     }
 
     /**
-     * Process provided <code>List</code> of <code>ReportingEndpoint</code> as a HTTP header, <code>Reporting-Endpoints</code>.
+     * Process provided {@code List} of {@code ReportingEndpoint} as a HTTP header, {@code Reporting-Endpoints}.
      *
-     * @param reportingEndpoints <code>List</code> of <code>ReportingEndpoint</code>
-     * @return Processed <code>Reporting-Endpoints</code> HTTP header string
+     * @param reportingEndpoints {@code List} of {@code ReportingEndpoint}
+     * @return Processed {@code Reporting-Endpoints} HTTP header string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see ReportingEndpoint
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse

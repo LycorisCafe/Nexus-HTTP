@@ -25,8 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
 /**
- * Content type <code>application/x-www-form-urlencoded</code> for <b>incoming content</b>. If request has header <code>Content-Type:
- * application/x-www-form-urlencoded</code>, then the <code>Content.getData()</code> type should cast to <code>UrlEncodedData</code>.
+ * Content type {@code application/x-www-form-urlencoded} for <b>incoming content</b>. If request has header
+ * {@code Content-Type: application/x-www-form-urlencoded}, then the {@code Content.getData()} type should cast to {@code UrlEncodedData}.
  * <pre>
  *     {@code
  *     // 'request' is from endpoint parameter (HttpPostRequest, ...)
@@ -40,21 +40,21 @@ import java.util.HashMap;
  *     }
  * </pre>
  *
- * @apiNote Since <code>UrlEncodedData</code> extends {@code HasMap<String, String>}, API users can treat this as a {@code Map<String, String>}.
+ * @apiNote Since {@code UrlEncodedData} extends {@code HasMap<String, String>}, API users can treat this as a {@code Map<String, String>}.
  * @see Content
  * @see Content#getData()
  * @since v1.0.0
  */
 public final class UrlEncodedData extends HashMap<String, String> {
     /**
-     * Process incoming <code>application/x-www-form-urlencoded</code> content type request.
+     * Process incoming {@code application/x-www-form-urlencoded} content type request.
      *
-     * @param requestId       <code>HttpRequest</code> id
-     * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
-     * @param contentLength   <code>Content-Length</code>
-     * @param chunked         <code>Transfer-Encoding</code> chunked?
-     * @param gzipped         <code>Content-Encoding</code> gzipped?
-     * @return New instance of <code>Content</code>
+     * @param requestId       {@code HttpRequest} id
+     * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
+     * @param contentLength   {@code Content-Length}
+     * @param chunked         {@code Transfer-Encoding} chunked?
+     * @param gzipped         {@code Content-Encoding} gzipped?
+     * @return New instance of {@code Content}
      * @throws IOException Error while reading data from socket input stream
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest

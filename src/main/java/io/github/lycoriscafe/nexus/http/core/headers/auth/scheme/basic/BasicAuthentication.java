@@ -17,6 +17,7 @@
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
 /**
  * The 'Basic' authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource without
@@ -34,8 +35,8 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
  * </pre>
  *
  * @see BasicAuthorization
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
+ * @see Authentication
+ * @see Authorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
  * @since v1.0.0
  */
@@ -65,7 +66,7 @@ public final class BasicAuthentication extends Authentication {
     }
 
     /**
-     * Process authentication instance as <code>WWW-Authenticate</code> HTTP header value.
+     * Process authentication instance as {@code WWW-Authenticate} HTTP header value.
      *
      * @return HTTP header value string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.

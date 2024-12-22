@@ -51,9 +51,17 @@ public final class CacheControl {
     private Long staleIfError;
 
     /**
-     * Get <code>max-age</code> directive value.
+     * Create instance of {@code CacheControl}.
      *
-     * @return <code>max-age</code> directive value
+     * @see CacheControl
+     * @since v1.0.0
+     */
+    public CacheControl() {}
+
+    /**
+     * Get {@code max-age} directive value.
+     *
+     * @return {@code max-age} directive value
      * @see #setMaxAge(long)
      * @see CacheControl
      * @since v1.0.0
@@ -63,10 +71,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>max-age</code> directive value in <b>seconds</b>.
+     * Set {@code max-age} directive value in <b>seconds</b>.
      *
-     * @param maxAge <code>max-age</code> directive value in <b>seconds</b>
-     * @return Same <code>CacheControl</code> instance
+     * @param maxAge {@code max-age} directive value in <b>seconds</b>
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -76,9 +84,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>s-max-age</code> directive value.
+     * Get {@code s-max-age} directive value.
      *
-     * @return <code>s-max-age</code> directive value
+     * @return {@code s-max-age} directive value
      * @see #setSMaxAge(long)
      * @see CacheControl
      * @since v1.0.0
@@ -88,10 +96,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>s-max-age</code> directive value in <b>seconds</b>.
+     * Set {@code s-max-age} directive value in <b>seconds</b>.
      *
-     * @param sMaxAge <code>s-max-age</code> directive value in <b>seconds</b>
-     * @return Same <code>CacheControl</code> instance
+     * @param sMaxAge {@code s-max-age} directive value in <b>seconds</b>
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -101,9 +109,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>no-cache</code> directive status.
+     * Get {@code no-cache} directive status.
      *
-     * @return <code>no-cache</code> directive status
+     * @return {@code no-cache} directive status
      * @see #setNoCache(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -113,10 +121,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>no-cache</code> directive status.
+     * Set {@code no-cache} directive status.
      *
-     * @param noCache <code>no-cache</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param noCache {@code no-cache} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -126,9 +134,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>must-revalidate</code> directive status.
+     * Get {@code must-revalidate} directive status.
      *
-     * @return <code>must-revalidate</code> directive status
+     * @return {@code must-revalidate} directive status
      * @see #setMustRevalidate(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -138,10 +146,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>must-revalidate</code> directive status.
+     * Set {@code must-revalidate} directive status.
      *
-     * @param mustRevalidate <code>must-revalidate</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param mustRevalidate {@code must-revalidate} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -151,9 +159,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>proxy-revalidate</code> directive status.
+     * Get {@code proxy-revalidate} directive status.
      *
-     * @return <code>proxy-revalidate</code> directive status
+     * @return {@code proxy-revalidate} directive status
      * @see #setProxyRevalidate(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -163,10 +171,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>proxy-revalidate</code> directive status.
+     * Set {@code proxy-revalidate} directive status.
      *
-     * @param proxyRevalidate <code>proxy-revalidate</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param proxyRevalidate {@code proxy-revalidate} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -176,9 +184,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>no-store</code> directive status.
+     * Get {@code no-store} directive status.
      *
-     * @return <code>no-store</code> directive status
+     * @return {@code no-store} directive status
      * @see #setNoStore(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -188,10 +196,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>no-store</code> directive status.
+     * Set {@code no-store} directive status.
      *
-     * @param noStore <code>no-store</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param noStore {@code no-store} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -201,9 +209,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>private</code> directive status.
+     * Get {@code private} directive status.
      *
-     * @return <code>private</code> directive status
+     * @return {@code private} directive status
      * @see #setPrivate(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -213,10 +221,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>private</code> directive status.
+     * Set {@code private} directive status.
      *
-     * @param private_ <code>private</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param private_ {@code private} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -226,9 +234,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>public</code> directive status.
+     * Get {@code public} directive status.
      *
-     * @return <code>public</code> directive status
+     * @return {@code public} directive status
      * @see #setPublic(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -238,10 +246,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>public</code> directive status.
+     * Set {@code public} directive status.
      *
-     * @param public_ <code>public</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param public_ {@code public} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -251,9 +259,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>must-understand</code> directive status.
+     * Get {@code must-understand} directive status.
      *
-     * @return <code>must-understand</code> directive status
+     * @return {@code must-understand} directive status
      * @see #setMustUnderstand(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -263,10 +271,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>must-understand</code> directive status.
+     * Set {@code must-understand} directive status.
      *
-     * @param mustUnderstand <code>must-understand</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param mustUnderstand {@code must-understand} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -277,9 +285,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>no-transform</code> directive status.
+     * Get {@code no-transform} directive status.
      *
-     * @return <code>no-transform</code> directive status
+     * @return {@code no-transform} directive status
      * @see #setNoTransform(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -289,10 +297,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>no-transform</code> directive status.
+     * Set {@code no-transform} directive status.
      *
-     * @param noTransform <code>no-transform</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param noTransform {@code no-transform} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -302,9 +310,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>immutable</code> directive status.
+     * Get {@code immutable} directive status.
      *
-     * @return <code>immutable</code> directive status
+     * @return {@code immutable} directive status
      * @see #setImmutable(boolean)
      * @see CacheControl
      * @since v1.0.0
@@ -314,10 +322,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>immutable</code> directive status.
+     * Set {@code immutable} directive status.
      *
-     * @param immutable <code>immutable</code> directive status
-     * @return Same <code>CacheControl</code> instance
+     * @param immutable {@code immutable} directive status
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -327,9 +335,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get provided <code>stale-while-revalidate</code> directive value.
+     * Get provided {@code stale-while-revalidate} directive value.
      *
-     * @return <code>stale-while-revalidate</code> directive value
+     * @return {@code stale-while-revalidate} directive value
      * @see #setStaleWhileRevalidate(long)
      * @see CacheControl
      * @since v1.0.0
@@ -339,10 +347,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>stale-while-revalidate</code> directive value in <b>seconds</b>.
+     * Set {@code stale-while-revalidate} directive value in <b>seconds</b>.
      *
-     * @param staleWhileRevalidate <code>stale-while-revalidate</code> directive value in <b>seconds</b>
-     * @return Same <code>CacheControl</code> instance
+     * @param staleWhileRevalidate {@code stale-while-revalidate} directive value in <b>seconds</b>
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -352,9 +360,9 @@ public final class CacheControl {
     }
 
     /**
-     * Get <code>stale-if-error</code> directive value.
+     * Get {@code stale-if-error} directive value.
      *
-     * @return <code>stale-if-error</code> directive value
+     * @return {@code stale-if-error} directive value
      * @see #setStaleIfError(long)
      * @see CacheControl
      * @since v1.0.0
@@ -364,10 +372,10 @@ public final class CacheControl {
     }
 
     /**
-     * Set <code>stale-if-error</code> directive value in <b>seconds</b>.
+     * Set {@code stale-if-error} directive value in <b>seconds</b>.
      *
-     * @param staleIfError <code>stale-if-error</code> directive value in <b>seconds</b>
-     * @return Same <code>CacheControl</code> instance
+     * @param staleIfError {@code stale-if-error} directive value in <b>seconds</b>
+     * @return Same {@code CacheControl} instance
      * @see CacheControl
      * @since v1.0.0
      */
@@ -377,10 +385,10 @@ public final class CacheControl {
     }
 
     /**
-     * Process provided <code>CacheControl</code> instance as a <code>Cache-Control</code> HTTP header.
+     * Process provided {@code CacheControl} instance as a {@code Cache-Control} HTTP header.
      *
-     * @param cacheControl <code>CacheControl</code> instance
-     * @return <code>Cache-Control</code> header string
+     * @param cacheControl {@code CacheControl} instance
+     * @return {@code Cache-Control} header string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see CacheControl
      * @since v1.0.0

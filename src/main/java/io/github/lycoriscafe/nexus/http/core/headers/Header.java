@@ -42,7 +42,7 @@ public final class Header {
     private final String value;
 
     /**
-     * Create an instance of <code>Header</code>.
+     * Create an instance of {@code Header}.
      *
      * @param name  Header name
      * @param value Header value
@@ -78,10 +78,10 @@ public final class Header {
     }
 
     /**
-     * Process incoming non-specific header (not defined in server) in to primary <code>Header</code>.
+     * Process incoming non-specific header (not defined in server) in to primary {@code Header}.
      *
      * @param headerParts Key value pair
-     * @return New <code>Header</code> instance
+     * @return New {@code Header} instance
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Header
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
@@ -92,9 +92,9 @@ public final class Header {
     }
 
     /**
-     * Process outgoing <code>Header</code>s to HTTP header strings.
+     * Process outgoing {@code Header}s to HTTP header strings.
      *
-     * @param headers <code>List</code> fo <code>Header</code> instances
+     * @param headers {@code List} fo {@code Header} instances
      * @return HTTP headers string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Header

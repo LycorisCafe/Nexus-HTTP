@@ -25,9 +25,9 @@ import java.lang.annotation.*;
  * <p>
  * The endpoint annotated with this,
  * <ul>
- *     <li>must <code>public</code> and <code>static</code></li>
- *     <li>must return <code>BearerTokenResponse</code> as <b>return</b> value</li>
- *     <li>must accept <code>BearerTokenRequest</code> as <b>only parameter</b></li>
+ *     <li>must {@code public} and {@code static}</li>
+ *     <li>must return {@code BearerTokenResponse} as <b>return</b> value</li>
+ *     <li>must accept {@code BearerTokenRequest} as <b>only parameter</b></li>
  * </ul>
  * <pre>
  *     {@code
@@ -42,7 +42,7 @@ import java.lang.annotation.*;
  *
  * @see BearerTokenResponse
  * @see BearerTokenRequest
- * @see io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST POST
+ * @see POST
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
  * @since v1.0.0
  */

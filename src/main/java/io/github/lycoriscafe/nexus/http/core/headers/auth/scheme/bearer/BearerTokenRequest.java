@@ -23,8 +23,8 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostReq
 import java.util.Map;
 
 /**
- * When client requests to generate a <code>Bearer</code> access token to a resource, instance of this class will be received to the target endpoint.
- * The endpoint must be annotated with <code>@BearerEndpoint</code>.
+ * When client requests to generate a {@code Bearer} access token to a resource, instance of this class will be received to the target endpoint. The
+ * endpoint must be annotated with {@code @BearerEndpoint}.
  *
  * @see BearerEndpoint
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
@@ -35,7 +35,7 @@ public final class BearerTokenRequest {
     private Map<String, String> params;
 
     /**
-     * Create an instance of <code>BearerTokenRequest</code>.
+     * Create an instance of {@code BearerTokenRequest}.
      *
      * @param grantType Token grant type
      * @see BearerTokenRequest
@@ -57,7 +57,7 @@ public final class BearerTokenRequest {
     }
 
     /**
-     * Get other parameters come along with the token request (without <code>grant_type</code>).
+     * Get other parameters come along with the token request (without {@code grant_type}).
      *
      * @return Other parameters
      * @see #setParams(Map)
@@ -69,10 +69,10 @@ public final class BearerTokenRequest {
     }
 
     /**
-     * Set other parameters come along with the token request (without <code>grant_type</code>)
+     * Set other parameters come along with the token request (without {@code grant_type})
      *
      * @param params Other parameters
-     * @return Same <code>BearerTokenRequest</code> instance
+     * @return Same {@code BearerTokenRequest} instance
      * @see BearerTokenRequest
      * @since v1.0.0
      */
@@ -82,10 +82,10 @@ public final class BearerTokenRequest {
     }
 
     /**
-     * Process provided request content to a new instance of <code>BearerTokenRequest</code>.
+     * Process provided request content to a new instance of {@code BearerTokenRequest}.
      *
-     * @param request <code>HttpPost</code> request
-     * @return New instance of <code>BearerTokenRequest</code>
+     * @param request {@code HttpPost} request
+     * @return New instance of {@code BearerTokenRequest}
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see BearerTokenRequest
      * @since v1.0.0

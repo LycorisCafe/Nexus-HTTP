@@ -27,8 +27,8 @@ import java.util.List;
  *     }
  * </pre>
  *
- * @apiNote When using <code>REPORT_TO</code> directive, you should specify it by passing an instance of <code>ReportingEndpoint</code> to the
- * <code>HttpResponse</code>.
+ * @apiNote When using {@code REPORT_TO} directive, you should specify it by passing an instance of {@code ReportingEndpoint} to the
+ * {@code HttpResponse}.
  * @see ReportingEndpoint
  * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
@@ -36,10 +36,10 @@ import java.util.List;
  */
 public final class ContentSecurityPolicyReportOnly extends ContentSecurityPolicy {
     /**
-     * Create instance of <code>ContentSecurityPolicyReportOnly</code>.
+     * Create instance of {@code ContentSecurityPolicyReportOnly}.
      *
      * @param directive CSP directive
-     * @param values    <code>List</code> of CSP directive values
+     * @param values    {@code List} of CSP directive values
      * @see CSPDirective
      * @see ContentSecurityPolicy
      * @see ContentSecurityPolicyReportOnly

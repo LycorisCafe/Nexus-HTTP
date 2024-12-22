@@ -35,7 +35,7 @@ public final class StrictTransportSecurity {
     private boolean preload;
 
     /**
-     * Create an instance of <code>StrictTransportSecurity</code>.
+     * Create an instance of {@code StrictTransportSecurity}.
      *
      * @param maxAge HSTS max age in seconds
      * @see StrictTransportSecurity
@@ -61,7 +61,7 @@ public final class StrictTransportSecurity {
      * Set include subdomains status.
      *
      * @param includeSubdomains include subdomains status
-     * @return Same <code>StrictTransportSecurity</code> instance
+     * @return Same {@code StrictTransportSecurity} instance
      * @see StrictTransportSecurity
      * @since v1.0.0
      */
@@ -85,7 +85,7 @@ public final class StrictTransportSecurity {
      * Set preload status.
      *
      * @param preload Preload status
-     * @return Same <code>StrictTransportSecurity</code> instance
+     * @return Same {@code StrictTransportSecurity} instance
      * @see StrictTransportSecurity
      * @since v1.0.0
      */
@@ -106,10 +106,10 @@ public final class StrictTransportSecurity {
     }
 
     /**
-     * Process HSTS instance as a <code>Strict-Transport-Security</code> HTTP header.
+     * Process HSTS instance as a {@code Strict-Transport-Security} HTTP header.
      *
-     * @param hsts <code>StrictTransportSecurity</code> instance
-     * @return Processed <code>Strict-Transport-Security</code> HTTP header
+     * @param hsts {@code StrictTransportSecurity} instance
+     * @return Processed {@code Strict-Transport-Security} HTTP header
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see StrictTransportSecurity
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse

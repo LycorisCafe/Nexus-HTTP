@@ -171,7 +171,7 @@ public enum CSPDirective {
      */
     REPORT_URI("report-uri"),
     /**
-     * When using this directive, API users should specify an instance of <code>ReportingEndpoint</code> to <code>HttpResponse</code>.
+     * When using this directive, API users should specify an instance of {@code ReportingEndpoint} to {@code HttpResponse}.
      *
      * @see ReportingEndpoint
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
@@ -183,10 +183,24 @@ public enum CSPDirective {
 
     private final String name;
 
+    /**
+     * CSP Directive.
+     *
+     * @param name String to set in header
+     * @see CSPDirective
+     * @since v1.0.0
+     */
     CSPDirective(final String name) {
         this.name = name;
     }
 
+    /**
+     * Get header value string of provided CSP directive.
+     *
+     * @return Header value string
+     * @see CSPDirective
+     * @since v1.0.0
+     */
     public String getName() {
         return name;
     }

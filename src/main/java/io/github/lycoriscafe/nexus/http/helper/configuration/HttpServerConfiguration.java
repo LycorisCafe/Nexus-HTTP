@@ -587,14 +587,16 @@ public final class HttpServerConfiguration {
         return maxChunkSize;
     }
 
-    /// Add heads one-by-one to send with every response.
-    ///
-    /// @param defaultHeader Default header
-    /// @see Header
-    /// @see #setDefaultHeaders(List)
-    /// @see HttpResponse#addHeader(Header)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add heads one-by-one to send with every response.
+     *
+     * @param defaultHeader Default header
+     * @see Header
+     * @see #setDefaultHeaders(List)
+     * @see HttpResponse#addHeader(Header)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultHeader(final Header defaultHeader) {
         Objects.requireNonNull(defaultHeader);
         if (defaultHeaders == null) defaultHeaders = new NonDuplicateList<>();
@@ -602,39 +604,45 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set headers to send with every response.
-    ///
-    /// @param defaultHeaders List of default headers
-    /// @see Header
-    /// @see #addDefaultHeader(Header)
-    /// @see HttpResponse#setHeaders(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set headers to send with every response.
+     *
+     * @param defaultHeaders List of default headers
+     * @see Header
+     * @see #addDefaultHeader(Header)
+     * @see HttpResponse#setHeaders(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultHeaders(final List<Header> defaultHeaders) {
         this.defaultHeaders = defaultHeaders;
         return this;
     }
 
-    /// Get provided default headers.
-    ///
-    /// @return List of default headers
-    /// @see Header
-    /// @see #addDefaultHeader(Header)
-    /// @see #setDefaultHeaders(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default headers.
+     *
+     * @return List of default headers
+     * @see Header
+     * @see #addDefaultHeader(Header)
+     * @see #setDefaultHeaders(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<Header> getDefaultHeaders() {
         return defaultHeaders;
     }
 
-    /// Add authentication challenges one-by-one to send with every response.
-    ///
-    /// @param defaultAuthentication Default authentication challenge
-    /// @see Authentication
-    /// @see #setDefaultAuthentications(List)
-    /// @see HttpResponse#addAuthentication(Authentication)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add authentication challenges one-by-one to send with every response.
+     *
+     * @param defaultAuthentication Default authentication challenge
+     * @see Authentication
+     * @see #setDefaultAuthentications(List)
+     * @see HttpResponse#addAuthentication(Authentication)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultAuthentication(final Authentication defaultAuthentication) {
         Objects.requireNonNull(defaultAuthentication);
         if (defaultAuthentications == null) defaultAuthentications = new NonDuplicateList<>();
@@ -642,39 +650,45 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set authentication challenges to send with every response.
-    ///
-    /// @param defaultAuthentications List of default authentication challenges
-    /// @see Authentication
-    /// @see #addDefaultAuthentication(Authentication)
-    /// @see HttpResponse#setAuthentications(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set authentication challenges to send with every response.
+     *
+     * @param defaultAuthentications List of default authentication challenges
+     * @see Authentication
+     * @see #addDefaultAuthentication(Authentication)
+     * @see HttpResponse#setAuthentications(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultAuthentications(final List<Authentication> defaultAuthentications) {
         this.defaultAuthentications = defaultAuthentications;
         return this;
     }
 
-    /// Get provided default authentication challenges.
-    ///
-    /// @return List of default authentication challenges
-    /// @see Authentication
-    /// @see #addDefaultAuthentication(Authentication)
-    /// @see #setDefaultAuthentications(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default authentication challenges.
+     *
+     * @return List of default authentication challenges
+     * @see Authentication
+     * @see #addDefaultAuthentication(Authentication)
+     * @see #setDefaultAuthentications(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<Authentication> getDefaultAuthentications() {
         return defaultAuthentications;
     }
 
-    /// Add cookies one-by-one to send with every response.
-    ///
-    /// @param defaultCookie Default cookie
-    /// @see Cookie
-    /// @see #setDefaultCookies(List)
-    /// @see HttpResponse#addCookie(Cookie)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add cookies one-by-one to send with every response.
+     *
+     * @param defaultCookie Default cookie
+     * @see Cookie
+     * @see #setDefaultCookies(List)
+     * @see HttpResponse#addCookie(Cookie)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultCookie(final Cookie defaultCookie) {
         Objects.requireNonNull(defaultCookie);
         if (defaultCookies == null) defaultCookies = new NonDuplicateList<>();
@@ -682,62 +696,72 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set cookies to send with every response.
-    ///
-    /// @param defaultCookies List of default cookies
-    /// @see Cookie
-    /// @see #addDefaultCookie(Cookie)
-    /// @see HttpResponse#setCookies(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set cookies to send with every response.
+     *
+     * @param defaultCookies List of default cookies
+     * @see Cookie
+     * @see #addDefaultCookie(Cookie)
+     * @see HttpResponse#setCookies(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultCookies(final List<Cookie> defaultCookies) {
         this.defaultCookies = defaultCookies;
         return this;
     }
 
-    /// Get provided default cookies.
-    ///
-    /// @return List of default cookies
-    /// @see Cookie
-    /// @see #addDefaultCookie(Cookie)
-    /// @see #setDefaultCookies(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default cookies.
+     *
+     * @return List of default cookies
+     * @see Cookie
+     * @see #addDefaultCookie(Cookie)
+     * @see #setDefaultCookies(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<Cookie> getDefaultCookies() {
         return defaultCookies;
     }
 
-    /// Set cross-origin resource sharing to send with every response.
-    ///
-    /// @param defaultCorsResponse Default cross-origin resource sharing
-    /// @see CORSResponse
-    /// @see HttpResponse#setCorsResponse(CORSResponse)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set cross-origin resource sharing to send with every response.
+     *
+     * @param defaultCorsResponse Default cross-origin resource sharing
+     * @see CORSResponse
+     * @see HttpResponse#setCorsResponse(CORSResponse)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultCors(final CORSResponse defaultCorsResponse) {
         this.defaultCcorsResponse = defaultCorsResponse;
         return this;
     }
 
-    /// Get provided default cross-origin resource sharing.
-    ///
-    /// @return Default cross-origin resource sharing
-    /// @see CORSResponse
-    /// @see #setDefaultCors(CORSResponse)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default cross-origin resource sharing.
+     *
+     * @return Default cross-origin resource sharing
+     * @see CORSResponse
+     * @see #setDefaultCors(CORSResponse)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public CORSResponse getDefaultCors() {
         return defaultCcorsResponse;
     }
 
-    /// Add reporting endpoints one-by-one to send with every response.
-    ///
-    /// @param reportingEndpoint Default reporting endpoint
-    /// @see ReportingEndpoint
-    /// @see #setDefaultReportingEndpoints(List)
-    /// @see HttpResponse#addReportingEndpoint(ReportingEndpoint)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add reporting endpoints one-by-one to send with every response.
+     *
+     * @param reportingEndpoint Default reporting endpoint
+     * @see ReportingEndpoint
+     * @see #setDefaultReportingEndpoints(List)
+     * @see HttpResponse#addReportingEndpoint(ReportingEndpoint)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultReportingEndpoint(final ReportingEndpoint reportingEndpoint) {
         Objects.requireNonNull(reportingEndpoint);
         if (reportingEndpoints == null) reportingEndpoints = new NonDuplicateList<>();
@@ -745,39 +769,45 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set reporting endpoints to send with every response.
-    ///
-    /// @param reportingEndpoints List of default reporting endpoints
-    /// @see ReportingEndpoint
-    /// @see #addDefaultReportingEndpoint(ReportingEndpoint)
-    /// @see HttpResponse#setReportingEndpoints(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set reporting endpoints to send with every response.
+     *
+     * @param reportingEndpoints List of default reporting endpoints
+     * @see ReportingEndpoint
+     * @see #addDefaultReportingEndpoint(ReportingEndpoint)
+     * @see HttpResponse#setReportingEndpoints(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {
         this.reportingEndpoints = reportingEndpoints;
         return this;
     }
 
-    /// Get provided default reporting endpoints.
-    ///
-    /// @return List of default reporting endpoints
-    /// @see ReportingEndpoint
-    /// @see #addDefaultReportingEndpoint(ReportingEndpoint)
-    /// @see #setDefaultReportingEndpoints(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default reporting endpoints.
+     *
+     * @return List of default reporting endpoints
+     * @see ReportingEndpoint
+     * @see #addDefaultReportingEndpoint(ReportingEndpoint)
+     * @see #setDefaultReportingEndpoints(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<ReportingEndpoint> getDefaultReportingEndpoints() {
         return reportingEndpoints;
     }
 
-    /// Add content security policies one-by-one to send with every response.
-    ///
-    /// @param defaultContentSecurityPolicy Default content security policy
-    /// @see ContentSecurityPolicy
-    /// @see #setDefaultContentSecurityPolicies(List)
-    /// @see HttpResponse#addContentSecurityPolicy(ContentSecurityPolicy)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add content security policies one-by-one to send with every response.
+     *
+     * @param defaultContentSecurityPolicy Default content security policy
+     * @see ContentSecurityPolicy
+     * @see #setDefaultContentSecurityPolicies(List)
+     * @see HttpResponse#addContentSecurityPolicy(ContentSecurityPolicy)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultContentSecurityPolicy(final ContentSecurityPolicy defaultContentSecurityPolicy) {
         Objects.requireNonNull(defaultContentSecurityPolicy);
         if (defaultContentSecurityPolicies == null) defaultContentSecurityPolicies = new NonDuplicateList<>();
@@ -785,39 +815,45 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set content security policies to sed with every response.
-    ///
-    /// @param defaultContentSecurityPolicies List of default content security policies
-    /// @see ContentSecurityPolicy
-    /// @see #addDefaultContentSecurityPolicy(ContentSecurityPolicy)
-    /// @see HttpResponse#setContentSecurityPolicies(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set content security policies to sed with every response.
+     *
+     * @param defaultContentSecurityPolicies List of default content security policies
+     * @see ContentSecurityPolicy
+     * @see #addDefaultContentSecurityPolicy(ContentSecurityPolicy)
+     * @see HttpResponse#setContentSecurityPolicies(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultContentSecurityPolicies(final List<ContentSecurityPolicy> defaultContentSecurityPolicies) {
         this.defaultContentSecurityPolicies = defaultContentSecurityPolicies;
         return this;
     }
 
-    /// Get provided default content security policies.
-    ///
-    /// @return List of default content security policies
-    /// @see ContentSecurityPolicy
-    /// @see #addDefaultContentSecurityPolicy(ContentSecurityPolicy)
-    /// @see #setDefaultContentSecurityPolicies(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default content security policies.
+     *
+     * @return List of default content security policies
+     * @see ContentSecurityPolicy
+     * @see #addDefaultContentSecurityPolicy(ContentSecurityPolicy)
+     * @see #setDefaultContentSecurityPolicies(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<ContentSecurityPolicy> getDefaultContentSecurityPolicies() {
         return defaultContentSecurityPolicies;
     }
 
-    /// Add content security policy report-only one-by-one to send with every response.
-    ///
-    /// @param defaultContentSecurityPolicyReportOnly Default content security policy report-only
-    /// @see ContentSecurityPolicyReportOnly
-    /// @see #setDefaultContentSecurityPolicyReportOnly(List)
-    /// @see HttpResponse#addContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Add content security policy report-only one-by-one to send with every response.
+     *
+     * @param defaultContentSecurityPolicyReportOnly Default content security policy report-only
+     * @see ContentSecurityPolicyReportOnly
+     * @see #setDefaultContentSecurityPolicyReportOnly(List)
+     * @see HttpResponse#addContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration addDefaultContentSecurityPolicyReportOnly(final ContentSecurityPolicyReportOnly defaultContentSecurityPolicyReportOnly) {
         Objects.requireNonNull(defaultContentSecurityPolicyReportOnly);
         if (this.defaultContentSecurityPolicyReportOnly == null) this.defaultContentSecurityPolicyReportOnly = new NonDuplicateList<>();
@@ -825,113 +861,133 @@ public final class HttpServerConfiguration {
         return this;
     }
 
-    /// Set content security policy report-only to sed with every response.
-    ///
-    /// @param defaultContentSecurityPolicyReportOnly List of default content security policy report-only
-    /// @see ContentSecurityPolicyReportOnly
-    /// @see #addDefaultContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
-    /// @see HttpResponse#setContentSecurityPolicyReportOnly(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set content security policy report-only to sed with every response.
+     *
+     * @param defaultContentSecurityPolicyReportOnly List of default content security policy report-only
+     * @see ContentSecurityPolicyReportOnly
+     * @see #addDefaultContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
+     * @see HttpResponse#setContentSecurityPolicyReportOnly(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultContentSecurityPolicyReportOnly(final List<ContentSecurityPolicyReportOnly> defaultContentSecurityPolicyReportOnly) {
         this.defaultContentSecurityPolicyReportOnly = defaultContentSecurityPolicyReportOnly;
         return this;
     }
 
-    /// Get provided default content security policy report-only.
-    ///
-    /// @return List of default content security policy report-only
-    /// @see ContentSecurityPolicyReportOnly
-    /// @see #addDefaultContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
-    /// @see #setDefaultContentSecurityPolicyReportOnly(List)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default content security policy report-only.
+     *
+     * @return List of default content security policy report-only
+     * @see ContentSecurityPolicyReportOnly
+     * @see #addDefaultContentSecurityPolicyReportOnly(ContentSecurityPolicyReportOnly)
+     * @see #setDefaultContentSecurityPolicyReportOnly(List)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public List<ContentSecurityPolicyReportOnly> getDefaultContentSecurityPolicyReportOnly() {
         return defaultContentSecurityPolicyReportOnly;
     }
 
-    /// Set strict transport security to send with every response.
-    ///
-    /// @param defaultStrictTransportSecurity Default strict transport security
-    /// @see StrictTransportSecurity
-    /// @see HttpResponse#setStrictTransportSecurity(StrictTransportSecurity)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set strict transport security to send with every response.
+     *
+     * @param defaultStrictTransportSecurity Default strict transport security
+     * @see StrictTransportSecurity
+     * @see HttpResponse#setStrictTransportSecurity(StrictTransportSecurity)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultStrictTransportSecurity(final StrictTransportSecurity defaultStrictTransportSecurity) {
         this.defaultStrictTransportSecurity = defaultStrictTransportSecurity;
         return this;
     }
 
-    /// Get provided default strict transport security.
-    ///
-    /// @return Default strict transport security
-    /// @see StrictTransportSecurity
-    /// @see #setDefaultStrictTransportSecurity(StrictTransportSecurity)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default strict transport security.
+     *
+     * @return Default strict transport security
+     * @see StrictTransportSecurity
+     * @see #setDefaultStrictTransportSecurity(StrictTransportSecurity)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public StrictTransportSecurity getDefaultStrictTransportSecurity() {
         return defaultStrictTransportSecurity;
     }
 
-    /// Set cache control to send with every response.
-    ///
-    /// @param cacheControl Default cache control
-    /// @see CacheControl
-    /// @see HttpResponse#setCashControl(CacheControl)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set cache control to send with every response.
+     *
+     * @param cacheControl Default cache control
+     * @see CacheControl
+     * @see HttpResponse#setCashControl(CacheControl)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultCacheControl(final CacheControl cacheControl) {
         this.defaultCacheControl = cacheControl;
         return this;
     }
 
-    /// Get provided default cache control.
-    ///
-    /// @return Default cache control
-    /// @see CacheControl
-    /// @see #setDefaultCacheControl(CacheControl)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided default cache control.
+     *
+     * @return Default cache control
+     * @see CacheControl
+     * @see #setDefaultCacheControl(CacheControl)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public CacheControl getDefaultCacheControl() {
         return defaultCacheControl;
     }
 
-    /// Set x content type noSniff status to every response.
-    ///
-    /// @param xContentTypeOptionsNoSniff NoSniff status
-    /// @see HttpResponse#setXContentTypeOptionsNoSniff(boolean)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set x content type noSniff status to every response.
+     *
+     * @param xContentTypeOptionsNoSniff NoSniff status
+     * @see HttpResponse#setXContentTypeOptionsNoSniff(boolean)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setDefaultXContentTypeNoSniff(final boolean xContentTypeOptionsNoSniff) {
         this.defaultXContentTypeOptionsNoSniff = xContentTypeOptionsNoSniff;
         return this;
     }
 
-    /// Get provided x content type noSniff
-    ///
-    /// @return NoSniff status
-    /// @see #setDefaultXContentTypeNoSniff(boolean)
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get provided x content type noSniff
+     *
+     * @return NoSniff status
+     * @see #setDefaultXContentTypeNoSniff(boolean)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public boolean isDefaultXContentTypeOptionsNoSniff() {
         return defaultXContentTypeOptionsNoSniff;
     }
 
-    /// Set detailed message to every exception redirect.
-    ///
-    /// @param addErrorMessageToResponseHeaders Message status
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Set detailed message to every exception redirect.
+     *
+     * @param addErrorMessageToResponseHeaders Message status
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public HttpServerConfiguration setAddErrorMessageToResponseHeaders(boolean addErrorMessageToResponseHeaders) {
         this.addErrorMessageToResponseHeaders = addErrorMessageToResponseHeaders;
         return this;
     }
 
-    /// Get exception redirect detailed message status
-    ///
-    /// @return Message status
-    /// @see HttpServerConfiguration
-    /// @since v1.0.0
+    /**
+     * Get exception redirect detailed message status
+     *
+     * @return Message status
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
     public boolean isAddErrorMessageToResponseHeaders() {
         return addErrorMessageToResponseHeaders;
     }

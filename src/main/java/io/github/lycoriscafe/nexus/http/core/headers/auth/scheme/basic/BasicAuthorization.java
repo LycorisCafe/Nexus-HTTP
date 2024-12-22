@@ -32,7 +32,7 @@ import java.util.Base64;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization Authorization
+ * @see Authorization
  * @see <a href="https://datatracker.ietf.org/doc/rfc7617">The 'Basic' HTTP Authentication Scheme (rfc7617)</a>
  * @since v1.0.0
  */
@@ -78,10 +78,10 @@ public final class BasicAuthorization extends Authorization {
     }
 
     /**
-     * Process provided string to a new instance of <code>BasicAuthorization</code>
+     * Process provided string to a new instance of {@code BasicAuthorization}
      *
      * @param params Basic authorization header value part (only data)
-     * @return New instance of <code>BasicAuthorization</code>
+     * @return New instance of {@code BasicAuthorization}
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see BasicAuthorization
      * @since v1.0.0

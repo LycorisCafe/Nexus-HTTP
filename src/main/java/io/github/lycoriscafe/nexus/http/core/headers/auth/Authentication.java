@@ -27,10 +27,10 @@ import java.util.List;
  */
 public abstract class Authentication {
     /**
-     * Process <code>WWW-Authenticate</code> HTTP headers for provided list of <code>Authentication</code> types.
+     * Process {@code WWW-Authenticate} HTTP headers for provided list of {@code Authentication} types.
      *
-     * @param authentications List of <code>Authentication</code>
-     * @return <code>WWW-Authenticate</code> header(s) string
+     * @param authentications List of {@code Authentication}
+     * @return {@code WWW-Authenticate} header(s) string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Authentication
      * @since v1.0.0
@@ -46,7 +46,7 @@ public abstract class Authentication {
     }
 
     /**
-     * Process instance-wise <code>WWW-Authenticate</code> HTTP header values.
+     * Process instance-wise {@code WWW-Authenticate} HTTP header values.
      *
      * @return Header value string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.

@@ -17,11 +17,11 @@
 package io.github.lycoriscafe.nexus.http.core.headers.cookies;
 
 /**
- * Cookie <code>SameSite</code> values.
+ * Cookie {@code SameSite} values.
  *
  * @see Cookie
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Cookies#controlling_third-party_cookies_with_samesite">Controlling third-party
- * cookies with <code>SameSite</code> (MDN Docs)</a>
+ * cookies with {@code SameSite} (MDN Docs)</a>
  * @since v1.0.0
  */
 public enum CookieSameSite {
@@ -56,14 +56,21 @@ public enum CookieSameSite {
 
     private final String value;
 
+    /**
+     * Cookie Same Site.
+     *
+     * @param value String value to sent in header
+     * @see CookieSameSite
+     * @since v1.0.0
+     */
     CookieSameSite(String value) {
         this.value = value;
     }
 
     /**
-     * Get <code>SameSite</code> value for include in HTTP header.
+     * Get {@code SameSite} value for include in HTTP header.
      *
-     * @return Formatted <code>SameSite</code> value
+     * @return Formatted {@code SameSite} value
      * @see CookieSameSite
      * @since v1.0.0
      */

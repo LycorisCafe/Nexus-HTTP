@@ -41,9 +41,9 @@ import java.util.zip.GZIPOutputStream;
  *     }
  * </pre>
  *
- * @apiNote This version of API only supports <code>Transfer-Encoding</code> <b>chunked</b> and <code>Content-Encoding</code> <b>gzip</b> for incoming
- * and outgoing content related encodings. <code>Content negotiation</code>, <code>Conditional requests</code> and <code>Range requests</code> are not
- * yet supported by the server itself, but the API users can implement it appropriately in their code.
+ * @apiNote This version of API only supports {@code Transfer-Encoding} <b>chunked</b> and {@code Content-Encoding} <b>gzip</b> for incoming and
+ * outgoing content related encodings. {@code Content negotiation}, {@code Conditional requests} and {@code Range requests} are not yet supported by
+ * the server itself, but the API users can implement it appropriately in their code.
  * @see #Content(String, Path)
  * @see #Content(String, byte[])
  * @see #Content(String, String)
@@ -60,9 +60,9 @@ public final class Content {
     private final Object data;
 
     /**
-     * Parent constructor for instancing <code>Content</code>.
+     * Parent constructor for instancing {@code Content}.
      *
-     * @param contentType <code>Content-Type</code> of the provided data
+     * @param contentType {@code Content-Type} of the provided data
      * @param data        Data that received/going to send
      * @apiNote Only used for in-API tasks.
      * @see Content
@@ -75,7 +75,7 @@ public final class Content {
     }
 
     /**
-     * Create an instance of <code>Content</code> by providing <code>Path</code> as data.
+     * Create an instance of {@code Content} by providing {@code Path} as data.
      * <pre>
      *     {@code
      *     // Example code
@@ -84,8 +84,8 @@ public final class Content {
      *     }
      * </pre>
      *
-     * @param contentType <code>Content-Type</code> of the provided data
-     * @param data        <code>Path</code> of data
+     * @param contentType {@code Content-Type} of the provided data
+     * @param data        {@code Path} of data
      * @see Path
      * @see Content
      * @since v1.0.0
@@ -96,7 +96,7 @@ public final class Content {
     }
 
     /**
-     * Create an instance of <code>Content</code> by providing <code>byte[]</code> as data.
+     * Create an instance of {@code Content} by providing {@code byte[]} as data.
      * <pre>
      *     {@code
      *     // Example code
@@ -105,8 +105,8 @@ public final class Content {
      *     }
      * </pre>
      *
-     * @param contentType <code>Content-Type</code> of the provided data
-     * @param data        <code>byte[]</code> of data
+     * @param contentType {@code Content-Type} of the provided data
+     * @param data        {@code byte[]} of data
      * @see Content
      * @since v1.0.0
      */
@@ -116,7 +116,7 @@ public final class Content {
     }
 
     /**
-     * Create an instance of <code>Content</code> by providing <code>String</code> as data.
+     * Create an instance of {@code Content} by providing {@code String} as data.
      * <pre>
      *     {@code
      *     // Example code
@@ -125,8 +125,8 @@ public final class Content {
      *     }
      * </pre>
      *
-     * @param contentType <code>Content-Type</code> of the provided data
-     * @param data        <code>String</code> of data
+     * @param contentType {@code Content-Type} of the provided data
+     * @param data        {@code String} of data
      * @see Content
      * @since v1.0.0
      */
@@ -136,7 +136,7 @@ public final class Content {
     }
 
     /**
-     * Create an instance of <code>Content</code> by providing <code>InputStream</code> as data.
+     * Create an instance of {@code Content} by providing {@code InputStream} as data.
      * <pre>
      *     {@code
      *     // Example code
@@ -145,8 +145,8 @@ public final class Content {
      *     }
      * </pre>
      *
-     * @param contentType <code>Content-Type</code> of the provided data
-     * @param data        <code>InputStream</code> of data
+     * @param contentType {@code Content-Type} of the provided data
+     * @param data        {@code InputStream} of data
      * @see Content
      * @since v1.0.0
      */
@@ -168,8 +168,8 @@ public final class Content {
     }
 
     /**
-     * Set name for content downloading. If this is set, the <code>Content-Disposition: attachment; filename="fileName"</code> header will present in
-     * the request and browsers will pop a download window.
+     * Set name for content downloading. If this is set, the {@code Content-Disposition: attachment; filename="fileName"} header will present in the
+     * request and browsers will pop a download window.
      * <pre>
      *     {@code
      *     // Example code
@@ -180,7 +180,7 @@ public final class Content {
      * </pre>
      *
      * @param downloadName Content name for downloading process
-     * @return Same <code>Content</code> instance
+     * @return Same {@code Content} instance
      * @see Content
      * @since v1.0.0
      */
@@ -202,11 +202,10 @@ public final class Content {
     }
 
     /**
-     * Set <code>Transfer-Encoding</code> to <b>'chunked'</b>. When this is enabled, default chunk size will get by the
-     * <code>HttpServerConfiguration</code>.
+     * Set {@code Transfer-Encoding} to <b>'chunked'</b>. When this is enabled, default chunk size will get by the {@code HttpServerConfiguration}.
      *
-     * @param transferEncodingChunked Set/Unset <code>Transfer-Encoding</code> to <b>'chunked'</b>
-     * @return Same <code>Content</code> instance
+     * @param transferEncodingChunked Set/Unset {@code Transfer-Encoding} to <b>'chunked'</b>
+     * @return Same {@code Content} instance
      * @see HttpServerConfiguration#setMaxChunkSize(int)
      * @see Content
      * @since v1.0.0
@@ -217,9 +216,9 @@ public final class Content {
     }
 
     /**
-     * Get is <code>Transfer-Encoding</code> set to <b>'chunked'</b>.
+     * Get is {@code Transfer-Encoding} set to <b>'chunked'</b>.
      *
-     * @return <code>Transfer-Encoding</code> <b>chunked</b> status
+     * @return {@code Transfer-Encoding} <b>chunked</b> status
      * @see #setTransferEncodingChunked(boolean)
      * @see Content
      * @since v1.0.0
@@ -229,10 +228,10 @@ public final class Content {
     }
 
     /**
-     * Set <code>Content-Encoding</code> to <b>gzip</b>.
+     * Set {@code Content-Encoding} to <b>gzip</b>.
      *
-     * @param contentEncodingGzipped Set/Unset <code>Content-Encoding</code> to <b>gzip</b>
-     * @return Same <code>Content</code> instance
+     * @param contentEncodingGzipped Set/Unset {@code Content-Encoding} to <b>gzip</b>
+     * @return Same {@code Content} instance
      * @see Content
      * @since v1.0.0
      */
@@ -243,9 +242,9 @@ public final class Content {
     }
 
     /**
-     * Get is <code>Content-Encoding</code> set to <b>gzip</b>.
+     * Get is {@code Content-Encoding} set to <b>gzip</b>.
      *
-     * @return <code>Content-Encoding</code> <b>gzip</b> status
+     * @return {@code Content-Encoding} <b>gzip</b> status
      * @see #setContentEncodingGzipped(boolean)
      * @see Content
      * @since v1.0.0
@@ -267,16 +266,16 @@ public final class Content {
     }
 
     /**
-     * Get content data. This method always return an <code>Object</code>. API users need to implement their own way to handle data by using the
-     * <code>Content-Type</code>.
+     * Get content data. This method always return an {@code Object}. API users need to implement their own way to handle data by using the
+     * {@code Content-Type}.
      *
-     * @return Data as <code>Object</code>
+     * @return Data as {@code Object}
      * @apiNote When receiving,
      * <ul>
-     *  <li><code>multipart/form-data</code>, the data should be cast to <code>List</code> of <code>MultipartFormData></code>.</li>
-     *  <li><code>application/x-www-form-urlencoded</code>, the data should cast to <code>UrlEncodedData</code>.</li>
-     *  <li><code>Transfer-Encoding: chunked</code>, the data should cast to <code>Path</code>.</li>
-     *  <li>Others should cast to <code>byte[]</code>.</li>
+     *  <li>{@code multipart/form-data}, the data should be cast to {@code List} of {@code MultipartFormData>}.</li>
+     *  <li>{@code application/x-www-form-urlencoded}, the data should cast to {@code UrlEncodedData}.</li>
+     *  <li>{@code Transfer-Encoding: chunked}, the data should cast to {@code Path}.</li>
+     *  <li>Others should cast to {@code byte[]}.</li>
      * </ul>
      * @see #getContentType()
      * @see MultipartFormData
@@ -300,13 +299,13 @@ public final class Content {
         /**
          * General processor for incoming content.
          *
-         * @param requestId       <code>HttpRequest</code> id
-         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
-         * @param contentType     <code>Content-Type</code>
-         * @param contentLength   <code>Content-Length</code>
-         * @param chunked         <code>Transfer-Encoding</code> chunked?
-         * @param gzipped         <code>Content-Encoding</code> gzipped?
-         * @return New instance of <code>Content</code>
+         * @param requestId       {@code HttpRequest} id
+         * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
+         * @param contentType     {@code Content-Type}
+         * @param contentLength   {@code Content-Length}
+         * @param chunked         {@code Transfer-Encoding} chunked?
+         * @param gzipped         {@code Content-Encoding} gzipped?
+         * @return New instance of {@code Content}
          * @throws IOException Error while reading data from the socket input stream
          * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
          * @see RequestConsumer
@@ -343,9 +342,9 @@ public final class Content {
         /**
          * Read chunked content from the socket input stream.
          *
-         * @param requestId       <code>HttpRequest</code> id
-         * @param path            <code>Path</code> that going to store the chunked content
-         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+         * @param requestId       {@code HttpRequest} id
+         * @param path            {@code Path} that going to store the chunked content
+         * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
          * @return Read process success or fail status
          * @throws IOException Error while reading data from the socket input stream
          * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
@@ -398,7 +397,7 @@ public final class Content {
          * Decompress gzip content.
          *
          * @param content         Received content
-         * @param requestConsumer <code>RequestConsumer</code> bound to the <code>HttpRequest</code>
+         * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
          * @return Type of decompressed data
          * @throws IOException Error while decompressing data
          * @see RequestConsumer
@@ -444,10 +443,10 @@ public final class Content {
         // TODO content encoding (gzip) has bugs
 
         /**
-         * Process headers and data (like gzip) to send along with the <code>HttpResponse</code>.
+         * Process headers and data (like gzip) to send along with the {@code HttpResponse}.
          *
-         * @param httpServerConfiguration <code>HttpServerConfiguration</code>
-         * @param content                 <code>Content</code> that need to be processed
+         * @param httpServerConfiguration {@code HttpServerConfiguration}
+         * @param content                 {@code Content} that need to be processed
          * @return HTTP content related headers
          * @throws IOException Error while processing content
          * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
@@ -513,8 +512,8 @@ public final class Content {
         /**
          * Write pre-processed content data to the socket output stream.
          *
-         * @param requestConsumer <code>RequestConsumer</code>
-         * @param content         Pre-processed <code>Content</code>
+         * @param requestConsumer {@code RequestConsumer}
+         * @param content         Pre-processed {@code Content}
          * @throws IOException Error while writing data to the socket output stream
          * @see #processOutgoingContent(HttpServerConfiguration, Content)
          * @see RequestConsumer
