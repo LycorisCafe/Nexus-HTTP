@@ -23,6 +23,8 @@ import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -35,6 +37,8 @@ import java.util.*;
  * @since v1.0.0
  */
 public final class RequestProcessor {
+    private static final Logger logger = LoggerFactory.getLogger(RequestProcessor.class);
+
     private final RequestConsumer requestConsumer;
 
     /**
@@ -67,6 +71,7 @@ public final class RequestProcessor {
         String[] request = requestLine.split(" ");
 
         if (!request[2].trim().equals("HTTP/1.1")) {
+            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED);
             requestConsumer.dropConnection(requestId, HttpStatusCode.HTTP_VERSION_NOT_SUPPORTED, "http version not supported");
             return;
         }
@@ -80,6 +85,7 @@ public final class RequestProcessor {
             case POST -> new HttpPostRequest(requestConsumer, requestId, HttpRequestMethod.POST);
             case PUT -> new HttpPutRequest(requestConsumer, requestId, HttpRequestMethod.PUT);
             case null -> {
+                logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.NOT_IMPLEMENTED);
                 requestConsumer.dropConnection(requestId, HttpStatusCode.NOT_IMPLEMENTED, "request method not implemented");
                 yield null;
             }
@@ -94,6 +100,7 @@ public final class RequestProcessor {
                 httpRequest.setParameters(decodeQueryParams(uriParts[1]));
             }
             default -> {
+                logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                 requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid query parameters provided");
                 return;
             }

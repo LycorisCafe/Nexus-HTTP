@@ -103,7 +103,13 @@ public final class HttpServer {
      */
     public void initialize() {
         if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
-
+        logger.atInfo().log("""
+                 _____ _____ __ __ _____ _____
+                |   | |   __|  |  |  |  |   __|
+                | | | |   __|-   -|  |  |__   |
+                |_|___|_____|__|__|_____|_____| HTTP v1.0
+                
+                """);
         executorService = initializeExecutorService(serverConfiguration);
         serverThread = Thread.ofPlatform().start(() -> {
             try {

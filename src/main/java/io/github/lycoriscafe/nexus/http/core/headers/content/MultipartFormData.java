@@ -19,6 +19,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -49,6 +51,8 @@ import java.util.*;
  * @since v1.0.0
  */
 public final class MultipartFormData {
+    private static final Logger logger = LoggerFactory.getLogger(MultipartFormData.class);
+
     private String name;
     private String fileName;
     private String contentType;
@@ -192,6 +196,7 @@ public final class MultipartFormData {
                                   final boolean chunked,
                                   final boolean gzipped) throws IOException {
         if (chunked) {
+            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
             requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported for multipart/form-data");
             return null;
         }
@@ -210,16 +215,12 @@ public final class MultipartFormData {
 
             if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
             String[] segmentData = line.split(":", 2)[1].trim().split(";", 0);
-            if (segmentData.length < 2) {
-                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
-                return null;
-            }
+            if (segmentData.length < 2) return invalidFormSegment(requestConsumer, requestId);
 
             MultipartFormData multiPartFormData = new MultipartFormData();
             for (int i = 0; i < segmentData.length; i++) {
                 if (i == 0 && !segmentData[i].equals("form-data")) {
-                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
-                    return null;
+                    return invalidFormSegment(requestConsumer, requestId);
                 }
                 if (i != 0) {
                     String[] keyVal = segmentData[i].trim().split("=", 2);
@@ -230,8 +231,7 @@ public final class MultipartFormData {
                             if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
                             String[] contentType = line.split(":", 0);
                             if (contentType.length > 2 || contentType.length == 0 || !contentType[0].equalsIgnoreCase("content-type")) {
-                                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
-                                return null;
+                                return invalidFormSegment(requestConsumer, requestId);
                             }
                             multiPartFormData.setContentType(contentType[1].trim());
                         }
@@ -261,6 +261,7 @@ public final class MultipartFormData {
      */
     private static Content invalidFormSegment(final RequestConsumer requestConsumer,
                                               final long requestId) {
+        logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
         requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment");
         return null;
     }

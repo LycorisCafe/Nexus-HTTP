@@ -42,7 +42,7 @@ import java.util.*;
  * @since v1.0.0
  */
 public final class RequestConsumer implements Runnable {
-    private final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
+    private static final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
 
     private static final byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
     private final RequestProcessor requestProcessor;
@@ -178,7 +178,6 @@ public final class RequestConsumer implements Runnable {
      */
     @Override
     public void run() {
-        logger.atTrace().log("client connection received");
         Thread.currentThread().setName("RequestConsumer");
         try {
             String requestLine = null;
@@ -212,7 +211,6 @@ public final class RequestConsumer implements Runnable {
         } catch (IOException e) {
             logger.atDebug().log(e.getMessage());
         }
-        logger.atTrace().log("client connection terminated");
     }
 
     /**
@@ -229,7 +227,6 @@ public final class RequestConsumer implements Runnable {
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode,
                                final String errorMessage) {
-        logger.atDebug().log("connection drop requested : id " + requestId + "; cause " + httpStatusCode + " " + errorMessage);
         var httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
         if (getHttpServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
             httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
@@ -266,7 +263,10 @@ public final class RequestConsumer implements Runnable {
 
                     if (response.getContent() != null) Content.WriteOperations.writeContent(this, response.getContent());
 
-                    if (response.isDropConnection()) socket.close();
+                    if (response.isDropConnection()) {
+                        socket.close();
+                        logger.atDebug().log("Connection dropped by dropConnection() request");
+                    }
                 } catch (IOException e) {
                     logger.atDebug().log(e.getMessage());
                 }

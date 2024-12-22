@@ -21,6 +21,8 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Locale;
 
@@ -34,6 +36,8 @@ import java.util.Locale;
  * @since v1.0.0
  */
 public sealed class HttpGetRequest extends HttpRequest permits HttpDeleteRequest, HttpHeadRequest, HttpOptionsRequest {
+    private static final Logger logger = LoggerFactory.getLogger(HttpGetRequest.class);
+
     /**
      * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
      * @param requestId       Request id bound to the HTTP request
@@ -58,6 +62,7 @@ public sealed class HttpGetRequest extends HttpRequest permits HttpDeleteRequest
         if (getHeaders() != null) {
             for (Header header : getHeaders()) {
                 if (header.getName().toLowerCase(Locale.US).startsWith("content-")) {
+                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "content cannot be processed with provided request method");
                     return;
                 }

@@ -23,6 +23,8 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.POST;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Locale;
@@ -35,6 +37,8 @@ import java.util.Locale;
  * @since v1.0.0
  */
 public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest, HttpPutRequest {
+    private static final Logger logger = LoggerFactory.getLogger(HttpPostRequest.class);
+
     private Content content;
 
     /**
@@ -111,6 +115,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         if (values.length == 1 && values[0].equals("chunked")) {
                             chunked = true;
                         } else {
+                            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                             getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only chunked transfer encoding supported");
                             return false;
                         }
@@ -119,6 +124,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                         if (values.length == 1 && values[0].equals("gzip")) {
                             gzipped = true;
                         } else {
+                            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                             getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "only gzip content encoding supported");
                             return false;
                         }
@@ -137,18 +143,21 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 try {
                     contentLength = Integer.parseInt(getHeaders().get(i).getValue());
                     if (contentLength > getRequestConsumer().getHttpServerConfiguration().getMaxContentLength()) {
+                        logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.CONTENT_TOO_LARGE);
                         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.CONTENT_TOO_LARGE, "content too large");
                         return false;
                     }
                     getHeaders().remove(getHeaders().get(i));
                     return true;
                 } catch (NumberFormatException e) {
+                    logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content length");
                     return false;
                 }
             }
         }
 
+        logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.LENGTH_REQUIRED);
         getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.LENGTH_REQUIRED, "content length required");
         return false;
     }

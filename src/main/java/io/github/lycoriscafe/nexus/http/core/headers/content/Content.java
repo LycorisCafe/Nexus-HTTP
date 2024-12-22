@@ -19,6 +19,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -53,6 +55,8 @@ import java.util.zip.GZIPOutputStream;
  * @since v1.0.0
  */
 public final class Content {
+    private static final Logger logger = LoggerFactory.getLogger(Content.class);
+
     private final String contentType;
     private String downloadName;
     private boolean transferEncodingChunked;
@@ -330,6 +334,7 @@ public final class Content {
                 byte[] buffer = new byte[contentLength];
                 int c = requestConsumer.getSocket().getInputStream().readNBytes(buffer, 0, contentLength);
                 if (c != contentLength) {
+                    logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                     requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "connection error");
                     return null;
                 }
@@ -361,6 +366,7 @@ public final class Content {
             while (true) {
                 String line = requestConsumer.readLine();
                 if (line == null) {
+                    logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                     requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "content cannot process");
                     return false;
                 }
@@ -369,6 +375,7 @@ public final class Content {
                 if (chunkSize == 0) break;
                 totalChunkSize += chunkSize;
                 if (totalChunkSize > requestConsumer.getHttpServerConfiguration().getMaxChunkedContentLength()) {
+                    logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.CONTENT_TOO_LARGE);
                     requestConsumer.dropConnection(requestId, HttpStatusCode.CONTENT_TOO_LARGE, "max chunked size exceeded");
                     return false;
                 }
@@ -386,6 +393,7 @@ public final class Content {
 
                 long c = inputStream.skip(2);
                 if (c != 2) {
+                    logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
                     requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid chunked content");
                     return false;
                 }

@@ -19,6 +19,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 
@@ -31,6 +33,8 @@ import java.util.Map;
  * @since v1.0.0
  */
 public final class BearerTokenRequest {
+    private static final Logger logger = LoggerFactory.getLogger(BearerTokenRequest.class);
+
     private final String grantType;
     private Map<String, String> params;
 
@@ -93,12 +97,14 @@ public final class BearerTokenRequest {
     public static BearerTokenRequest parse(final HttpPostRequest request) {
         UrlEncodedData params;
         if (!(request.getContent().getData() instanceof UrlEncodedData)) {
+            logger.atDebug().log("Drop request - RequestId:" + request.getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
             request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "invalid content type");
             return null;
         }
         params = (UrlEncodedData) request.getContent().getData();
 
         if (!params.containsKey("grant_type")) {
+            logger.atDebug().log("Drop request - RequestId:" + request.getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
             request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing");
             return null;
         }

@@ -18,6 +18,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.URLDecoder;
@@ -46,6 +48,8 @@ import java.util.HashMap;
  * @since v1.0.0
  */
 public final class UrlEncodedData extends HashMap<String, String> {
+    private static final Logger logger = LoggerFactory.getLogger(UrlEncodedData.class);
+
     /**
      * Process incoming {@code application/x-www-form-urlencoded} content type request.
      *
@@ -68,6 +72,7 @@ public final class UrlEncodedData extends HashMap<String, String> {
                                   final boolean chunked,
                                   final boolean gzipped) throws IOException {
         if (chunked) {
+            logger.atDebug().log("Drop request - RequestId:" + requestId + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
             requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "transfer encoding not supported");
             return null;
         }

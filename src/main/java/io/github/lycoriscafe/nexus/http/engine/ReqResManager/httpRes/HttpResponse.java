@@ -44,7 +44,8 @@ import java.util.Objects;
  * @since v1.0.0
  */
 public final class HttpResponse {
-    private final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+    private static final Logger logger = LoggerFactory.getLogger(HttpResponse.class);
+
     private final long requestId;
     private final RequestConsumer requestConsumer;
 
@@ -684,8 +685,8 @@ public final class HttpResponse {
             if (isXContentTypeOptionsNoSniff()) output.append("X-Content-Type-Options: nosniff").append("\r\n");
             return output.append("\r\n").toString();
         } catch (Exception e) {
-            requestConsumer.dropConnection(requestId, HttpStatusCode.INTERNAL_SERVER_ERROR,
-                    "error while parsing http response");
+            logger.atDebug().log("Drop request - RequestId:" + getRequestId() + ", StatusCode:" + HttpStatusCode.BAD_REQUEST);
+            requestConsumer.dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while parsing http response");
             return null;
         }
     }
