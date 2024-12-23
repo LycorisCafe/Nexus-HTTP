@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="d1254a47-ccc4-439b-a3d7-d981c276af93" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpsServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpsServer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/resources/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/resources/simplelogger.properties" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/io/github/lycoriscafe/nexus/Endpoints.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/io/github/lycoriscafe/nexus/WebApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleCodes/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SampleCodes/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleCodes/src/main/java/io/github/lycoriscafe/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/SampleCodes/src/main/java/io/github/lycoriscafe/Main.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/c.list" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/c.list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/cfg/buildprofiles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/cfg/buildprofiles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/completion_procedure.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/completion_procedure.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/completion_procedure_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/completion_procedure_dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/convert_table_to_xml.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/convert_table_to_xml.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/convert_table_to_xml_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/convert_table_to_xml_dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/new_topic_options.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/new_topic_options.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/images/new_topic_options_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/new_topic_options_dark.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/nexus-http-main-doc.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/redirection-rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/redirection-rules.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/topics/Start-the-server.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/Start-the-server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/topics/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/v.list" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/v.list" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Writerside/writerside.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/writerside.cfg" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="InstanceColorv3">
+    <option name="map">
+      <map>
+        <entry key="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree">
+          <value>
+            <ColorState>
+              <option name="customOrder" value="1" />
+              <option name="first">
+                <RgbState>
+                  <option name="blue" value="60" />
+                  <option name="darkBlue" value="60" />
+                  <option name="darkGreen" value="68" />
+                  <option name="darkRed" value="206" />
+                  <option name="green" value="68" />
+                  <option name="red" value="206" />
+                </RgbState>
+              </option>
+              <option name="second">
+                <RgbState>
+                  <option name="blue" value="65" />
+                  <option name="darkBlue" value="65" />
+                  <option name="darkGreen" value="126" />
+                  <option name="darkRed" value="231" />
+                  <option name="green" value="126" />
+                  <option name="red" value="231" />
+                </RgbState>
+              </option>
+            </ColorState>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="downloadDocsAutomatically" value="true" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 0
+}]]></component>
+  <component name="ProjectId" id="2qdBZEQmH5fGrTB4XqCflAKFFga" />
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "Application.SampleCodes.executor": "Run",
+    "Maven.nexus-http-master [package].executor": "Run",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "RunOnceActivity.git.unshallow": "true",
+    "git-widget-placeholder": "main",
+    "ignore.virus.scanning.warn.message": "true",
+    "kotlin-language-version-configured": "true",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "settings.editor.selected.configurable": "advanced.settings",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="Application.SampleCodes">
+    <list>
+      <item itemvalue="Application.SampleCodes" />
+      <item itemvalue="Writerside.Documentation" />
+    </list>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-jdk-9823dce3aa75-fdfe4dae3a2d-intellij.indexing.shared.core-IU-243.22562.218" />
+        <option value="bundled-js-predefined-d6986cc7102b-deb605915726-JavaScript-IU-243.22562.218" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="d1254a47-ccc4-439b-a3d7-d981c276af93" name="Changes" comment="" />
+      <created>1734982628339</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1734982628339</updated>
+      <workItem from="1734982633078" duration="6028000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="3" />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

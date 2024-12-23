@@ -86,7 +86,7 @@ public final class HttpsServer extends HttpServer {
                         sslServerSocketFactory.createServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress()));
                 sslServerSocket.setEnabledProtocols(serverConfiguration.getTlsVersions());
                 serverSocket = sslServerSocket;
-                LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
+                LogFormatter.log(logger.atInfo(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }

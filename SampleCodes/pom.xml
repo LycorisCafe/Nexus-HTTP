@@ -25,7 +25,11 @@
         <version>1.0.0</version>
     </parent>
 
-    <artifactId>SampleCodes</artifactId>
+    <artifactId>sampleCodes</artifactId>
+    <packaging>jar</packaging>
+
+    <name>Sample Codes</name>
+    <description>Sample codes for Nexus-HTTP</description>
 
     <dependencies>
         <dependency>

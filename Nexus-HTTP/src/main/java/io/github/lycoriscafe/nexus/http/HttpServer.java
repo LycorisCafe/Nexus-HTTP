@@ -118,7 +118,7 @@ public sealed class HttpServer permits HttpsServer {
                 serverSocket = serverConfiguration.getInetAddress() == null ?
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
                         new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
-                LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
+                LogFormatter.log(logger.atInfo(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }

@@ -25,7 +25,7 @@
     <version>1.0.0</version>
     <packaging>pom</packaging>
 
-    <name>Nexus-HTTP</name>
+    <name>Nexus-HTTP Master</name>
     <description>Simple embedded HTTP server and web framework for Java applications!</description>
     <url>https://github.com/LycorisCafe/nexus-http</url>
     <inceptionYear>2024</inceptionYear>

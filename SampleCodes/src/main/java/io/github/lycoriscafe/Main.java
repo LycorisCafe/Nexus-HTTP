@@ -17,7 +17,9 @@
 package io.github.lycoriscafe;
 
 import io.github.lycoriscafe.nexus.http.HttpServer;
+import io.github.lycoriscafe.nexus.http.HttpsServer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.HttpsServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 
 import java.io.IOException;
@@ -25,7 +27,15 @@ import java.sql.SQLException;
 
 public class Main {
     public static void main(String[] args) throws ScannerException, SQLException, IOException {
-        var ss = new HttpServerConfiguration("io.github.lycoriscafe", "NexusTemp");
-        var aa = new HttpServer(ss).initialize();
+        // Start HTTP server on random port
+        var httpServerConfiguration = new HttpServerConfiguration("io.github.lycoriscafe", "NexusTemp");
+        var httpServer = new HttpServer(httpServerConfiguration);
+        httpServer.initialize();
+
+        // Start HTTPS server on random port
+//        var httpsServerConfiguration = new HttpsServerConfiguration("io.github.lycoriscafe", "NexusTemp",
+//                "myTrustStore", "password".toCharArray(), "myKeyStore", "password".toCharArray());
+//        var httpsServer = new HttpsServer(httpsServerConfiguration);
+//        httpsServer.initialize();
     }
 }

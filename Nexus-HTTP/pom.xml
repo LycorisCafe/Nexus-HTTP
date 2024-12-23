@@ -26,8 +26,10 @@
     </parent>
 
     <artifactId>nexus-http</artifactId>
-    <version>1.0.0</version>
     <packaging>jar</packaging>
+
+    <name>Nexus-HTTP</name>
+    <description>Simple embedded HTTP server and web framework for Java applications!</description>
 
     <properties>
         <gpg.key_name>53D6343ADD375807F4CAF21204CF9748DA106AA5</gpg.key_name>
