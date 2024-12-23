@@ -1,0 +1,84 @@
+-J-Duser.language=
+-J-Duser.country=
+@options
+@packages
+-classpath
+'C:/Users/NaveenB2004/.m2/repository/org/xerial/sqlite-jdbc/3.47.1.0/sqlite-jdbc-3.47.1.0.jar;C:/Users/NaveenB2004/.m2/repository/org/reflections/reflections/0.10.2/reflections-0.10.2.jar;C:/Users/NaveenB2004/.m2/repository/org/javassist/javassist/3.28.0-GA/javassist-3.28.0-GA.jar;C:/Users/NaveenB2004/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar;C:/Users/NaveenB2004/.m2/repository/org/slf4j/slf4j-api/2.0.16/slf4j-api-2.0.16.jar;C:/Users/NaveenB2004/.m2/repository/org/slf4j/slf4j-simple/2.0.16/slf4j-simple-2.0.16.jar'
+-encoding
+'UTF-8'
+-protected
+-source
+'21'
+-sourcepath
+'D:/Projects/nexus-http/src/main/java;D:/Projects/nexus-http/target/generated-sources/annotations'
+-author
+-bottom
+'Copyright &#169; 2024. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'D:/Projects/nexus-http/target/reports/apidocs'
+-docencoding
+'UTF-8'
+-Xdoclint:all,-missing
+-doctitle
+'nexus-http 1.0.0 API'
+-tag
+"apiNote:a:API Note:"
+-use
+-version
+-windowtitle
+'nexus-http 1.0.0 API'
+io.github.lycoriscafe.nexus.http.core.headers.auth
+io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.basic
+io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer
+io.github.lycoriscafe.nexus.http.core.headers.cache
+io.github.lycoriscafe.nexus.http.core.headers.content
+io.github.lycoriscafe.nexus.http.core.headers.cookies
+io.github.lycoriscafe.nexus.http.core.headers.cors
+io.github.lycoriscafe.nexus.http.core.headers.csp
+io.github.lycoriscafe.nexus.http.core.headers
+io.github.lycoriscafe.nexus.http.core.headers.hsts
+io.github.lycoriscafe.nexus.http.core
+io.github.lycoriscafe.nexus.http.core.requestMethods.annotations
+io.github.lycoriscafe.nexus.http.core.requestMethods
+io.github.lycoriscafe.nexus.http.core.statusCodes.annotations
+io.github.lycoriscafe.nexus.http.core.statusCodes
+io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq
+io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes
+io.github.lycoriscafe.nexus.http.engine
+io.github.lycoriscafe.nexus.http.helper.configuration
+io.github.lycoriscafe.nexus.http.helper
+io.github.lycoriscafe.nexus.http.helper.models
+io.github.lycoriscafe.nexus.http.helper.scanners
+io.github.lycoriscafe.nexus.http.helper.util
+io.github.lycoriscafe.nexus.http
+C:\Users\NaveenB2004\.m2\repository\org\xerial\sqlite-jdbc\3.47.1.0\sqlite-jdbc-3.47.1.0.jar = 1734832417550
+C:\Users\NaveenB2004\.m2\repository\org\reflections\reflections\0.10.2\reflections-0.10.2.jar = 1732370898914
+C:\Users\NaveenB2004\.m2\repository\org\javassist\javassist\3.28.0-GA\javassist-3.28.0-GA.jar = 1732370904012
+C:\Users\NaveenB2004\.m2\repository\com\google\code\findbugs\jsr305\3.0.2\jsr305-3.0.2.jar = 1732370871001
+C:\Users\NaveenB2004\.m2\repository\org\slf4j\slf4j-api\2.0.16\slf4j-api-2.0.16.jar = 1732234136764
+C:\Users\NaveenB2004\.m2\repository\org\slf4j\slf4j-simple\2.0.16\slf4j-simple-2.0.16.jar = 1732370897993
+D:\Projects\nexus-http\src\main\java = 1732390438060
+D:\Projects\nexus-http\target\generated-sources\annotations = 1734845713391
+D:\Projects\nexus-http\target\reports\apidocs\allclasses-index.html = 1734845727969
+D:\Projects\nexus-http\target\reports\apidocs\allpackages-index.html = 1734845727974
+D:\Projects\nexus-http\target\reports\apidocs\copy.svg = 1734845728093
+D:\Projects\nexus-http\target\reports\apidocs\element-list = 1734845727071
+D:\Projects\nexus-http\target\reports\apidocs\help-doc.html = 1734845728086
+D:\Projects\nexus-http\target\reports\apidocs\index-all.html = 1734845728073
+D:\Projects\nexus-http\target\reports\apidocs\index.html = 1734845727809
+D:\Projects\nexus-http\target\reports\apidocs\link.svg = 1734845728094
+D:\Projects\nexus-http\target\reports\apidocs\member-search-index.js = 1734845727984
+D:\Projects\nexus-http\target\reports\apidocs\module-search-index.js = 1734845727976
+D:\Projects\nexus-http\target\reports\apidocs\overview-summary.html = 1734845728079
+D:\Projects\nexus-http\target\reports\apidocs\overview-tree.html = 1734845727802
+D:\Projects\nexus-http\target\reports\apidocs\package-search-index.js = 1734845727978
+D:\Projects\nexus-http\target\reports\apidocs\script.js = 1734845728091
+D:\Projects\nexus-http\target\reports\apidocs\search-page.js = 1734845728099
+D:\Projects\nexus-http\target\reports\apidocs\search.html = 1734845728076
+D:\Projects\nexus-http\target\reports\apidocs\search.js = 1734845728097
+D:\Projects\nexus-http\target\reports\apidocs\serialized-form.html = 1734845727342
+D:\Projects\nexus-http\target\reports\apidocs\stylesheet.css = 1734845728090
+D:\Projects\nexus-http\target\reports\apidocs\tag-search-index.js = 1734845727986
+D:\Projects\nexus-http\target\reports\apidocs\type-search-index.js = 1734845727980
