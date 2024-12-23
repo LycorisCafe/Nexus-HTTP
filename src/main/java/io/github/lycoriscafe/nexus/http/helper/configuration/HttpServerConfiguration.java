@@ -37,12 +37,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Configurations configuration for {@code HttpServer}.
+ * Configurations for {@code HttpServer}.
  *
  * @see HttpServer
  * @since v1.0.0
  */
-public final class HttpServerConfiguration {
+public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     private int port = 0;
     private int backlog = 0;
     private InetAddress inetAddress = null;
@@ -50,10 +50,10 @@ public final class HttpServerConfiguration {
     private ThreadType threadType = ThreadType.VIRTUAL;
 
     private final String basePackage;
+    private final String tempDirectory;
     private String urlExtension = "";
-    private String tempDirectory = "NexusTemp";
-    private String staticFilesDirectory = null;
-    private DatabaseType databaseType = DatabaseType.TEMPORARY;
+    private String staticFilesDirectory;
+    private DatabaseType databaseType = DatabaseType.MEMORY;
 
     private int maxHeaderSize = 10_240;
     private int maxHeadersPerRequest = 20;
@@ -78,11 +78,13 @@ public final class HttpServerConfiguration {
     /**
      * Create an instance of {@code HttpServerConfiguration}.
      *
-     * @param basePackage Package that need to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
+     * @param basePackage   Package that need to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
+     * @param tempDirectory Temporary directory location for in-API server tasks. It must be seperated directories if you implement more than one
+     *                      server.
      * @apiNote <pre>
      * {@code
      * // Example endpoint scan scenario
-     * var serverConfig = new HttpServerConfiguration("org.example.server_x");
+     * var serverConfig = new HttpServerConfiguration("org.example.server_x", "TempServer_x");
      * _
      * |- org.example
      *      |- server_x
@@ -100,20 +102,38 @@ public final class HttpServerConfiguration {
      * @see HttpServerConfiguration
      * @since v1.0.0
      */
-    public HttpServerConfiguration(final String basePackage) {
-        this.basePackage = Objects.requireNonNull(basePackage);
+    public HttpServerConfiguration(final String basePackage,
+                                   final String tempDirectory) {
+        Objects.requireNonNull(basePackage);
+        Objects.requireNonNull(tempDirectory);
+        if (basePackage.isEmpty() || tempDirectory.isEmpty()) throw new IllegalStateException("basePackage/temDirectory cannot be empty");
+
+        this.basePackage = basePackage;
+        this.tempDirectory = tempDirectory;
     }
 
     /**
      * Get provided base package.
      *
      * @return Base package
-     * @see #HttpServerConfiguration(String)
+     * @see #HttpServerConfiguration(String, String)
      * @see HttpServerConfiguration
      * @since v1.0.0
      */
     public String getBasePackage() {
         return basePackage;
+    }
+
+    /**
+     * Get provided temporary directory.
+     *
+     * @return Temporary directory
+     * @see #HttpServerConfiguration(String, String)
+     * @see HttpServerConfiguration
+     * @since v1.0.0
+     */
+    public String getTempDirectory() {
+        return tempDirectory;
     }
 
     /**
@@ -253,34 +273,6 @@ public final class HttpServerConfiguration {
     }
 
     /**
-     * Set temporary directory to process in-API tasks such as content handling for requests/responses. Default is {@code "NexusTemp"} in same
-     * directory. This directory cannot be null and must have read and write permissions.
-     *
-     * @param tempDirectory Temporary directory for in-API tasks
-     * @return Same {@code HttpServerConfiguration} instance
-     * @see HttpServerConfiguration
-     * @since v1.0.0
-     */
-    public HttpServerConfiguration setTempDirectory(final String tempDirectory) {
-        Objects.requireNonNull(tempDirectory);
-        if (tempDirectory.isBlank()) throw new IllegalStateException("temp directory cannot be empty/blank");
-        this.tempDirectory = tempDirectory;
-        return this;
-    }
-
-    /**
-     * Get temporary directory.
-     *
-     * @return Temporary directory
-     * @see #setTempDirectory(String)
-     * @see HttpServerConfiguration
-     * @since v1.0.0
-     */
-    public String getTempDirectory() {
-        return tempDirectory;
-    }
-
-    /**
      * Set prefix to the endpoint. Default is empty.
      * <pre>
      *     {@code
@@ -363,7 +355,7 @@ public final class HttpServerConfiguration {
     }
 
     /**
-     * Set database creation type. Default is {@code TEMPORARY}.
+     * Set database creation type. Default is {@code MEMORY}.
      *
      * @param databaseType Database type
      * @return Same {@code HttpServerConfiguration} instance

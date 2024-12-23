@@ -29,7 +29,7 @@ public class WebApplication {
     private static final Logger logger = LoggerFactory.getLogger(WebApplication.class);
 
     public static void main(String[] args) throws ScannerException, SQLException, IOException, InterruptedException {
-        var httpServerConfiguration = new HttpServerConfiguration("io.github.lycoriscafe.nexus").setPort(2004);
+        var httpServerConfiguration = new HttpServerConfiguration("io.github.lycoriscafe.nexus", "NexusTemp").setPort(2004);
         var httpServer = new HttpServer(httpServerConfiguration).initialize();
     }
 }

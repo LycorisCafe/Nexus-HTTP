@@ -39,18 +39,18 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Base class for initialize a server.
+ * Base class for initialize an HTTP server.
  *
  * @since v1.0.0
  */
-public final class HttpServer {
+public sealed class HttpServer permits HttpsServer {
     private final Logger logger = LoggerFactory.getLogger(HttpServer.class);
 
-    private final HttpServerConfiguration serverConfiguration;
-    private Thread serverThread;
-    private ServerSocket serverSocket;
-    private ExecutorService executorService;
-    private final Database database;
+    final HttpServerConfiguration serverConfiguration;
+    Thread serverThread;
+    ServerSocket serverSocket;
+    ExecutorService executorService;
+    final Database database;
 
     /**
      * Create instance for an HTTP server.
@@ -89,7 +89,7 @@ public final class HttpServer {
      * @see HttpServer
      * @since v1.0.0
      */
-    private static ExecutorService initializeExecutorService(final HttpServerConfiguration serverConfiguration) {
+    static ExecutorService initializeExecutorService(final HttpServerConfiguration serverConfiguration) {
         return Executors.newFixedThreadPool(serverConfiguration.getMaxIncomingConnections(), serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
                 Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
     }
@@ -103,21 +103,22 @@ public final class HttpServer {
      * @see HttpServer
      * @since v1.0.0
      */
-    public synchronized HttpServer initialize() throws InterruptedException, IOException {
+    public synchronized HttpServer initialize() {
         if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
 
         // Simple decoration
         LogFormatter.log(logger.atInfo(), "_____ _____ __ __ _____ _____");
         LogFormatter.log(logger.atInfo(), "|   | |   __|  |  |  |  |   __|");
         LogFormatter.log(logger.atInfo(), "| | | |   __|-   -|  |  |__   |");
-        LogFormatter.log(logger.atInfo(), "|_|___|_____|__|__|_____|_____| HTTP v1.0");
+        LogFormatter.log(logger.atInfo(), "|_|___|_____|__|__|_____|_____| HTTP (API v1.0)");
 
         executorService = initializeExecutorService(serverConfiguration);
-        serverSocket = serverConfiguration.getInetAddress() == null ?
-                new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
-                new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
         serverThread = Thread.ofPlatform().start(() -> {
             try {
+                serverSocket = serverConfiguration.getInetAddress() == null ?
+                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
+                        new ServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress());
+                LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }
@@ -125,7 +126,6 @@ public final class HttpServer {
                 throw new RuntimeException(e);
             }
         });
-        LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
         return this;
     }
 

@@ -84,11 +84,9 @@ public final class Database {
     public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
         Connection conn = switch (serverConfiguration.getDatabaseType()) {
             case TEMPORARY -> {
-                String dbName = serverConfiguration.getTempDirectory() + "/NexusHttp" + (serverConfiguration.getPort() == 0 ?
-                        (int) (Math.random() * 100) : serverConfiguration.getPort()) + ".db";
-                Path path = Paths.get(dbName);
+                Path path = Paths.get(serverConfiguration.getTempDirectory() + "/NexusHttp.db");
                 if (Files.exists(path)) Files.delete(path);
-                yield DriverManager.getConnection("jdbc:sqlite:" + dbName);
+                yield DriverManager.getConnection("jdbc:sqlite:" + path);
             }
             case MEMORY -> DriverManager.getConnection("jdbc:sqlite::memory:");
         };

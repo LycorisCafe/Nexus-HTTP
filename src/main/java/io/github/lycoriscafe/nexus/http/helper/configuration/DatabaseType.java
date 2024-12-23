@@ -24,16 +24,17 @@ package io.github.lycoriscafe.nexus.http.helper.configuration;
  */
 public enum DatabaseType {
     /**
-     * In-memory database
+     * In-memory database.
      *
      * @see DatabaseType
      * @since v1.0.0
      */
     MEMORY,
     /**
-     * Physical database located in temporary directory specified in {@code HttpServerConfiguration}.
+     * Physical database located in temporary directory specified in {@code HttpServerConfiguration}. This type will help when it comes to server
+     * debugging.
      *
-     * @see HttpServerConfiguration#setTempDirectory(String)
+     * @see HttpServerConfiguration#HttpServerConfiguration(String, String)
      * @see DatabaseType
      * @since v1.0.0
      */
