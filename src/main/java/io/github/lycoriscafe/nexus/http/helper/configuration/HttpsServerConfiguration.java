@@ -28,9 +28,9 @@ import java.util.Objects;
  * @since v1.0.0
  */
 public final class HttpsServerConfiguration extends HttpServerConfiguration {
-    private final String trustStorePath;
+    private final String trustStoreName;
     private final char[] trustStorePassword;
-    private final String keyStorePath;
+    private final String keyStoreName;
     private final char[] keyStorePassword;
     private final String[] tlsVersions;
 
@@ -64,17 +64,17 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      */
     public HttpsServerConfiguration(final String basePackage,
                                     final String tempDirectory,
-                                    final String trustStorePath,
+                                    final String trustStoreName,
                                     final char[] trustStorePassword,
-                                    final String keyStorePath,
+                                    final String keyStoreName,
                                     final char[] keyStorePassword,
                                     final String... tlsVersions) {
         super(basePackage, tempDirectory);
-        this.trustStorePath = Objects.requireNonNull(trustStorePath);
+        this.trustStoreName = Objects.requireNonNull(trustStoreName);
         this.trustStorePassword = trustStorePassword;
-        this.keyStorePath = Objects.requireNonNull(keyStorePath);
+        this.keyStoreName = Objects.requireNonNull(keyStoreName);
         this.keyStorePassword = keyStorePassword;
-        this.tlsVersions = tlsVersions == null ? new String[]{"TLSv1.3"} : tlsVersions;
+        this.tlsVersions = tlsVersions.length == 0 ? new String[]{"TLSv1.3"} : tlsVersions;
     }
 
     /**
@@ -84,8 +84,8 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      * @see HttpsServerConfiguration
      * @since v1.0.0
      */
-    public String getTrustStorePath() {
-        return trustStorePath;
+    public String getTrustStoreName() {
+        return trustStoreName;
     }
 
     /**
@@ -106,8 +106,8 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      * @see HttpsServerConfiguration
      * @since v1.0.0
      */
-    public String getKeyStorePath() {
-        return keyStorePath;
+    public String getKeyStoreName() {
+        return keyStoreName;
     }
 
     /**

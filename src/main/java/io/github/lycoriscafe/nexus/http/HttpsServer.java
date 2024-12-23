@@ -94,7 +94,6 @@ public final class HttpsServer extends HttpServer {
                 throw new RuntimeException(e);
             }
         });
-        LogFormatter.log(logger.atDebug(), "Server initialized @ " + serverSocket.getLocalSocketAddress());
         return this;
     }
 
@@ -115,14 +114,14 @@ public final class HttpsServer extends HttpServer {
     private SSLContext initializeSslContext()
             throws KeyStoreException, IOException, NoSuchAlgorithmException, KeyManagementException, CertificateException, UnrecoverableKeyException {
         KeyStore trustStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        try (var trustStorePath = new FileInputStream(serverConfiguration.getTrustStorePath())) {
+        try (var trustStorePath = new FileInputStream(serverConfiguration.getTrustStoreName())) {
             trustStore.load(trustStorePath, serverConfiguration.getTrustStorePassword());
         }
         TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
         tmf.init(trustStore);
 
         KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-        try (var keyStorePath = new FileInputStream(serverConfiguration.getKeyStorePath())) {
+        try (var keyStorePath = new FileInputStream(serverConfiguration.getKeyStoreName())) {
             keyStore.load(keyStorePath, serverConfiguration.getKeyStorePassword());
         }
         KeyManagerFactory kmf = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
