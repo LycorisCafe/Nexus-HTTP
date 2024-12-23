@@ -29,10 +29,12 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Base64;
 
 /**
  * Static files' scanner.
  *
+ * @apiNote This version has the implementation, but it's not completed and will not work.
  * @see ReqFile
  * @see Database
  * @since v1.0.0
@@ -104,10 +106,7 @@ public final class FileScanner {
             while (reader.read(buffer) > 0) {
                 messageDigest.update(buffer);
             }
-
-            // TODO implement
-
-            return "";
+            return Base64.getEncoder().encodeToString(messageDigest.digest());
         }
     }
 }

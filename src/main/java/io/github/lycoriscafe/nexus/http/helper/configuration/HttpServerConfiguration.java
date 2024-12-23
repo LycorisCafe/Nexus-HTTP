@@ -334,6 +334,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
      *
      * @param staticFilesDirectory Static files directory
      * @return Same {@code HttpServerConfiguration} instance
+     * @apiNote This version has the implementation, but it's not completed and will not work.
      * @see HttpServerConfiguration
      * @since v1.0.0
      */

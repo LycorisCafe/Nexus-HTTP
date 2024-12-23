@@ -17,16 +17,34 @@
 package io.github.lycoriscafe.nexus;
 
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
+import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.content.Content;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.GET;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpGetRequest;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 
 @HttpEndpoint
 public class Endpoints {
+    @GET("/")
+    public static HttpResponse homePage(HttpGetRequest request,
+                                        HttpResponse response) {
+        // Will redirect to "/helloWorld" endpoint
+        return response.setStatusCode(HttpStatusCode.TEMPORARY_REDIRECT).addHeader(new Header("Location", "/helloWorld"));
+    }
+
     @GET("/helloWorld")
     public static HttpResponse helloWorld(HttpGetRequest request,
                                           HttpResponse response) {
+        // Will return "Hello World!"
         return response.setContent(new Content("text/plain", "Hello World!"));
+    }
+
+    @GET("/hello")
+    public static HttpResponse helloPerson(HttpGetRequest request,
+                                           HttpResponse response) {
+        // Will return "Hello {name}!". {name} is an url parameter. If null, "Hello John!".
+        String name = request.getParameters() == null ? "John" : request.getParameters().get("name");
+        return response.setContent(new Content("text/plain", "Hello " + name + "!"));
     }
 }
