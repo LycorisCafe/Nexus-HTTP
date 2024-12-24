@@ -1,0 +1,190 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="built-on" content="2024-12-24T19:00:13.7987211">
+    <title>Add endpoints | Getting Started with Nexus-HTTP</title>
+    <script type="application/json" id="virtual-toc-data">[
+        {
+            "id": "httpendpoint",
+            "level": 0,
+            "title": "@HttpEndpoint",
+            "anchor": "#httpendpoint"
+        },
+        {
+            "id": "request-method-annotations",
+            "level": 0,
+            "title": "Request method annotations",
+            "anchor": "#request-method-annotations"
+        }
+    ]</script>
+    <script type="application/json" id="topic-shortcuts"></script>
+    <link href="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.css" rel="stylesheet">
+    <meta name="msapplication-TileColor" content="#000000">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png">
+    <meta name="msapplication-TileImage"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png">
+    <meta name="msapplication-square70x70logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png">
+    <meta name="msapplication-square150x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png">
+    <meta name="msapplication-wide310x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png">
+    <meta name="msapplication-square310x310logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png">
+    <meta name="image" content=""><!-- Open Graph -->
+    <meta property="og:title" content="Add endpoints | Getting Started with Nexus-HTTP">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="Getting Started with Nexus-HTTP Help">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url"
+          content="writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/add-endpoints.html">
+    <!-- End Open Graph --><!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="">
+    <meta name="twitter:title" content="Add endpoints | Getting Started with Nexus-HTTP">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:creator" content="">
+    <meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage -->
+    <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "WebPage",
+        "@id": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/add-endpoints.html#webpage",
+        "url": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/add-endpoints.html",
+        "name": "Add endpoints | Getting Started with Nexus-HTTP",
+        "description": "",
+        "image": "",
+        "inLanguage": "en-US"
+    }</script><!-- End Schema.org --><!-- Schema.org WebSite -->
+    <script type="application/ld+json">{
+        "@type": "WebSite",
+        "@id": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/#website",
+        "url": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/",
+        "name": "Getting Started with Nexus-HTTP Help"
+    }</script><!-- End Schema.org --></head>
+<body data-id="Add-endpoints" data-main-title="Add endpoints"
+      data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="">
+<div class="wrapper">
+    <main class="panel _main">
+        <header class="panel__header">
+            <div class="container"><h3>Getting Started with Nexus-HTTP v1.0 Help</h3>
+                <div class="panel-trigger"></div>
+            </div>
+        </header>
+        <section class="panel__content">
+            <div class="container">
+                <article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Add-endpoints"
+                                                                               id="Add-endpoints.md">Add endpoints</h1>
+                    <p id="z6gz7qm_3">In this section we will discuss how to add endpoint to our Nexus-HTTP server. To
+                        do that, we will create a new <code class="code" id="z6gz7qm_7">Java</code> class with name
+                        <code class="code" id="z6gz7qm_8">Endpoints.java</code>.</p>
+                    <div class="code-block" data-lang="none">
+                        SampleCodes
+                        |- src
+                        | |- main
+                        | | |- java
+                        | | | |- io
+                        | | | |- github
+                        | | | |- lycoriscafe
+                        | | | |- tutorial
+                        | | | |- Main.java
+                        | | | |- Endpoints.java &lt;-
+                        | | |- resources
+                        | |- test
+                        |- pom.xml
+                    </div>
+                    <section class="chapter"><h2 id="httpendpoint" data-toc="httpendpoint">@HttpEndpoint</h2>
+                        <p id="z6gz7qm_9">First of all, we need to mark the target class using the <a
+                                href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/core/HttpEndpoint.html"
+                                id="z6gz7qm_11" data-external="true" rel="noopener noreferrer"><code class="code"
+                                                                                                     id="z6gz7qm_12">@HttpEndpoint</code></a>
+                            annotation. It will help to the endpoints scanner to identify this class holding endpoints
+                            and trigger a scan.</p>
+                        <div class="code-block" data-lang="java">
+
+                            @HttpEndpoint
+                            public class Endpoints {
+                            }
+                        </div>
+                    </section>
+                    <section class="chapter"><h2 id="request-method-annotations" data-toc="request-method-annotations">
+                        Request method annotations</h2>
+                        <p id="z6gz7qm_13">To define a HTTP endpoint, we have <a
+                                href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/package-summary.html"
+                                id="z6gz7qm_21" data-external="true" rel="noopener noreferrer"><code class="code"
+                                                                                                     id="z6gz7qm_22">HTTP
+                            request method annotations</code></a>.</p>
+                        <aside class="prompt" data-type="tip" data-title="" id="z6gz7qm_14"><p id="z6gz7qm_23"><code
+                                class="code" id="z6gz7qm_24">@GET</code> - GET request endpoint<br><code class="code"
+                                                                                                         id="z6gz7qm_26">@POST</code>
+                            - POST request endpoint<br><code class="code" id="z6gz7qm_28">@PUT</code> - PUT request
+                            endpoint<br><code class="code" id="z6gz7qm_30">@DELETE</code> - DELETE request
+                            endpoint<br><code class="code" id="z6gz7qm_32">@HEAD</code> - HEAD request endpoint<br><code
+                                    class="code" id="z6gz7qm_34">@OPTIONS</code> - OPTIONS request endpoint<br><code
+                                    class="code" id="z6gz7qm_36">@PATCH</code> - PATCH request endpoint</p></aside>
+                        <p id="z6gz7qm_15">There are few points that API users should follow.</p>
+                        <ul class="list _bullet" id="z6gz7qm_16">
+                            <li class="list__item" id="z6gz7qm_37"><p>Annotated method must be <code class="code"
+                                                                                                     id="z6gz7qm_41">public</code>
+                                and <code class="code" id="z6gz7qm_42">static</code>.</p></li>
+                            <li class="list__item" id="z6gz7qm_38"><p>Annotated method must use return type as <a
+                                    href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpRes/HttpResponse.html"
+                                    id="z6gz7qm_43" data-external="true" rel="noopener noreferrer"><code class="code"
+                                                                                                         id="z6gz7qm_44">HttpResponse</code></a>.
+                            </p></li>
+                            <li class="list__item" id="z6gz7qm_39"><p>Annotated method must have 2 parameters. <a
+                                    href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpRequest.html"
+                                    id="z6gz7qm_45" data-external="true" rel="noopener noreferrer"><code class="code"
+                                                                                                         id="z6gz7qm_47">HttpRequest</code></a>
+                                type and <a
+                                        href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpRes/HttpResponse.html"
+                                        id="z6gz7qm_46" data-external="true" rel="noopener noreferrer"><code
+                                        class="code" id="z6gz7qm_48">HttpResponse</code></a> respectively.</p></li>
+                            <li class="list__item" id="z6gz7qm_40"><p>The class holding the annotated method must be
+                                annotated with <a
+                                        href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/core/HttpEndpoint.html"
+                                        id="z6gz7qm_49" data-external="true" rel="noopener noreferrer"><code
+                                        class="code" id="z6gz7qm_50">HttpEndpoint</code></a>.</p></li>
+                        </ul>
+                        <aside class="prompt" data-type="tip" data-title="" id="z6gz7qm_17"><p id="z6gz7qm_51">When
+                            doing the in-method processing it's highly recommended to return the same HttpResponse that
+                            got as a method parameter with any changes (for more info, see HttpResponse class).</p>
+                        </aside>
+                        <p id="z6gz7qm_18">This is a sample <code class="code" id="z6gz7qm_52">GET</code> endpoint. When
+                            you browse to this endpoint, you will receive a web page containing <code class="code"
+                                                                                                      id="z6gz7qm_53">Sample
+                                Get endpoint!</code>.</p>
+                        <div class="code-block" data-lang="java">
+
+                            @GET(&quot;/sampleGetEndpoint&quot;)
+                            public static HttpResponse sampleGetEndpoint(HttpGetRequest request,
+                            HttpResponse response) {
+                            // This will return HTTP status '200 OK' without any content
+                            return response.setContent(new Content(&quot;text/plain&quot;, &quot;Sample Get endpoint!&quot;));
+                            }
+                        </div>
+                        <aside class="prompt" data-type="tip" data-title="" id="z6gz7qm_20"><p id="z6gz7qm_54">You can
+                            always find full tutorial source code in <a
+                                    href="https://github.com/lycoriscafe/nexus-http/src/test" id="z6gz7qm_55"
+                                    data-external="true" rel="noopener noreferrer">here!</a></p></aside>
+                    </section>
+                    <div class="last-modified">Last modified: 24 December 2024</div>
+                    <div data-feedback-placeholder="true"></div>
+                    <div class="navigation-links _bottom"><a href="start-the-server.html"
+                                                             class="navigation-links__prev">Start the server</a><a
+                            href="authenticated-endpoints.html" class="navigation-links__next">Authenticated
+                        endpoints</a></div>
+                </article>
+                <div id="disqus_thread"></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.js"></script>
+</body>
+</html>

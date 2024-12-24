@@ -20,8 +20,8 @@
     <var name="version" value="1.0.0"/>
     <var name="mvn-central-url" value="https://central.sonatype.com/artifact/io.github.lycoriscafe/nexus-http"/>
     <var name="web-url" value="https://lycoriscafe.github.io/nexus-http"/>
-    <var name="nexus-http" value="https://github.com/lycoriscafe/nexus-http/Nexus-HTTP"/>
+    <var name="nexus-http" value="https://github.com/lycoriscafe/nexus-http"/>
     <var name="javadoc" value="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc"/>
-    <var name="sample-codes" value="https://github.com/lycoriscafe/nexus-http/SampleCodes"/>
-    <var name="product" value="Writerside"/>
+    <var name="sample-codes" value="https://github.com/lycoriscafe/nexus-http/src/test"/>
+    <var name="product" value="Nexus-HTTP"/>
 </vars>

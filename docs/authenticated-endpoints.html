@@ -1,0 +1,176 @@
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="built-on" content="2024-12-24T19:00:13.8329717">
+    <title>Authenticated endpoints | Getting Started with Nexus-HTTP</title>
+    <script type="application/json" id="virtual-toc-data">[
+        {
+            "id": "authenticated-annotation",
+            "level": 0,
+            "title": "@Authenticated annotation",
+            "anchor": "#authenticated-annotation"
+        }
+    ]</script>
+    <script type="application/json" id="topic-shortcuts"></script>
+    <link href="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.css" rel="stylesheet">
+    <meta name="msapplication-TileColor" content="#000000">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png">
+    <meta name="msapplication-TileImage"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png">
+    <meta name="msapplication-square70x70logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png">
+    <meta name="msapplication-square150x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png">
+    <meta name="msapplication-wide310x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png">
+    <meta name="msapplication-square310x310logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png">
+    <meta name="image" content=""><!-- Open Graph -->
+    <meta property="og:title" content="Authenticated endpoints | Getting Started with Nexus-HTTP">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="Getting Started with Nexus-HTTP Help">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url"
+          content="writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/authenticated-endpoints.html">
+    <!-- End Open Graph --><!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="">
+    <meta name="twitter:title" content="Authenticated endpoints | Getting Started with Nexus-HTTP">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:creator" content="">
+    <meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage -->
+    <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "WebPage",
+        "@id": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/authenticated-endpoints.html#webpage",
+        "url": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/authenticated-endpoints.html",
+        "name": "Authenticated endpoints | Getting Started with Nexus-HTTP",
+        "description": "",
+        "image": "",
+        "inLanguage": "en-US"
+    }</script><!-- End Schema.org --><!-- Schema.org WebSite -->
+    <script type="application/ld+json">{
+        "@type": "WebSite",
+        "@id": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/#website",
+        "url": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/",
+        "name": "Getting Started with Nexus-HTTP Help"
+    }</script><!-- End Schema.org --></head>
+<body data-id="Authenticated-endpoints" data-main-title="Authenticated endpoints"
+      data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}" data-template="article" data-breadcrumbs="">
+<div class="wrapper">
+    <main class="panel _main">
+        <header class="panel__header">
+            <div class="container"><h3>Getting Started with Nexus-HTTP v1.0 Help</h3>
+                <div class="panel-trigger"></div>
+            </div>
+        </header>
+        <section class="panel__content">
+            <div class="container">
+                <article class="article" data-shortcut-switcher="inactive"><h1 data-toc="Authenticated-endpoints"
+                                                                               id="Authenticated-endpoints.md">
+                    Authenticated endpoints</h1>
+                    <p id="uqjs68_3">In this section you will learn how to set up an authenticated endpoint. The basic
+                        idea is that, if you make authenticated endpoint and your request has no <code class="code"
+                                                                                                       id="uqjs68_6">Authorization</code>
+                        header, the API will automatically send a response with default authentication challenges
+                        specified in <a
+                                href="https://lycoriscafe.github.io/nexus-http/nexus-http-1.0.0-javadoc/io/github/lycoriscafe/nexus/http/helper/configuration/HttpServerConfiguration.html"
+                                id="uqjs68_7" data-external="true" rel="noopener noreferrer"><code class="code"
+                                                                                                   id="uqjs68_8">HttpServerConfiguration</code></a>.
+                    </p>
+                    <aside class="prompt" data-type="tip" data-title="" id="uqjs68_4"><p id="uqjs68_9">Note: This API
+                        version (v1.0.0) only supports <code class="code" id="uqjs68_10">Basic</code> and <code
+                                class="code" id="uqjs68_11">Bearer</code> authentications only.</p></aside>
+                    <section class="chapter"><h2 id="authenticated-annotation" data-toc="authenticated-annotation"><code
+                            class="code" id="uqjs68_23">@Authenticated</code> annotation</h2>
+                        <p id="uqjs68_13">This annotation is the basic authorization checking annotation. Let's say you
+                            set a <code class="code" id="uqjs68_24">Basic</code> authentication challenge by <code
+                                    class="code" id="uqjs68_25">httpServerConfiguration.addAuthentication()</code>, when
+                            you route to that endpoint, you will ask to provide a username and password to access the
+                            endpoint.</p>
+                        <aside class="prompt" data-type="tip" data-title="" id="uqjs68_14"><p id="uqjs68_26">Note: Theis
+                            API does not process authentication other than the <code class="code" id="uqjs68_27">Authorization</code>
+                            request header checking. So, API users need to implement their own authentication methods to
+                            verify the incoming requests.</p></aside>
+                        <p id="uqjs68_15">Let's create another class to add authenticated methods.</p>
+                        <div class="code-block" data-lang="none">
+                            SampleCodes
+                            |- src
+                            | |- main
+                            | | |- java
+                            | | | |- io
+                            | | | |- github
+                            | | | |- lycoriscafe
+                            | | | |- tutorial
+                            | | | |- Main.java
+                            | | | |- Endpoints.java
+                            | | | |- AuthenticatedEndpoints.java &lt;-
+                            | | |- resources
+                            | |- test
+                            |- pom.xml
+                        </div>
+                        <p id="uqjs68_17">Any endpoint can be annotated with <code class="code" id="uqjs68_28">@Authenticated</code>.
+                            The endpoint annotated with this,</p>
+                        <ul class="list _bullet" id="uqjs68_18">
+                            <li class="list__item" id="uqjs68_29"><p>must <code class="code"
+                                                                                id="uqjs68_33">public</code> and <code
+                                    class="code" id="uqjs68_34">static</code></p></li>
+                            <li class="list__item" id="uqjs68_30"><p>must annotate with any of request method
+                                annotation</p></li>
+                            <li class="list__item" id="uqjs68_31"><p>must return <code class="code" id="uqjs68_35">HttpResponse</code>
+                                as return value</p></li>
+                            <li class="list__item" id="uqjs68_32"><p>must accept any type of <code class="code"
+                                                                                                   id="uqjs68_36">HttpRequest</code>
+                                as only parameter</p></li>
+                        </ul>
+                        <p id="uqjs68_19">In this example, to authenticate, we use <code class="code" id="uqjs68_37">Basic</code>
+                            authentication scheme with username and password <code class="code"
+                                                                                   id="uqjs68_38">root</code>.</p>
+                        <aside class="prompt" data-type="tip" data-title="" id="uqjs68_20"><p id="uqjs68_39">Note: If
+                            you're using the <code class="code" id="uqjs68_40">@Authentication</code>, make sure to
+                            provide default authentication challenges to the <code class="code" id="uqjs68_41">HttpServerConfiguration</code>.
+                        </p></aside>
+                        <div class="code-block" data-lang="java">
+
+                            @Authenticated
+                            @GET(&quot;/sampleAuthenticatedEndpoint&quot;)
+                            public static HttpResponse sampleAuthenticatedEndpoint(HttpGetRequest request,
+                            HttpResponse response) {
+                            // Either these methods will work
+                            // if (request.getAuthorization() instanceof BasicAuthorization) {}
+                            if (request.getAuthorization().getAuthScheme() == AuthScheme.BASIC) {
+                            var authorization = (BasicAuthorization) request.getAuthorization();
+                            if (authorization.getUsername().equals(&quot;root&quot;) &amp;&amp;
+                            authorization.getPassword().equals(&quot;root&quot;)) {
+                            return response.setContent(new Content(&quot;text/plain&quot;, &quot;Authenticated!&quot;));
+                            }
+                            }
+                            // ...
+                            return response.setContent(new Content(&quot;text/plain&quot;, &quot;Unauthenticated!&quot;));
+                            }
+                        </div>
+                        <aside class="prompt" data-type="tip" data-title="" id="uqjs68_22"><p id="uqjs68_42">You can
+                            always find full tutorial source code in <a
+                                    href="https://github.com/lycoriscafe/nexus-http/src/test" id="uqjs68_43"
+                                    data-external="true" rel="noopener noreferrer">here!</a></p></aside>
+                    </section>
+                    <div class="last-modified">Last modified: 24 December 2024</div>
+                    <div data-feedback-placeholder="true"></div>
+                    <div class="navigation-links _bottom"><a href="add-endpoints.html" class="navigation-links__prev">Add
+                        endpoints</a><a href="status-annotations.html" class="navigation-links__next">Status
+                        Annotations</a></div>
+                </article>
+                <div id="disqus_thread"></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.js"></script>
+</body>
+</html>

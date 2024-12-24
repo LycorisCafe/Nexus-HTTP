@@ -3,6 +3,10 @@
 **Nexus-HTTP** is a library that implements both embedded web sever and web framework just to make plug and play HTTP
 server in Java environment. We aim to make this as lightweight, easy to use and feature rich as possible.
 
+> Contributions are warmly welcome in [here!](%nexus-http%/pulls)\
+> Issue reports are accepted in [here!](%nexus-http%/issues)\
+> Discuss? Open topic in [here!](%nexus-http%/discussions)
+
 ## Before you start
 
 Before you begin, make sure you meet these prerequisites:

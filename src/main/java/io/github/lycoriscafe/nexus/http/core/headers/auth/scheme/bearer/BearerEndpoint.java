@@ -32,8 +32,8 @@ import java.lang.annotation.*;
  * <pre>
  *     {@code
  *     @BearerEndpoint(@POST("/sampleBearerTokenEndpoint"))
- *     public static BearerTokenResponse sampleBearerTokenEndpoint(BearerTokenRequest request) {
- *         BearerTokenResponse response = ...
+ *     public static BearerTokenResponse sampleBearerTokenEndpoint(BearerTokenRequest request,
+ *                                                                 BearerTokenResponse response) {
  *         // ...
  *         return response;
  *     }
