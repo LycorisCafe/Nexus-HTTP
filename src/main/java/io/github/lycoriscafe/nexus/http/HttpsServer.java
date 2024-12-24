@@ -52,8 +52,7 @@ public final class HttpsServer extends HttpServer {
      * @see HttpServer
      * @since v1.0.0
      */
-    public HttpsServer(HttpsServerConfiguration httpsServerConfiguration)
-            throws SQLException, IOException, ScannerException {
+    public HttpsServer(HttpsServerConfiguration httpsServerConfiguration) throws SQLException, IOException, ScannerException {
         super(httpsServerConfiguration);
     }
 
@@ -69,7 +68,7 @@ public final class HttpsServer extends HttpServer {
      */
     @Override
     public synchronized HttpsServer initialize() {
-        if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
+        if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("Server already running");
 
         // Simple decoration
         LogFormatter.log(logger.atInfo(), "_____ _____ __ __ _____ _____");

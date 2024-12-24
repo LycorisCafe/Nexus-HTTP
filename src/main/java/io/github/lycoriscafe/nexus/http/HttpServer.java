@@ -67,11 +67,12 @@ public sealed class HttpServer permits HttpsServer {
         serverConfiguration = Objects.requireNonNull(httpServerConfiguration);
 
         Path tempPath = Paths.get(httpServerConfiguration.getTempDirectory());
-        if (!Files.exists(tempPath)) Files.createDirectory(tempPath);
+        if (Files.exists(tempPath))  Files.delete(tempPath);
+        Files.createDirectory(tempPath);
 
         if (httpServerConfiguration.getStaticFilesDirectory() != null) {
             Path staticPath = Paths.get(httpServerConfiguration.getStaticFilesDirectory());
-            if (!Files.exists(staticPath) || !Files.isDirectory(staticPath)) throw new IllegalStateException("static path cannot be found");
+            if (!Files.exists(staticPath) || !Files.isDirectory(staticPath)) throw new IllegalStateException("Static files path cannot be found");
         }
 
         database = new Database(serverConfiguration);
@@ -104,7 +105,7 @@ public sealed class HttpServer permits HttpsServer {
      * @since v1.0.0
      */
     public synchronized HttpServer initialize() {
-        if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("http server already running");
+        if (serverThread != null && serverThread.isAlive()) throw new IllegalStateException("Server already running");
 
         // Simple decoration
         LogFormatter.log(logger.atInfo(), "_____ _____ __ __ _____ _____");
@@ -140,7 +141,7 @@ public sealed class HttpServer permits HttpsServer {
      * @since v1.0.0
      */
     public synchronized void shutdown() throws IOException, InterruptedException {
-        if (!serverThread.isAlive()) throw new IllegalStateException("http server already shutdown");
+        if (!serverThread.isAlive()) throw new IllegalStateException("Server already shutdown");
         if (!executorService.awaitTermination(serverConfiguration.getConnectionTimeout(), TimeUnit.MILLISECONDS)) executorService.shutdownNow();
         serverSocket.close();
         if (serverThread.isAlive()) serverThread.interrupt();

@@ -20,7 +20,8 @@ server environment in Java. We aim to make this as lightweight, easy to use, and
 
 [![Central Repository](https://img.shields.io/maven-central/v/io.github.lycoriscafe/nexus-http
 )](https://central.sonatype.com/artifact/io.github.lycoriscafe/nexus-http)
-[![Minimum JDK version](https://img.shields.io/badge/Minumum_JDK-v21-yello)]()
+[![Minimum JDK version](https://img.shields.io/badge/Minumum_JDK-v21-yello)](
+https://www.oracle.com/java/technologies/downloads/)
 
 ```xml
 <dependency>
@@ -32,4 +33,4 @@ server environment in Java. We aim to make this as lightweight, easy to use, and
 
 ---
 
-*Copyright 2024 Lycoris Cafe*
+*Copyright 2025 Lycoris Cafe*
