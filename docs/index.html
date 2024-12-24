@@ -1,9 +1,171 @@
-<!DOCTYPE html>
-<html lang="en-US">
-<meta charset="utf-8">
-<title>You will be redirected shortly</title>
-<meta http-equiv="refresh" content="0; url=index_md.html">
-<h1>Redirecting&hellip;</h1>
-<a href="index_md.html">Click here if you are not redirected.</a>
-<script>location = "index_md.html"</script>
+<!--
+  ~ Copyright 2024 Lycoris Cafe
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE html SYSTEM "about:legacy-compat">
+<html lang="en-US" data-preset="contrast" data-primary-color="#307FFF">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta charset="UTF-8">
+    <meta name="built-on" content="2024-12-24T19:00:13.8017184">
+    <title>Nexus-HTTP | Getting Started with Nexus-HTTP</title>
+    <script type="application/json" id="virtual-toc-data">[
+        {
+            "id": "before-you-start",
+            "level": 0,
+            "title": "Before you start",
+            "anchor": "#before-you-start"
+        },
+        {
+            "id": "get-started",
+            "level": 0,
+            "title": "Get started",
+            "anchor": "#get-started"
+        }
+    ]</script>
+    <script type="application/json" id="topic-shortcuts"></script>
+    <link href="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.css" rel="stylesheet">
+    <meta name="msapplication-TileColor" content="#000000">
+    <link rel="apple-touch-icon" sizes="180x180" href="https://jetbrains.com/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="https://jetbrains.com/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="https://jetbrains.com/favicon-16x16.png">
+    <meta name="msapplication-TileImage"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-144x144.png">
+    <meta name="msapplication-square70x70logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-70x70.png">
+    <meta name="msapplication-square150x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-150x150.png">
+    <meta name="msapplication-wide310x150logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x150.png">
+    <meta name="msapplication-square310x310logo"
+          content="https://resources.jetbrains.com/storage/ui/favicons/mstile-310x310.png">
+    <meta name="image" content=""><!-- Open Graph -->
+    <meta property="og:title" content="Nexus-HTTP | Getting Started with Nexus-HTTP">
+    <meta property="og:description" content="">
+    <meta property="og:image" content="">
+    <meta property="og:site_name" content="Getting Started with Nexus-HTTP Help">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:url"
+          content="writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/index_md.html">
+    <!-- End Open Graph --><!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="">
+    <meta name="twitter:title" content="Nexus-HTTP | Getting Started with Nexus-HTTP">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:creator" content="">
+    <meta name="twitter:image:src" content=""><!-- End Twitter Card --><!-- Schema.org WebPage -->
+    <script type="application/ld+json">{
+        "@context": "http://schema.org",
+        "@type": "WebPage",
+        "@id": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/index_md.html#webpage",
+        "url": "writerside-documentation/https://lycoriscafe.github.io/nexus-http/v1.0/index_md.html",
+        "name": "Nexus-HTTP | Getting Started with Nexus-HTTP",
+        "description": "",
+        "image": "",
+        "inLanguage": "en-US"
+    }</script><!-- End Schema.org --><!-- Schema.org WebSite -->
+    <script type="application/ld+json">{
+        "@type": "WebSite",
+        "@id": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/#website",
+        "url": "writerside-documentationhttps://lycoriscafe.github.io/nexus-http/",
+        "name": "Getting Started with Nexus-HTTP Help"
+    }</script><!-- End Schema.org --></head>
+<body data-id="index" data-main-title="Nexus-HTTP" data-article-props="{&quot;seeAlsoStyle&quot;:&quot;links&quot;}"
+      data-template="article" data-breadcrumbs="">
+<div class="wrapper">
+    <main class="panel _main">
+        <header class="panel__header">
+            <div class="container"><h3>Getting Started with Nexus-HTTP v1.0 Help</h3>
+                <div class="panel-trigger"></div>
+            </div>
+        </header>
+        <section class="panel__content">
+            <div class="container">
+                <article class="article" data-shortcut-switcher="inactive"><h1 data-toc="index" id="index.md">
+                    Nexus-HTTP</h1>
+                    <p id="-ccu7ci_3"><span class="control" id="-ccu7ci_7">Nexus-HTTP</span> is a library that
+                        implements both embedded web sever and web framework just to make plug and play HTTP server in
+                        Java environment. We aim to make this as lightweight, easy to use and feature rich as possible.
+                    </p>
+                    <aside class="prompt" data-type="tip" data-title="" id="-ccu7ci_4"><p id="-ccu7ci_8">Contributions
+                        are warmly welcome in <a href="https://github.com/lycoriscafe/nexus-http/pulls" id="-ccu7ci_9"
+                                                 data-external="true" rel="noopener noreferrer">here!</a><br> Issue
+                        reports are accepted in <a href="https://github.com/lycoriscafe/nexus-http/issues"
+                                                   id="-ccu7ci_11" data-external="true"
+                                                   rel="noopener noreferrer">here!</a><br> Discuss? Open topic in <a
+                                href="https://github.com/lycoriscafe/nexus-http/discussions" id="-ccu7ci_13"
+                                data-external="true" rel="noopener noreferrer">here!</a></p></aside>
+                    <section class="chapter"><h2 id="before-you-start" data-toc="before-you-start">Before you start</h2>
+                        <p id="-ccu7ci_14">Before you begin, make sure you meet these prerequisites:</p>
+                        <ul class="list _bullet" id="-ccu7ci_15">
+                            <li class="list__item" id="-ccu7ci_16"><p>Installed JDK <code class="code" id="-ccu7ci_18">v21</code>
+                                or higher</p></li>
+                            <li class="list__item" id="-ccu7ci_17"><p>Apache Maven <code class="code" id="-ccu7ci_19">v3.x</code>
+                                (or similar build system)</p></li>
+                        </ul>
+                    </section>
+                    <section class="chapter"><h2 id="get-started" data-toc="get-started">Get started</h2>
+                        <p id="-ccu7ci_20">To get started, create a new project. In here, we use the default <code
+                                class="code" id="-ccu7ci_26">Maven</code> project structure.</p>
+                        <div class="code-block" data-lang="none">
+                            SampleCodes
+                            |- src
+                            | |- main
+                            | | |- java
+                            | | | |- io
+                            | | | |- github
+                            | | | |- lycoriscafe
+                            | | | |- tutorial
+                            | | | |- Main.java &lt;-
+                            | | |- resources
+                            | |- test
+                            |- pom.xml
+                        </div>
+                        <p id="-ccu7ci_22">In <a href="https://github.com/lycoriscafe/nexus-http/src/test/pom.xml"
+                                                 id="-ccu7ci_27" data-external="true" rel="noopener noreferrer"><code
+                                class="code" id="-ccu7ci_29">pom.xml</code></a>, add the <code class="code"
+                                                                                               id="-ccu7ci_28">Nexus-HTTP</code>
+                            dependency.</p>
+                        <aside class="prompt" data-type="tip" data-title="" id="-ccu7ci_23"><p id="-ccu7ci_30">You can
+                            find latest version of <code class="code" id="-ccu7ci_31">Nexus-HTTP</code> from <a
+                                    href="https://central.sonatype.com/artifact/io.github.lycoriscafe/nexus-http"
+                                    id="-ccu7ci_32" data-external="true" rel="noopener noreferrer">here!</a></p></aside>
+                        <div class="code-block" data-lang="markup">
+
+                            &lt;dependency&gt;
+                            &lt;groupId&gt;io.github.lycoriscafe&lt;/groupId&gt;
+                            &lt;artifactId&gt;nexus-http&lt;/artifactId&gt;
+                            &lt;version&gt;1.0.0&lt;/version&gt;
+                            &lt;/dependency&gt;
+                        </div>
+                        <aside class="prompt" data-type="tip" data-title="" id="-ccu7ci_25"><p id="-ccu7ci_33">You can
+                            always find full tutorial source code in <a
+                                    href="https://github.com/lycoriscafe/nexus-http/src/test" id="-ccu7ci_34"
+                                    data-external="true" rel="noopener noreferrer">here!</a></p></aside>
+                    </section>
+                    <div class="last-modified">Last modified: 24 December 2024</div>
+                    <div data-feedback-placeholder="true"></div>
+                    <div class="navigation-links _bottom"><a href="start-the-server.html"
+                                                             class="navigation-links__next">Start the server</a></div>
+                </article>
+                <div id="disqus_thread"></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="https://resources.jetbrains.com/writerside/apidoc/6.10.0-b575/app.js"></script>
+</body>
 </html>
