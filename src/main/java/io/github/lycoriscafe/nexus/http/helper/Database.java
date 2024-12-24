@@ -150,7 +150,8 @@ public final class Database {
      * @since v1.0.0
      */
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
-        PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster WHERE endpoint = ? AND reqMethod = ?");
+        PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster " +
+                "WHERE endpoint = ? AND reqMethod = ? COLLATE NOCASE");
         preQuery.setString(1, model.getRequestEndpoint());
         preQuery.setString(2, model.getReqMethod().toString());
         ResultSet preResultSet = preQuery.executeQuery();
@@ -158,7 +159,8 @@ public final class Database {
             throw new ScannerException("endpoints with same value found, aborting scanning");
         }
 
-        PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)");
+        PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) " +
+                "VALUES (?, ?, ?, ?)");
         masterQuery.setString(1, model.getRequestEndpoint());
         masterQuery.setString(2, model.getReqMethod().toString());
         masterQuery.setBoolean(3, model.isAuthenticated());
