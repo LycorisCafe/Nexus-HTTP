@@ -1,6 +1,5 @@
-Nexus-HTTP/target
-SampleCodes/target
-SampleCodes/NexusTemp
+target
+NexusTemp
 
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/

@@ -23,7 +23,7 @@ SampleCodes
 |   |   |       |- github
 |   |   |           |- lycoriscafe
 |   |   |               |- tutorial
-|   |   |                   |- Main.java
+|   |   |                   |- Main.java     <-
 |   |   |- resources
 |   |- test
 |- pom.xml
@@ -40,7 +40,5 @@ In [`pom.xml`](%sample-codes%/pom.xml), add the `Nexus-HTTP` dependency.
     <version>%version%</version>
 </dependency>
 ```
-
----
 
 > You can always find full tutorial source code in [here!](%sample-codes%)

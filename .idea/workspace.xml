@@ -4,30 +4,93 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="d1254a47-ccc4-439b-a3d7-d981c276af93" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpsServer.java" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpsServer.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/resources/simplelogger.properties" beforeDir="false" afterPath="$PROJECT_DIR$/Nexus-HTTP/src/main/resources/simplelogger.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/README.md" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/io/github/lycoriscafe/nexus/Endpoints.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/test/java/io/github/lycoriscafe/nexus/WebApplication.java" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/SampleCodes/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/SampleCodes/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/SampleCodes/src/main/java/io/github/lycoriscafe/Main.java" beforeDir="false" afterPath="$PROJECT_DIR$/SampleCodes/src/main/java/io/github/lycoriscafe/Main.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/c.list" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/c.list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/cfg/buildprofiles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/cfg/buildprofiles.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/completion_procedure.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/completion_procedure.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/completion_procedure_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/completion_procedure_dark.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/convert_table_to_xml.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/convert_table_to_xml.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/convert_table_to_xml_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/convert_table_to_xml_dark.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/new_topic_options.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/new_topic_options.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/images/new_topic_options_dark.png" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/images/new_topic_options_dark.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/nexus-http-main-doc.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/redirection-rules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/redirection-rules.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/topics/Start-the-server.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/Start-the-server.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/topics/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/index.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/v.list" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/v.list" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Writerside/writerside.cfg" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/writerside.cfg" afterDir="false" />
+    <list default="true" id="cf4564ac-3cf5-4ac7-bd37-815edc749f5b" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/Documentation/topics/Add-endpoints.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Documentation/topics/Authenticated-endpoints.md" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/Documentation/topics/Status-Annotations.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/encodings.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/Documentation.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/runConfigurations/SampleCodes.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Documentation/topics/Start-the-server.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/Start-the-server.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Documentation/topics/index.md" beforeDir="false" afterPath="$PROJECT_DIR$/Documentation/topics/index.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/HttpsServer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/HttpEndpoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/Header.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/AuthScheme.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/Authenticated.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/Authentication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/Authorization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/basic/BasicAuthentication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/basic/BasicAuthorization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerAuthentication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerAuthorization.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerEndpoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerError.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerTokenRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/auth/scheme/bearer/BearerTokenResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cache/CacheControl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/content/Content.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/content/MultipartFormData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/content/UrlEncodedData.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cookies/Cookie.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cookies/CookiePrefix.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cookies/CookieSameSite.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cors/CORSRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/cors/CORSResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/csp/CSPDirective.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/csp/ContentSecurityPolicy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/csp/ContentSecurityPolicyReportOnly.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/csp/ReportingEndpoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/headers/hsts/StrictTransportSecurity.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/HttpRequestMethod.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/DELETE.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/GET.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/HEAD.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/OPTIONS.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/PATCH.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/POST.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/requestMethods/annotations/PUT.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/HttpStatusCode.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/Found.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/Gone.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/MovedPermanently.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/PermanentRedirect.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/SeeOther.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/TemporaryRedirect.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/core/statusCodes/annotations/UnavailableForLegalReasons.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpDeleteRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpGetRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpHeadRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpOptionsRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpPatchRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpPostRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpPutRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpReq/HttpRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/ReqResManager/httpRes/HttpResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/RequestConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/engine/RequestProcessor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/Database.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/configuration/DatabaseType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/configuration/HttpServerConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/configuration/HttpsServerConfiguration.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/configuration/ThreadType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/models/ReqEndpoint.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/models/ReqFile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/models/ReqMaster.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/scanners/EndpointScanner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/scanners/FileScanner.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/scanners/ScannerException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/util/LogFormatter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/java/io/github/lycoriscafe/nexus/http/helper/util/NonDuplicateList.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Nexus-HTTP/src/main/resources/simplelogger.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleCodes/pom.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/SampleCodes/src/main/java/io/github/lycoriscafe/Main.java" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -38,39 +101,6 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="InstanceColorv3">
-    <option name="map">
-      <map>
-        <entry key="$PROJECT_DIR$/Documentation/nexus-http-main-doc.tree">
-          <value>
-            <ColorState>
-              <option name="customOrder" value="1" />
-              <option name="first">
-                <RgbState>
-                  <option name="blue" value="60" />
-                  <option name="darkBlue" value="60" />
-                  <option name="darkGreen" value="68" />
-                  <option name="darkRed" value="206" />
-                  <option name="green" value="68" />
-                  <option name="red" value="206" />
-                </RgbState>
-              </option>
-              <option name="second">
-                <RgbState>
-                  <option name="blue" value="65" />
-                  <option name="darkBlue" value="65" />
-                  <option name="darkGreen" value="126" />
-                  <option name="darkRed" value="231" />
-                  <option name="green" value="126" />
-                  <option name="red" value="231" />
-                </RgbState>
-              </option>
-            </ColorState>
-          </value>
-        </entry>
-      </map>
-    </option>
-  </component>
   <component name="MavenImportPreferences">
     <option name="importingSettings">
       <MavenImportingSettings>
@@ -78,39 +108,29 @@
       </MavenImportingSettings>
     </option>
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
-  <component name="ProjectId" id="2qdBZEQmH5fGrTB4XqCflAKFFga" />
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
+  <component name="ProjectId" id="2qfCmcCBiLQOdFe84L4y4MLb9ai" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
-    "Application.SampleCodes.executor": "Run",
-    "Maven.nexus-http-master [package].executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",
     "RunOnceActivity.git.unshallow": "true",
     "git-widget-placeholder": "main",
-    "ignore.virus.scanning.warn.message": "true",
     "kotlin-language-version-configured": "true",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
-    "settings.editor.selected.configurable": "advanced.settings",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.importing",
     "vue.rearranger.settings.migration": "true"
+  },
+  "keyToStringList": {
+    "stardust.markdown.MarkdownSplitEditorSuppressor:keyList": []
   }
 }]]></component>
-  <component name="RunManager" selected="Application.SampleCodes">
-    <list>
-      <item itemvalue="Application.SampleCodes" />
-      <item itemvalue="Writerside.Documentation" />
-    </list>
-  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -122,20 +142,17 @@
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="d1254a47-ccc4-439b-a3d7-d981c276af93" name="Changes" comment="" />
-      <created>1734982628339</created>
+      <changelist id="cf4564ac-3cf5-4ac7-bd37-815edc749f5b" name="Changes" comment="" />
+      <created>1735044406719</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
-      <updated>1734982628339</updated>
-      <workItem from="1734982633078" duration="6028000" />
+      <updated>1735044406719</updated>
+      <workItem from="1735044411448" duration="87000" />
+      <workItem from="1735044527722" duration="37000" />
     </task>
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
-  </component>
-  <component name="XSLT-Support.FileAssociations.UIState">
-    <expand />
-    <select />
   </component>
 </project>

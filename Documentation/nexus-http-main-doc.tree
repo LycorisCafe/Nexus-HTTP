@@ -24,4 +24,7 @@
 
     <toc-element topic="index.md"/>
     <toc-element topic="Start-the-server.md"/>
+    <toc-element topic="Add-endpoints.md"/>
+    <toc-element topic="Authenticated-endpoints.md"/>
+    <toc-element topic="Status-Annotations.md"/>
 </instance-profile>

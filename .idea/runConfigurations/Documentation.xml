@@ -1,8 +1,0 @@
-<component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Documentation" type="StardustRunConfiguration" factoryName="save-as-zip">
-    <option name="folderPath" value="$PROJECT_DIR$/docs" />
-    <option name="instanceId" value="nexus-http-main-doc" />
-    <option name="instanceName" value="Getting Started with Nexus-HTTP" />
-    <method v="2" />
-  </configuration>
-</component>
