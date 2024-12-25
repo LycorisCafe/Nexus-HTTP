@@ -144,7 +144,7 @@ public final class MultipartFormData {
      * @see MultipartFormData
      * @since v1.0.0
      */
-    private void setParameter(final String key,
+    private void addParameter(final String key,
                               final String value) {
         if (parameters == null) parameters = new HashMap<>();
         parameters.put(key, value);
@@ -206,44 +206,71 @@ public final class MultipartFormData {
         ByteArrayInputStream inputStream = new ByteArrayInputStream((byte[]) content.getData());
         List<MultipartFormData> data = new NonDuplicateList<>();
         while (true) {
-            String line;
-            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
+            MultipartFormData formData = new MultipartFormData();
 
-            if (line.equals(boundary + "--")) break;
-            if (!line.equals(boundary)) return invalidFormSegment(requestConsumer, requestId);
+            var readBoundary = readLine(inputStream);
+            if (readBoundary == null || readBoundary.size() == 0) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
+            if (readBoundary.toString(StandardCharsets.UTF_8).equals(boundary + "--")) break;
+            if (!readBoundary.toString(StandardCharsets.UTF_8).equals(boundary)) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
 
-            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
-            String[] segmentData = line.split(":", 2)[1].trim().split(";", 0);
-            if (segmentData.length < 2) return invalidFormSegment(requestConsumer, requestId);
-
-            MultipartFormData multiPartFormData = new MultipartFormData();
-            for (int i = 0; i < segmentData.length; i++) {
-                if (i == 0 && !segmentData[i].equals("form-data")) {
-                    return invalidFormSegment(requestConsumer, requestId);
-                }
-                if (i != 0) {
-                    String[] keyVal = segmentData[i].trim().split("=", 2);
-                    switch (keyVal[0].trim()) {
-                        case "name" -> multiPartFormData.setName(keyVal[1].trim().replaceAll("\"", ""));
-                        case "filename" -> {
-                            multiPartFormData.setFileName(keyVal[1].trim().replaceAll("\"", ""));
-                            if ((line = readLine(inputStream)) == null) return invalidFormSegment(requestConsumer, requestId);
-                            String[] contentType = line.split(":", 0);
-                            if (contentType.length > 2 || contentType.length == 0 || !contentType[0].equalsIgnoreCase("content-type")) {
-                                return invalidFormSegment(requestConsumer, requestId);
-                            }
-                            multiPartFormData.setContentType(contentType[1].trim());
+            var readContentDisposition = readLine(inputStream);
+            if (readContentDisposition == null || readContentDisposition.size() == 0) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
+            String[] contentDispositionHeader = readContentDisposition.toString(StandardCharsets.UTF_8).split(":", 2);
+            if (contentDispositionHeader.length != 2 || !contentDispositionHeader[0].equalsIgnoreCase("content-disposition")) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
+            String[] parameters = contentDispositionHeader[1].split(";", 0);
+            if (parameters.length < 2 || !parameters[0].trim().equalsIgnoreCase("form-data")) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
+            for (int i = 1; i < parameters.length; i++) {
+                String[] keyValue = parameters[i].trim().split("=", 2);
+                switch (keyValue[0]) {
+                    case "form-data" -> {}
+                    case "name" -> formData.setName(keyValue[1].replaceAll("\"", ""));
+                    case "filename" -> {
+                        formData.setFileName(keyValue[1].replaceAll("\"", ""));
+                        var readContentType = readLine(inputStream);
+                        if (readContentType == null || readContentType.size() == 0) {
+                            invalidFormSegment(requestConsumer, requestId);
+                            return null;
                         }
-                        default -> multiPartFormData.setParameter(keyVal[0].trim(), keyVal[1].trim().replaceAll("\"", ""));
+                        String[] contentTypeHeader = readContentType.toString(StandardCharsets.UTF_8).split(":", 2);
+                        if (contentTypeHeader.length != 2 || !contentTypeHeader[0].equalsIgnoreCase("content-type")) {
+                            invalidFormSegment(requestConsumer, requestId);
+                            return null;
+                        }
+                        formData.setContentType(contentTypeHeader[1].trim());
                     }
+                    default -> formData.addParameter(keyValue[0], keyValue[1].replaceAll("\"", ""));
                 }
             }
 
-            if ((line = readLine(inputStream)) == null || line.isEmpty()) return invalidFormSegment(requestConsumer, requestId);
+            var readEmptyLine = readLine(inputStream);
+            if (readEmptyLine == null || readEmptyLine.size() != 0) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
 
-            ByteArrayOutputStream byteArrayOutputStream = readByte(inputStream);
-            if (byteArrayOutputStream == null) return invalidFormSegment(requestConsumer, requestId);
-            multiPartFormData.setData(byteArrayOutputStream.toByteArray());
+            var readData = readLine(inputStream);
+            if (readData == null) {
+                invalidFormSegment(requestConsumer, requestId);
+                return null;
+            }
+            formData.setData(readData.toByteArray());
+
+            data.add(formData);
         }
 
         return new Content("multipart/form-data", data);
@@ -254,55 +281,29 @@ public final class MultipartFormData {
      *
      * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
      * @param requestId       Request id bound to the HTTP request
-     * @return <b>Always return null</b>
      * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
      * @since v1.0.0
      */
-    private static Content invalidFormSegment(final RequestConsumer requestConsumer,
-                                              final long requestId) {
-        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid form segment", logger);
-        return null;
+    private static void invalidFormSegment(final RequestConsumer requestConsumer,
+                                           final long requestId) {
+        requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "Invalid form segment", logger);
     }
 
-    /**
-     * Read string line from the given input stream. The line terminator always will {@code \r\n}.
-     *
-     * @param inputStream {@code InputStream} that data should be read from
-     * @return String (charset UTF-8)
-     * @throws IOException Error while reading data from the input stream
-     * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
-     * @since v1.0.0
-     */
-    private static String readLine(final InputStream inputStream) throws IOException {
-        ByteArrayOutputStream byteArrayOutputStream = readByte(inputStream);
-        return byteArrayOutputStream == null ? null :
-                byteArrayOutputStream.size() == 0 ? "" : byteArrayOutputStream.toString(StandardCharsets.UTF_8);
-    }
+    private static ByteArrayOutputStream readLine(final InputStream inputStream) throws IOException {
+        byte[] terminatePoint = new byte[RequestConsumer.LINE_TERMINATOR.length];
+        var byteArrayOutputStream = new ByteArrayOutputStream();
 
-    /**
-     * Read byte line from the given input stream. The line terminator always will {@code \r\n}.
-     *
-     * @param inputStream {@code InputStream} that data should be read from
-     * @return {@code ByteArrayOutputStream} that can easily convert to {@code String} or {@code byte[]}
-     * @throws IOException Error while reading data from the input stream
-     * @see #process(long, RequestConsumer, String, Integer, boolean, boolean)
-     * @since v1.0.0
-     */
-    private static ByteArrayOutputStream readByte(final InputStream inputStream) throws IOException {
-        byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        byte[] terminatePoint = new byte[2];
+        int c = inputStream.read(terminatePoint, 0, RequestConsumer.LINE_TERMINATOR.length);
+        if (c != RequestConsumer.LINE_TERMINATOR.length) return null;
 
-        int c = inputStream.read(terminatePoint, 0, 2);
-        if (c != 2) return null;
-
-        while (!Arrays.equals(lineTerminator, terminatePoint)) {
+        while (!Arrays.equals(RequestConsumer.LINE_TERMINATOR, terminatePoint)) {
             int b = inputStream.read();
             if (b == -1) return null;
             byteArrayOutputStream.write(terminatePoint[0]);
             terminatePoint[0] = terminatePoint[1];
             terminatePoint[1] = (byte) b;
         }
+
         return byteArrayOutputStream;
     }
 }
