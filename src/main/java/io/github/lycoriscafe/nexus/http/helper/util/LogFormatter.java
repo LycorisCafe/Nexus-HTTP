@@ -18,7 +18,19 @@ package io.github.lycoriscafe.nexus.http.helper.util;
 
 import org.slf4j.spi.LoggingEventBuilder;
 
-public class LogFormatter {
+/**
+ * Format the SLF4j log output by adding {@code NEXUS-HTTP :: } prefix.
+ * @see #log(LoggingEventBuilder, String)
+ * @since v1.0.0
+ */
+public final class LogFormatter {
+    /**
+     * Format the output log by adding {@code NEXUS-HTTP :: } prefix.
+     * @param loggingEventBuilder SLF4j logger event builder. Like {@code atDebug()}.
+     * @param message Message to log
+     * @see LogFormatter
+     * @since v1.0.0
+     */
     public static void log(final LoggingEventBuilder loggingEventBuilder,
                            final String message) {
         loggingEventBuilder.log("NEXUS-HTTP :: " + message);

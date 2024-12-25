@@ -49,7 +49,7 @@ public enum CookiePrefix {
     }
 
     /**
-     * Get prefix value for include in HTTP header.
+     * Get prefix value for include in the HTTP header.
      *
      * @return Formatted prefix value
      * @see Cookie

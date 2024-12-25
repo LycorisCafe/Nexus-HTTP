@@ -27,7 +27,7 @@ import java.lang.annotation.*;
  * The endpoint annotated with this,
  * <ul>
  *     <li>must {@code public} and {@code static}</li>
- *     <li>must annotate with any of request method annotation</li>
+ *     <li>must annotate with any of the request method annotation</li>
  *     <li>must return {@code HttpResponse} as <b>return</b> value</li>
  *     <li>must accept any type of {@code HttpRequest} as <b>only parameter</b></li>
  * </ul>

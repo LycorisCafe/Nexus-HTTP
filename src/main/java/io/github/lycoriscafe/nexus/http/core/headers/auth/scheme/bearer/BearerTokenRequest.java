@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 /**
- * When client requests to generate a {@code Bearer} access token to a resource, instance of this class will be received to the target endpoint. The
+ * When a client requests to generate a {@code Bearer} access token to a resource, instance of this class will be received to the target endpoint. The
  * endpoint must be annotated with {@code @BearerEndpoint}.
  *
  * @see BearerEndpoint

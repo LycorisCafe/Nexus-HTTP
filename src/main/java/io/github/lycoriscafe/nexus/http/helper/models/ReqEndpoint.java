@@ -25,7 +25,7 @@ import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 import java.lang.reflect.Method;
 
 /**
- * Method endpoint model for communicate endpoint data to/from endpoint methods to/from database.
+ * Method endpoint model for communicate endpoint data to/from endpoint methods to/from the database.
  *
  * @see EndpointScanner
  * @see ReqMaster
@@ -44,7 +44,7 @@ public final class ReqEndpoint extends ReqMaster {
      *
      * @param requestEndpoint       Endpoint URI
      * @param reqMethod             HTTP request method
-     * @param authenticated         Is endpoint authenticated?
+     * @param authenticated         Is the endpoint authenticated?
      * @param className             Target class
      * @param methodName            Target method
      * @param statusAnnotation      Available status annotation

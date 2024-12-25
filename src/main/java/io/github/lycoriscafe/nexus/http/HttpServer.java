@@ -53,7 +53,7 @@ public sealed class HttpServer permits HttpsServer {
     final Database database;
 
     /**
-     * Create instance for an HTTP server.
+     * Create an instance for an HTTP server.
      *
      * @param httpServerConfiguration {@code HttpServerConfiguration} instance
      * @throws SQLException     Error while initializing database connection
@@ -135,7 +135,7 @@ public sealed class HttpServer permits HttpsServer {
      * Shutdown HTTP server.
      *
      * @throws IOException          Error while stop the server
-     * @throws InterruptedException Executor services related exceptions
+     * @throws InterruptedException Executor services-related exceptions
      * @see #initialize()
      * @see HttpServer
      * @since v1.0.0

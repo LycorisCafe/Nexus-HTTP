@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Cross Origin Resource Sharing (CORS) for HTTP requests.
+ * Cross-Origin Resource Sharing (CORS) for HTTP requests.
  * <pre>
  *     {@code
  *     // Example code
@@ -33,7 +33,7 @@ import java.util.Locale;
  * </pre>
  *
  * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
- * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross Origin Resource Sharing (MDN Docs)</a>
+ * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (MDN Docs)</a>
  * @since v1.0.0
  */
 public final class CORSRequest {

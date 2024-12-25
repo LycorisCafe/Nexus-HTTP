@@ -24,7 +24,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import java.util.Objects;
 
 /**
- * When client requests to generate a {@code Bearer} access token to a resource, instance of this class will be returned from the target endpoint. The
+ * When a client requests to generate a {@code Bearer} access token to a resource, instance of this class will be returned from the target endpoint. The
  * endpoint must be annotated with {@code @BearerEndpoint}.
  * <pre>
  *     {@code
@@ -83,7 +83,7 @@ public final class BearerTokenResponse {
     }
 
     /**
-     * Set token expire time
+     * Set token expires time
      *
      * @param expiresIn Expire time in seconds.
      * @return Same {@code BearerTokenResponse} instance
@@ -133,7 +133,7 @@ public final class BearerTokenResponse {
     }
 
     /**
-     * Set scope of the token
+     * Set the scope of the token
      *
      * @param scope Scope of the token
      * @return Same {@code BearerTokenResponse} instance

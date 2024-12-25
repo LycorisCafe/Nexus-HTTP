@@ -27,7 +27,7 @@ import java.util.List;
  */
 public abstract class Authentication {
     /**
-     * Process {@code WWW-Authenticate} HTTP headers for provided list of {@code Authentication} types.
+     * Process the provided list of {@code Authentication} types to {@code WWW-Authenticate} HTTP headers.
      *
      * @param authentications List of {@code Authentication}
      * @return {@code WWW-Authenticate} header(s) string

@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="SampleCodes" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="io.github.lycoriscafe.Main" />
+    <option name="MAIN_CLASS_NAME" value="Main" />
     <module name="nexus-http" />
     <method v="2">
       <option name="Make" enabled="true" />

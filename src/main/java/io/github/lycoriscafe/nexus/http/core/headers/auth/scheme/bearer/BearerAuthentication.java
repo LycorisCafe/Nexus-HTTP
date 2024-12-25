@@ -20,7 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
 /**
- * The {@code Bearer} authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource
+ * The {@code Bearer} authentication for HTTP. An instance of this class will send it to the clients when they asked to access to a protected resource
  * without specifying {@code Authorization} header.
  * <pre>
  *     {@code
@@ -97,7 +97,7 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Set authentication error for the provided instance.
+     * Set the authentication error for the provided instance.
      *
      * @param error Authentication error
      * @return Same {@code BearerAuthentication} instance
@@ -165,7 +165,7 @@ public final class BearerAuthentication extends Authentication {
     }
 
     /**
-     * Get error description of the provided instance.
+     * Get the error description of the provided instance.
      *
      * @return Specified error description
      * @see #setErrorDescription(String)

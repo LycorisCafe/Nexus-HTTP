@@ -43,7 +43,7 @@ public class Authorization {
     }
 
     /**
-     * Get provided authentication scheme
+     * Get the provided authentication scheme
      *
      * @return Authentication scheme
      * @see AuthScheme

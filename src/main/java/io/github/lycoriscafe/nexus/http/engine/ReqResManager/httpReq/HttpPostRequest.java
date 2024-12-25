@@ -71,7 +71,7 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
     private Integer contentLength = null;
 
     /**
-     * Process content reading related operations.
+     * Process content reading-related operations.
      *
      * @see Content.ReadOperations
      * @since v1.0.0
@@ -86,8 +86,15 @@ public sealed class HttpPostRequest extends HttpRequest permits HttpPatchRequest
                 String value = getHeaders().get(i).getValue().toLowerCase(Locale.US).trim();
                 try {
                     content = switch (value) {
-                        case String x when x.startsWith("multipart/form-data") -> MultipartFormData.process(getRequestId(), getRequestConsumer(),
-                                value.split(";")[1].split("=")[1], contentLength, chunked, gzipped);
+                        case String x when x.startsWith("multipart/form-data") -> {
+                            String[] headerParts = x.split(";", 0);
+                            if (headerParts.length != 2 || !headerParts[1].trim().startsWith("boundary")) {
+                                getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.BAD_REQUEST, "Invalid content-type", logger);
+                                yield null;
+                            }
+                            yield MultipartFormData.process(getRequestId(), getRequestConsumer(), "--" + headerParts[1].split("=", 2)[1],
+                                    contentLength, chunked, gzipped);
+                        }
                         case "application/x-www-form-urlencoded" -> UrlEncodedData.process(getRequestId(), getRequestConsumer(), contentLength,
                                 chunked, gzipped);
                         default -> Content.ReadOperations.process(getRequestId(), getRequestConsumer(), value, contentLength, chunked, gzipped);

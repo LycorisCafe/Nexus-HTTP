@@ -29,7 +29,7 @@ import java.util.Locale;
 /**
  * HTTP GET request method.
  *
- * @apiNote Since {@code GET} request method don't accept content, all request headers beginning with {@code Content-} must be avoided.
+ * @apiNote Since {@code GET} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
  * @see GET
  * @see #finalizeRequest()
  * @see HttpRequest
@@ -52,8 +52,8 @@ public sealed class HttpGetRequest extends HttpRequest permits HttpDeleteRequest
     }
 
     /**
-     * This method will process the content related operations. Since {@code GET}, {@code DELETE}, {@code HEAD} and {@code OPTIONS} request methods
-     * are not supporting the content related operations, it will cause a connection drop.
+     * This method will process the content-related operations. Since {@code GET}, {@code DELETE}, {@code HEAD} and {@code OPTIONS} request methods
+     * are not supporting the content-related operations, it will cause a connection drop.
      *
      * @since v1.0.0
      */

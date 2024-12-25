@@ -58,9 +58,9 @@ public enum AuthScheme {
     }
 
     /**
-     * Get the target 'AuthScheme' value to set in header.
+     * Get the target 'AuthScheme' value to set in the header.
      *
-     * @return 'AuthScheme' value to set in header
+     * @return 'AuthScheme' value to set in the header
      * @see AuthScheme
      * @since v1.0.0
      */

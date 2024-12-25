@@ -21,9 +21,9 @@ import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import java.lang.annotation.*;
 
 /**
- * Mark endpoint method as an HTTP redirect endpoint. The redirect response HTTP status code will {@code 302 Found}. The point is when API user's API
- * changed, user can just annotate it with this and ignore the deep in-method response processing part (if this annotation presents, the method will
- * not execute). To use this annotation, one of the request method annotation must be presented.
+ * Mark the endpoint method as an HTTP redirect endpoint. The redirect response HTTP status code will {@code 302 Found}. The point is when a user's
+ * API is changed, the user can just annotate it with this and ignore the deep-in-method response processing part (if this annotation presents, the
+ * method will not execute). To use this annotation, one of the request method annotations must be presented.
  * <pre>
  *     {@code
  *     @Found("/redirectEndpoint")

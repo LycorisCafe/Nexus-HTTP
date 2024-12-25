@@ -129,8 +129,8 @@ public final class RequestProcessor {
     /**
      * Process URI query parameters.
      *
-     * @param params Full query string that need to be processed
-     * @return Map of query key, value pairs
+     * @param params Full query string that needs to be processed
+     * @return Map of query's key, value pairs
      * @see #process(long, String, List)
      * @see RequestProcessor
      * @since v1.0.0
@@ -148,7 +148,7 @@ public final class RequestProcessor {
     /**
      * Process received URI to normal string by removing ASCII integers and escapes.
      *
-     * @param uri URI string that need to be decoded
+     * @param uri URI string that needs to be decoded
      * @return Decoded URI string
      * @see RequestProcessor
      * @since v1.0.0

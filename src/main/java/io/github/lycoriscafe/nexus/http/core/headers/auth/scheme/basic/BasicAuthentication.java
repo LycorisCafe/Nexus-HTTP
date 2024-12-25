@@ -20,8 +20,8 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
 /**
- * The 'Basic' authentication for HTTP. An instance of this class will send to the clients when they asked to access to a protected resource without
- * specifying 'Authorization' header. Default charset that send with this is 'UTF-8'.
+ * The 'Basic' authentication for HTTP. An instance of this class will send it to the clients when they ask for access to a protected resource without
+ * specifying the 'Authorization' header. Default charset that send with this is 'UTF-8'.
  * <pre>
  *     {@code
  *      <!-- General header format -->

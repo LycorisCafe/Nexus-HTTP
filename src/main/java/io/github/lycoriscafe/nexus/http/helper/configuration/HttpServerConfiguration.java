@@ -78,8 +78,8 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     /**
      * Create an instance of {@code HttpServerConfiguration}.
      *
-     * @param basePackage   Package that need to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
-     * @param tempDirectory Temporary directory location for in-API server tasks. It must be seperated directories if you implement more than one
+     * @param basePackage   Package that needs to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
+     * @param tempDirectory Temporary directory location for in-API server tasks. It must be separated directories if you implement more than one
      *                      server.
      * @apiNote <pre>
      * {@code
@@ -113,7 +113,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get provided base package.
+     * Get the provided base package.
      *
      * @return Base package
      * @see #HttpServerConfiguration(String, String)
@@ -137,10 +137,10 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set server port number. Default is {@code 80} (HTTP)/{@code 443} (HTTPS). If port is set to {@code 0}, a random port will be selected by the
-     * system.
+     * Set the server port number. Default is {@code 80} (HTTP)/{@code 443} (HTTPS). If port is set to {@code 0}, the system will select a random
+     * port.
      *
-     * @param port Server port number. Default is 0 (it means an implementation specific default will be used).
+     * @param port Server port number. Default is {@code 0} (it means an implementation-specific default will be used).
      * @return Same {@code HttpServerConfiguration} instance
      * @see ServerSocket#ServerSocket(int, int)
      * @see ServerSocket#ServerSocket(int, int, InetAddress)
@@ -153,7 +153,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get server port number.
+     * Get the server port number.
      *
      * @return Server port number
      * @see #setPort(int)
@@ -167,7 +167,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     /**
      * Set server backlog value.
      *
-     * @param backlog Server backlog. Default is 0 (it means an implementation specific default will be used).
+     * @param backlog Server backlog. Default is {@code 0} (it means an implementation-specific default will be used).
      * @return Same {@code HttpServerConfiguration} instance
      * @see ServerSocket#ServerSocket(int, int)
      * @see ServerSocket#ServerSocket(int, int, InetAddress)
@@ -220,7 +220,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set connection timeout value for each incoming connection. Default is {@code 60,000 milliseconds} (1 minute).
+     * Set the connection timeout value for each incoming connection. Default is {@code 60,000 milliseconds} (1 minute).
      *
      * @param connectionTimeout Timeout value in milliseconds
      * @return Same {@code HttpServerConfiguration} instance
@@ -234,7 +234,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get connection timeout value for each incoming connection.
+     * Get the connection timeout value for each incoming connection.
      *
      * @return Timeout value
      * @see #setConnectionTimeout(int)
@@ -246,7 +246,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set thread type for incoming requests. Default is {@code ThreadType.VIRTUAL}.
+     * Set the thread type for incoming requests. Default is {@code ThreadType.VIRTUAL}.
      *
      * @param threadType Thread type
      * @return Same {@code HttpServerConfiguration} instance
@@ -261,7 +261,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get thread type for incoming requests.
+     * Get the thread type for incoming requests.
      *
      * @return Thread type
      * @see #setThreadType(ThreadType)
@@ -273,7 +273,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set prefix to the endpoint. Default is empty.
+     * Set the prefix to the endpoint. Default is empty.
      * <pre>
      *     {@code
      *     // This code will give -> http://host:port/api/v1.0.0/sampleEndpointClass/sampleEndpoint
@@ -356,7 +356,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set database creation type. Default is {@code MEMORY}.
+     * Set the database creation type. Default is {@code MEMORY}.
      *
      * @param databaseType Database type
      * @return Same {@code HttpServerConfiguration} instance
@@ -371,7 +371,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get database type.
+     * Get the database type.
      *
      * @return Database type
      * @see DatabaseType
@@ -384,7 +384,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set maximum header size in bytes. Default is {@code 10,240}.
+     * Set the maximum header size in bytes. Default is {@code 10,240}.
      *
      * @param maxHeaderSize Maximum header size in bytes
      * @return Same {@code HttpServerConfiguration} instance
@@ -410,7 +410,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set maximum headers count per request. Default is {@code 20}.
+     * Set the maximum headers count per request. Default is {@code 20}.
      *
      * @param maxHeadersPerRequest Maximum headers count per request
      * @return Same {@code HttpServerConfiguration} instance
@@ -438,8 +438,8 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set maximum incoming connections for server. If this count is overwhelm, next connections will go to backlog until remaining connection dies.
-     * Default is {@code 100}.
+     * Set maximum incoming connections for the server. If this count is overwhelmed, the next connections will go to the backlog until the remaining
+     * connection dies. Default is {@code 100}.
      *
      * @param maxIncomingConnections Maximum incoming connections for server
      * @return Same {@code HttpServerConfiguration} instance
@@ -454,7 +454,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Get maximum incoming connections for server.
+     * Get maximum incoming connections for the server.
      *
      * @return Maximum incoming connections for server
      * @see #setMaxIncomingConnections(int)
@@ -470,7 +470,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
      *
      * @param maxContentLength Maximum content length
      * @return Same {@code HttpServerConfiguration} instance
-     * @apiNote This will not apply to the requests that comes with {@code Transfer-Encoding: chunked} header.
+     * @apiNote This will not apply to the requests that come with {@code Transfer-Encoding: chunked} header.
      * @see #setMaxChunkedContentLength(int)
      * @see HttpServerConfiguration
      * @since v1.0.0
@@ -556,7 +556,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Add heads one-by-one to send with every response.
+     * Add header one-by-one to send with every response.
      *
      * @param defaultHeader Default header
      * @return Same {@code HttpServerConfiguration} instance
@@ -652,7 +652,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Add cookies one-by-one to send with every response.
+     * Add cookie one-by-one to send with every response.
      *
      * @param defaultCookie Default cookie
      * @return Same {@code HttpServerConfiguration} instance
@@ -900,7 +900,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set cache control to send with every response.
+     * Set cache control to send it with every response.
      *
      * @param cacheControl Default cache control
      * @return Same {@code HttpServerConfiguration} instance
@@ -954,7 +954,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     }
 
     /**
-     * Set detailed message to every exception redirect.
+     * Set a detailed message to every exception redirect.
      *
      * @param addErrorMessageToResponseHeaders Message status
      * @return Same {@code HttpServerConfiguration} instance

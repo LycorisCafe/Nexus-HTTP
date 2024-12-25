@@ -24,14 +24,14 @@ import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpRespons
 import java.lang.annotation.*;
 
 /**
- * Mark endpoint method as an HTTP {@code POST} request method endpoint. There are few points that API users should follow.
+ * Mark endpoint method as an HTTP {@code POST} request method endpoint. There are a few points that API users should follow.
  * <ul>
  *     <li>Annotated method must be {@code public} and {@code static}.</li>
  *     <li>Annotated method must use return type as {@code HttpResponse}.</li>
- *     <li>Annotated method must have 2 parameters. {@code HttpPostRequest} and {@code HttpResponse} respectively.</li>
+ *     <li>Annotated method must have two parameters. {@code HttpPostRequest} and {@code HttpResponse} respectively.</li>
  *     <li>The class holding the annotated method must be annotated with {@code HttpEndpoint}.</li>
  * </ul>
- * When doing the in-method processing it's recommended to return the same {@code HttpResponse} that got as a method parameter with any changes (for
+ * When doing the in-method processing, it's recommended to return the same {@code HttpResponse} that got as a method parameter with any changes (for
  * more info, see {@code HttpResponse} class).
  * <pre>
  *     {@code

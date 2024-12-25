@@ -23,7 +23,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 /**
  * HTTP DELETE request method.
  *
- * @apiNote Since {@code DELETE} request method don't accept content, all request headers beginning with {@code Content-} must be avoided.
+ * @apiNote Since {@code DELETE} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
  * @see DELETE
  * @see #finalizeRequest()
  * @see HttpRequest

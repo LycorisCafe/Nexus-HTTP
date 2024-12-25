@@ -34,7 +34,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 /**
- * Base of the server. The basic request receiving and response sending operations are done by this class. Every receiving connection will have an
+ * Base of the server. This class does the basic request receiving and response sending operations. Every receiving connection will have an
  * instance of this class. Also, instance of this class will be able to handle {@code Long.MAX_VALUE - 1} times of requests in keep-alive connection.
  * Connection related settings can be found at {@code HttpServerConfiguration}.
  *
@@ -45,7 +45,7 @@ import java.util.*;
 public final class RequestConsumer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
 
-    private static final byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
+    public static final byte[] LINE_TERMINATOR = "\r\n".getBytes(StandardCharsets.UTF_8);
     private final RequestProcessor requestProcessor;
 
     private final HttpServerConfiguration serverConfiguration;
@@ -87,7 +87,7 @@ public final class RequestConsumer implements Runnable {
     }
 
     /**
-     * Calculate and return unique request identifier for this socket connection. this method can generate {@code 0} to {@code Long.MAX_VALUE} times
+     * Calculate and return a unique request identifier for this socket connection. This method can generate {@code 0} to {@code Long.MAX_VALUE} times
      * of ids.
      *
      * @return Unique request identifier
@@ -146,7 +146,7 @@ public final class RequestConsumer implements Runnable {
      * line terminator always will {@code \r\n}.
      *
      * @return String, read using socket input stream and converted (charset UTF-8)
-     * @throws IOException Error while reading data from socket input stream
+     * @throws IOException Error while reading data from the socket input stream
      * @see RequestConsumer
      * @since v1.0.0
      */
@@ -156,7 +156,7 @@ public final class RequestConsumer implements Runnable {
         int c = socket.getInputStream().read(terminatePoint, 0, 2);
         if (c != 2) return null;
 
-        while (!Arrays.equals(lineTerminator, terminatePoint)) {
+        while (!Arrays.equals(LINE_TERMINATOR, terminatePoint)) {
             int b = socket.getInputStream().read();
             if (b == -1) return null;
             byteArrayOutputStream.write(terminatePoint[0]);
@@ -217,31 +217,31 @@ public final class RequestConsumer implements Runnable {
     }
 
     /**
-     * Prepare HTTP request to drop the connection. This method is used to error reporting in-API exception occurred. The {@code errorMessage}
+     * Prepare an HTTP response to drop the connection. This method is used to error reporting in-API exception occurred. The {@code exception}
      * settings can be found in {@code HttpServerConfiguration}.
      *
      * @param requestId      Request id bound to the request that throws an exception
      * @param httpStatusCode HTTP status code
-     * @param errorMessage   Detailed error message
+     * @param exception      Detailed exception message
      * @see HttpServerConfiguration#setAddErrorMessageToResponseHeaders(boolean)
      * @see RequestConsumer
      * @since v1.0.0
      */
     public void dropConnection(final long requestId,
                                final HttpStatusCode httpStatusCode,
-                               final String errorMessage,
+                               final String exception,
                                final Logger logger) {
 
-        LogFormatter.log(logger.atDebug(), "Connection drop - RequestId:" + requestId + ", StatusCode:" + httpStatusCode + ", ErrorMessage:" + errorMessage);
+        LogFormatter.log(logger.atDebug(), "Connection drop - RequestId:" + requestId + ", StatusCode:" + httpStatusCode + ", Exception:" + exception);
         var httpResponse = new HttpResponse(requestId, this).setStatusCode(httpStatusCode).setDropConnection(true);
-        if (getHttpServerConfiguration().isAddErrorMessageToResponseHeaders() && errorMessage != null) {
-            httpResponse.setContent(new Content("application/json", "{\"errorMessage\":\"" + errorMessage + "\"}"));
+        if (getHttpServerConfiguration().isAddErrorMessageToResponseHeaders() && exception != null) {
+            httpResponse.setContent(new Content("application/json", "{\"exception\":\"" + exception + "\"}"));
         }
         send(httpResponse);
     }
 
     /**
-     * Base response writer method. Response headers are write to the socket output stream by this method, but content related write operations are
+     * Base response writer method. Response headers are written to the socket output stream by this method, but content related write operations are
      * handled by the {@code Content} class. This method is constructed to support {@code HTTP Pipelining}.
      *
      * @param httpResponse {@code HttpResponse} that should be sent

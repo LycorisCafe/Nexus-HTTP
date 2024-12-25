@@ -21,7 +21,7 @@ import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
 
 /**
- * Static file endpoint model for communicate endpoint data to/from endpoint methods to/from database.
+ * Static file endpoint model for communicate endpoint data to/from endpoint methods to/from the database.
  *
  * @see FileScanner
  * @see ReqMaster
@@ -36,7 +36,7 @@ public final class ReqFile extends ReqMaster {
      * Create instance of {@code ReqFile}.
      *
      * @param location      Static file location as HTTP URI
-     * @param authenticated Is endpoint authenticated?
+     * @param authenticated Is the endpoint authenticated?
      * @param lastModified  Last modified date in HTTP date format
      * @param eTag          Calculated MD5 E-Tag
      * @see ReqFile

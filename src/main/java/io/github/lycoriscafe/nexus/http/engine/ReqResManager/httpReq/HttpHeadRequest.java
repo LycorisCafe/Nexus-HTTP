@@ -23,7 +23,7 @@ import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 /**
  * HTTP HEAD request method.
  *
- * @apiNote Since {@code HEAD} request method don't accept content, all request headers beginning with {@code Content-} must be avoided.
+ * @apiNote Since {@code HEAD} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
  * @see HEAD
  * @see #finalizeRequest()
  * @see HttpRequest

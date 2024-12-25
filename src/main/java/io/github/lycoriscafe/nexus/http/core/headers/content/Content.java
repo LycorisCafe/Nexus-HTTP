@@ -161,7 +161,7 @@ public final class Content {
     }
 
     /**
-     * Get provided content type.
+     * Get the provided content type.
      *
      * @return Provided content type
      * @see Content
@@ -172,7 +172,7 @@ public final class Content {
     }
 
     /**
-     * Set name for content downloading. If this is set, the {@code Content-Disposition: attachment; filename="fileName"} header will present in the
+     * Set the name for content downloading. If this is set, the {@code Content-Disposition: attachment; filename="fileName"} header will present in the
      * request and browsers will pop a download window.
      * <pre>
      *     {@code
@@ -183,7 +183,7 @@ public final class Content {
      *     }
      * </pre>
      *
-     * @param downloadName Content name for downloading process
+     * @param downloadName Content name for the downloading
      * @return Same {@code Content} instance
      * @see Content
      * @since v1.0.0
@@ -270,7 +270,7 @@ public final class Content {
     }
 
     /**
-     * Get content data. This method always return an {@code Object}. API users need to implement their own way to handle data by using the
+     * Get content data. This method always returns an {@code Object}. API users need to implement their own way to handle data by using the
      * {@code Content-Type}.
      *
      * @return Data as {@code Object}
@@ -451,7 +451,7 @@ public final class Content {
          *
          * @param httpServerConfiguration {@code HttpServerConfiguration}
          * @param content                 {@code Content} that need to be processed
-         * @return HTTP content related headers
+         * @return HTTP content-related headers
          * @throws IOException Error while processing content
          * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
          * @see io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration HttpServerConfiguration

@@ -20,7 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
 /**
- * The {@code Bearer} authorization for HTTP. An instance of this class will receive to the server endpoint when client provided the
+ * The {@code Bearer} authorization for HTTP. An instance of this class will receive to the server endpoint when the client provided the
  * {@code Authorization} header with authentication scheme {@code Bearer}. Only authorization header field will be treated as a proper authorization
  * (see rfc6750 - 2).
  * <pre>

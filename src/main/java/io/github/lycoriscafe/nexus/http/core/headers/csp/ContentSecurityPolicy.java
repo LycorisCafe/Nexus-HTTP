@@ -68,7 +68,7 @@ public sealed class ContentSecurityPolicy permits ContentSecurityPolicyReportOnl
     }
 
     /**
-     * Get provided values for CSP directive.
+     * Get provided values for the CSP directive.
      *
      * @return {@code List} of CSP directive values
      * @see CSPDirective

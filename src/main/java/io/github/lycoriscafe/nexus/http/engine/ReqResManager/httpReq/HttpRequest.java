@@ -93,7 +93,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Get unique identifier for this request based on {@code RequestConsumer}. It means when a connection received, the id will begin to cont from 1
+     * Get unique identifier for this request based on {@code RequestConsumer}. It means when a connection is received, the id will begin to cont from 1
      * to Long.MAX_VALUE (if hit, connection reset).
      *
      * @return Unique identifier for this request
@@ -106,7 +106,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Get request method of the incoming HTTP request.
+     * Get the request method of the incoming HTTP request.
      *
      * @return HTTP request method
      * @see HttpRequestMethod
@@ -118,7 +118,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Set endpoint URI of the incoming request.
+     * Set the endpoint URI of the incoming request.
      *
      * @param endpoint Endpoint URI
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
@@ -228,7 +228,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Get CORS come along with the request.
+     * Get CORS to come along with the request.
      *
      * @return CORS
      * @see CORSRequest
@@ -240,7 +240,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Set authorization come along with the request.
+     * Set authorization comes along with the request.
      *
      * @param authorization Authorization
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
@@ -265,8 +265,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Finalize the HTTP request. It means process errors and if no errors found, call the appropriate endpoint methods and vice versa. Child classes
-     * of this class also overrides this method and process some HTTP request method related operations.
+     * Finalize the HTTP request. It means process errors and if no errors are found, calls the appropriate endpoint methods and vice versa. Child classes
+     * of this class also override this method and process some HTTP request-method-related operations.
      *
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see HttpGetRequest#finalizeRequest()

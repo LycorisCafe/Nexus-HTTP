@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import java.util.List;
 
 /**
- * Cross Origin Resource Sharing (CORS) for HTTP responses.
+ * Cross-Origin Resource Sharing (CORS) for HTTP responses.
  * <pre>
  *     {@code
  *     // Example code
@@ -130,7 +130,7 @@ public final class CORSResponse {
     /**
      * Set {@code Access-Control-Allow-Credentials} header.
      *
-     * @param accessControlAllowCredentials Allow credentials header status
+     * @param accessControlAllowCredentials Allow credential header status
      * @return Same {@code CORSResponse} instance
      * @see CORSResponse
      * @since v1.0.0
@@ -207,7 +207,7 @@ public final class CORSResponse {
     /**
      * Process CORS instance to include in HTTP response headers.
      *
-     * @param CORSResponse Instance that need to be processed
+     * @param CORSResponse Instance that needs to be processed
      * @return HTTP headers string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see CORSResponse

@@ -30,7 +30,7 @@ public final class NonDuplicateList<E> extends ArrayList<E> {
      * Check for element presence and if absent add to the {@code ArrayList}.
      *
      * @param e element whose presence in this collection is to be ensured
-     * @return If element added, {@code true} else {@code false}
+     * @return If the element added, {@code true} else {@code false}
      * @see ArrayList#add(Object)
      * @see NonDuplicateList
      * @since v1.0.0

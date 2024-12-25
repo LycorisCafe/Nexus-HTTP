@@ -115,7 +115,7 @@ public final class HttpResponse {
     }
 
     /**
-     * Set HTTP status code for this response. If you don't set this, the default status will {@code 200 OK}.
+     * Set the HTTP status code for this response. If you don't set this, the default status will {@code 200 OK}.
      *
      * @param httpStatusCode HTTP status code
      * @return Same {@code HttpResponse} instance
@@ -200,7 +200,7 @@ public final class HttpResponse {
     }
 
     /**
-     * Set cookies one-by-one.
+     * Set cookie one-by-one.
      *
      * @param cookie {@code Cookie}
      * @return Same {@code HttpResponse} instance
@@ -419,7 +419,7 @@ public final class HttpResponse {
     }
 
     /**
-     * Get content security policy report only(s).
+     * Get the content security policy report only(s).
      *
      * @return {@code List} of {@code ContentSecurityPolicyReportOnly}
      * @see ReportingEndpoint
@@ -646,9 +646,9 @@ public final class HttpResponse {
     }
 
     /**
-     * Get is this response marked as drop connection response.
+     * Get is this response marked as drop connection response?
      *
-     * @return Is drop marked?
+     * @return Is the drop marked?
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see RequestConsumer#send(HttpResponse)
      * @see HttpResponse
@@ -659,7 +659,7 @@ public final class HttpResponse {
     }
 
     /**
-     * Finalize the response. It means assemble status code, header fields and process content related operations.
+     * Finalize the response. It means assembling status code, header fields and process content-related operations.
      *
      * @return Processed HTTP headers string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.

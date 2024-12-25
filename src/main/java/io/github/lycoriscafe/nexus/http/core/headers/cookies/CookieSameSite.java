@@ -36,7 +36,7 @@ public enum CookieSameSite {
     STRICT("Strict"),
     /**
      * {@code Lax} is similar, except the browser also sends the cookie when the user navigates to the cookie's origin site (even if the user is
-     * coming from a different site). This is useful for cookies affecting the display of a site — for example you might have partner product
+     * coming from a different site). This is useful for cookies affecting the display of a site — for example, you might have partner product
      * information along with an affiliate link on your website. When that link is followed to the partner website, they might want to set a cookie
      * stating that the affiliate link was followed, which displays a reward banner and provides a discount if the product is purchased.
      *

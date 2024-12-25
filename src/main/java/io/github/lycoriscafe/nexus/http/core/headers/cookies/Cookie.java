@@ -64,7 +64,7 @@ public final class Cookie {
     }
 
     /**
-     * Get name of the cookie.
+     * Get the name of the cookie.
      *
      * @return Name of the cookie
      * @see #Cookie(String, String)
@@ -88,7 +88,7 @@ public final class Cookie {
     }
 
     /**
-     * Set {@code Expires} directive value. The argument pass to this method should be HTTP date formatted string.
+     * Set {@code Expires} directive value. The argument passed to this method should be HTTP date formatted string.
      *
      * @param expires HTTP date formatted string
      * @return Same {@code Cookie} instance
@@ -189,7 +189,7 @@ public final class Cookie {
     }
 
     /**
-     * Set {@code Domain} directive velue.
+     * Set {@code Domain} directive value.
      *
      * @param domain Directive value
      * @return Same {@code Cookie} instance
@@ -267,7 +267,7 @@ public final class Cookie {
     }
 
     /**
-     * Set cookie name prefix.
+     * Set the cookie name prefix.
      *
      * @param prefix Name prefix
      * @return Same {@code Cookie} instance

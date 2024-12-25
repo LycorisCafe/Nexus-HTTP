@@ -52,7 +52,7 @@ public final class Database {
      *
      * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
      * @throws SQLException Error while establishing the database connection
-     * @throws IOException  Error while writing database to disk
+     * @throws IOException  Error while writing the database to disk
      * @see Database
      * @since v1.0.0
      */
@@ -142,9 +142,9 @@ public final class Database {
     /**
      * Add endpoint data to the database.
      *
-     * @param model {@code ReqMaster} or it's child instance
+     * @param model {@code ReqMaster} or its child instance
      * @throws SQLException     Error while writing data to the database
-     * @throws ScannerException More than 1 endpoint with the same URi found error
+     * @throws ScannerException More than one endpoint with the same URi found error
      * @see ReqMaster
      * @see Database
      * @since v1.0.0

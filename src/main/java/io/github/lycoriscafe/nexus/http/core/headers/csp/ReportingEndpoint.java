@@ -81,7 +81,7 @@ public final class ReportingEndpoint {
     }
 
     /**
-     * Process provided {@code List} of {@code ReportingEndpoint} as a HTTP header, {@code Reporting-Endpoints}.
+     * Process provided {@code List} of {@code ReportingEndpoint} as an HTTP header, {@code Reporting-Endpoints}.
      *
      * @param reportingEndpoints {@code List} of {@code ReportingEndpoint}
      * @return Processed {@code Reporting-Endpoints} HTTP header string

@@ -42,7 +42,7 @@ public final class HttpsServer extends HttpServer {
     private final HttpsServerConfiguration serverConfiguration = (HttpsServerConfiguration) super.serverConfiguration;
 
     /**
-     * Create instance for an HTTP server.
+     * Create an instance for an HTTP server.
      *
      * @param httpsServerConfiguration {@code HttpsServerConfiguration} instance
      * @throws SQLException     Error while initializing database connection

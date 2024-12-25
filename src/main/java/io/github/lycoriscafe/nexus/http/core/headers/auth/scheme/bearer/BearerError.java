@@ -44,7 +44,7 @@ public enum BearerError {
     INVALID_TOKEN("invalid_token"),
     /**
      * The request requires higher privileges than provided by the access token. The resource server SHOULD respond with the HTTP 403 (Forbidden)
-     * status code and MAY include the "scope" attribute with the scope necessary to access the protected resource.
+     * status code, and MAY include the "scope" attribute with the scope necessary to access the protected resource.
      *
      * @see BearerError
      * @since v1.0.0
@@ -58,9 +58,9 @@ public enum BearerError {
     }
 
     /**
-     * Get the target 'BearerError' value to set in header.
+     * Get the target 'BearerError' value to set in the header.
      *
-     * @return 'BearerError' value to set in header
+     * @return 'BearerError' value to set in the header
      * @see BearerError
      * @since v1.0.0
      */

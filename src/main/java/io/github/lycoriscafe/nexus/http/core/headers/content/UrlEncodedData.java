@@ -59,7 +59,7 @@ public final class UrlEncodedData extends HashMap<String, String> {
      * @param chunked         {@code Transfer-Encoding} chunked?
      * @param gzipped         {@code Content-Encoding} gzipped?
      * @return New instance of {@code Content}
-     * @throws IOException Error while reading data from socket input stream
+     * @throws IOException Error while reading data from the socket input stream
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
      * @see RequestConsumer

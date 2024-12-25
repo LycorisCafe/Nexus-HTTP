@@ -41,7 +41,7 @@ import java.util.Base64;
  */
 public final class FileScanner {
     /**
-     * Check for errors for static files directory and pass it to scan method.
+     * Check for errors for static files directory and pass it to the scan method.
      *
      * @param serverConfiguration {@code HttpServerConfiguration} instance bound to the sever
      * @param database            {@code Database} instance bound to the server

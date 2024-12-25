@@ -20,7 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 
 /**
- * Parent model for communicate endpoint data to/from endpoint methods to/from database.
+ * Parent model for communicate endpoint data to/from endpoint methods to/from the database.
  *
  * @see ReqEndpoint
  * @see ReqFile
@@ -37,7 +37,7 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
      *
      * @param requestEndpoint Endpoint URI
      * @param reqMethod       HTTP request method
-     * @param authenticated   Is endpoint authenticated?
+     * @param authenticated   Is the endpoint authenticated?
      * @see HttpRequestMethod
      * @see ReqMaster
      * @since v1.0.0
@@ -73,7 +73,7 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     }
 
     /**
-     * Get endpoint authenticated status.
+     * Get endpoint-authenticated status.
      *
      * @return Endpoint authenticated status
      * @see ReqMaster
@@ -84,7 +84,7 @@ public sealed class ReqMaster permits ReqEndpoint, ReqFile {
     }
 
     /**
-     * Process endpoint URI. Basically, rebuild the URI by removing unnecessary {@code /}.
+     * Process endpoint URI. Rebuild the URI by removing unnecessary {@code /}.
      *
      * @param requestEndpoint Endpoint URI
      * @return Reconstructed endpoint URI

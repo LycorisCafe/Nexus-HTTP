@@ -23,7 +23,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 
 /**
- * The 'Basic' authorization for HTTP. An instance of this class will receive to the server endpoint when client provided the 'Authorization' header
+ * The 'Basic' authorization for HTTP. An instance of this class will receive to the server endpoint when a client provides the 'Authorization' header
  * with authentication scheme 'Basic'. The username and password will decode from Base64 to cleartext (charset UTF-8).
  * <pre>
  *     {@code

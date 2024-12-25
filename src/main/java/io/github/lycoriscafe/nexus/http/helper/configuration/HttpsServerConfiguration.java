@@ -37,8 +37,8 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
     /**
      * Create an instance of {@code HttpServerConfiguration}.
      *
-     * @param basePackage   Package that need to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
-     * @param tempDirectory Temporary directory location for in-API server tasks. It must be seperated directories if you implement more than one
+     * @param basePackage   Package that needs to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
+     * @param tempDirectory Temporary directory location for in-API server tasks. It must be separated directories if you implement more than one
      *                      server. If you didn't specify the {@code tlsVersions}, {@code TLSv1.3} will be used.
      * @apiNote <pre>
      * {@code

@@ -60,7 +60,7 @@ public final class MultipartFormData {
     private byte[] data;
 
     /**
-     * Get name of the form-data part.
+     * Get the name of the form-data part.
      *
      * @return Name of the form-data part
      * @see MultipartFormData
@@ -71,7 +71,7 @@ public final class MultipartFormData {
     }
 
     /**
-     * Set name of the form-data part.
+     * Set the name of the form-data part.
      *
      * @param name Name of the form-data part
      * @see MultipartFormData
@@ -93,7 +93,7 @@ public final class MultipartFormData {
     }
 
     /**
-     * Set file-name of the form data part.
+     * Set the file-name of the form data part.
      *
      * @param fileName File-name of the form data part
      * @see MultipartFormData
@@ -104,7 +104,7 @@ public final class MultipartFormData {
     }
 
     /**
-     * Get content-type of the form data part. This can be null.
+     * Get the content-type of the form data part. This can be null.
      *
      * @return Content-type of the form data part
      * @see MultipartFormData
@@ -115,7 +115,7 @@ public final class MultipartFormData {
     }
 
     /**
-     * Set content-type of the form data part.
+     * Set the content-type of the form data part.
      *
      * @param contentType Content-type of the form data part
      * @see MultipartFormData
@@ -162,7 +162,7 @@ public final class MultipartFormData {
     }
 
     /**
-     * Set content of the form data part.
+     * Set the content of the form data part.
      *
      * @param data Content of the form data part
      * @see MultipartFormData
@@ -182,7 +182,7 @@ public final class MultipartFormData {
      * @param chunked         {@code Transfer-Encoding} chunked?
      * @param gzipped         {@code Content-Encoding} gzipped?
      * @return New instance of {@code Content}
-     * @throws IOException Error while reading data from socket input stream
+     * @throws IOException Error while reading data from the socket input stream
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
      * @see RequestConsumer
@@ -289,6 +289,16 @@ public final class MultipartFormData {
         requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "Invalid form segment", logger);
     }
 
+    /**
+     * Read line of bytes into a {@code ByteArrayOutputStream} and return. The line terminator is imported from the {@code RequestConsumer}.
+     *
+     * @param inputStream Data source
+     * @return If completed a line of data, instance of {@code ByteArrayInputStream}. Else, null.
+     * @throws IOException Error while reading data from the input stream
+     * @see RequestConsumer
+     * @see MultipartFormData
+     * @since v1.0.0
+     */
     private static ByteArrayOutputStream readLine(final InputStream inputStream) throws IOException {
         byte[] terminatePoint = new byte[RequestConsumer.LINE_TERMINATOR.length];
         var byteArrayOutputStream = new ByteArrayOutputStream();

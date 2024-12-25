@@ -24,7 +24,7 @@ import java.lang.annotation.*;
  * Mark class as an HTTP endpoints holding class.
  * <pre>
  *     {@code
- *     @HttpEndpoint
+ *     @HttpEndpoint("/")
  *     public class HttpEndpointsClass {
  *          @GET("/sampleGetEndpoint")
  *          public static HttpResponse sampleGetEndpoint(HttpGetRequest request,
@@ -63,5 +63,5 @@ public @interface HttpEndpoint {
      * @see HttpEndpoint
      * @since v1.0.0
      */
-    String value() default "";
+    String value();
 }
