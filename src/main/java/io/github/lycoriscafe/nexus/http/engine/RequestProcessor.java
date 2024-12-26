@@ -116,7 +116,7 @@ public final class RequestProcessor {
                 case "authorization" -> httpRequest.setAuthorization(Authorization.processIncomingAuth(parts[1]));
                 case "origin", "access-control-request-method", "access-control-request-headers" ->
                         corsRequest = CORSRequest.processIncomingCors(corsRequest, parts);
-                default -> httpRequest.setHeader(Header.parseIncomingHeader(parts));
+                default -> httpRequest.addHeader(Header.parseIncomingHeader(parts));
             }
         }
         httpRequest.setCorsRequest(corsRequest);

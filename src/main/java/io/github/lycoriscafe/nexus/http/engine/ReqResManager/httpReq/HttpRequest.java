@@ -172,7 +172,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
      * @see HttpRequest
      * @since v1.0.0
      */
-    public void setHeader(final Header header) {
+    public void addHeader(final Header header) {
         if (headers == null) headers = new NonDuplicateList<>();
         headers.add(header);
     }
