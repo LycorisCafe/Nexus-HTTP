@@ -45,7 +45,7 @@ import java.util.*;
 public final class RequestConsumer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(RequestConsumer.class);
 
-    public static final byte[] LINE_TERMINATOR = "\r\n".getBytes(StandardCharsets.UTF_8);
+    private static final byte[] lineTerminator = "\r\n".getBytes(StandardCharsets.UTF_8);
     private final RequestProcessor requestProcessor;
 
     private final HttpServerConfiguration serverConfiguration;
@@ -156,7 +156,7 @@ public final class RequestConsumer implements Runnable {
         int c = socket.getInputStream().read(terminatePoint, 0, 2);
         if (c != 2) return null;
 
-        while (!Arrays.equals(LINE_TERMINATOR, terminatePoint)) {
+        while (!Arrays.equals(lineTerminator, terminatePoint)) {
             int b = socket.getInputStream().read();
             if (b == -1) return null;
             byteArrayOutputStream.write(terminatePoint[0]);
