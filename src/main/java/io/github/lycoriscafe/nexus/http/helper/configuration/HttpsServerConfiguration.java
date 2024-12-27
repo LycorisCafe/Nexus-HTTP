@@ -39,7 +39,12 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      *
      * @param basePackage   Package that needs to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
      * @param tempDirectory Temporary directory location for in-API server tasks. It must be separated directories if you implement more than one
-     *                      server. If you didn't specify the {@code tlsVersions}, {@code TLSv1.3} will be used.
+     *                      server.
+     * @param trustStoreName Trust store name (can pass the keystore)
+     * @param trustStorePassword Trust store password
+     * @param keyStoreName Key store name
+     * @param keyStorePassword Key store password
+     * @param tlsVersions Supported TLS versions. If you didn't specify the {@code tlsVersions}, {@code TLSv1.3} will be used.
      * @apiNote <pre>
      * {@code
      * // Example endpoint scan scenario

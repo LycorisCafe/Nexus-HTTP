@@ -532,7 +532,6 @@ public final class Content {
                 case InputStream stream -> stream;
                 default -> throw new IllegalStateException("Unexpected value: " + content.getData());
             }) {
-
                 int c;
                 byte[] buffer = new byte[requestConsumer.getHttpServerConfiguration().getMaxChunkSize()];
                 while ((c = inputStream.read(buffer)) != -1) {
