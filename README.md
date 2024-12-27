@@ -8,7 +8,7 @@ server environment in Java. We aim to make this as lightweight, easy to use, and
 
 ---
 
-## Contribute, Issue report and Discussions
+## Contribute, Issue report, and Discussions
 
 - Contributions are warmly welcome in [here!](https://github.com/lycoriscafe/nexus-http/pulls)
 - Issue reports are accepted in [here!](https://github.com/lycoriscafe/nexus-http/issues)

@@ -93,8 +93,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Get unique identifier for this request based on {@code RequestConsumer}. It means when a connection is received, the id will begin to cont from 1
-     * to Long.MAX_VALUE (if hit, connection reset).
+     * Get unique identifier for this request based on {@code RequestConsumer}. It means when a connection is received, the id will begin to cont from
+     * 1 to Long.MAX_VALUE (if hit, connection reset).
      *
      * @return Unique identifier for this request
      * @see RequestConsumer
@@ -265,8 +265,8 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
     }
 
     /**
-     * Finalize the HTTP request. It means process errors and if no errors are found, calls the appropriate endpoint methods and vice versa. Child classes
-     * of this class also override this method and process some HTTP request-method-related operations.
+     * Finalize the HTTP request. It means process errors and if no errors are found, calls the appropriate endpoint methods and vice versa. Child
+     * classes of this class also override this method and process some HTTP request-method-related operations.
      *
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see HttpGetRequest#finalizeRequest()
@@ -325,7 +325,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     if (response instanceof HttpResponse httpResponse) {
                         getRequestConsumer().send(httpResponse);
                     } else {
-                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid http response provided", logger);
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "Invalid http response provided", logger);
                     }
                 }
                 case ReqFile reqFile -> {
@@ -334,7 +334,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 default -> throw new IllegalStateException("Unexpected value: " + endpointDetails);
             }
         } catch (SQLException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "error while processing request/response", logger);
+            getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "Error while processing request/response", logger);
             throw new RuntimeException(e);
         }
     }

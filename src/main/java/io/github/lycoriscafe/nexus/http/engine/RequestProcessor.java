@@ -107,6 +107,7 @@ public final class RequestProcessor {
             }
         }
 
+        boolean hostAvailable = false;
         CORSRequest corsRequest = null;
         for (String header : headers) {
             String[] parts = header.split(":", 2);
@@ -116,10 +117,18 @@ public final class RequestProcessor {
                 case "authorization" -> httpRequest.setAuthorization(Authorization.processIncomingAuth(parts[1]));
                 case "origin", "access-control-request-method", "access-control-request-headers" ->
                         corsRequest = CORSRequest.processIncomingCors(corsRequest, parts);
-                default -> httpRequest.addHeader(Header.parseIncomingHeader(parts));
+                default -> {
+                    if (headerName.equals("host")) hostAvailable = true;
+                    httpRequest.addHeader(Header.parseIncomingHeader(parts));
+                }
             }
         }
         httpRequest.setCorsRequest(corsRequest);
+
+        if (!hostAvailable) {
+            requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "Host header not available", logger);
+            return;
+        }
 
         LogFormatter.log(logger.atTrace(), "Finalizing HTTP request - RequestId:" + httpRequest.getRequestId() + ", RequestMethod:" +
                 httpRequest.getRequestMethod() + ", RequestEndpoint:" + httpRequest.getEndpoint());
