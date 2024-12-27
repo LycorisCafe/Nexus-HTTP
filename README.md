@@ -33,4 +33,4 @@ https://www.oracle.com/java/technologies/downloads/)
 
 ---
 
-*Copyright 2025 Lycoris Cafe*
+*Copyright 2025 Lycoris Café*
