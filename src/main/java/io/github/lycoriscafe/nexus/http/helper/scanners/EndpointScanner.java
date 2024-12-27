@@ -20,6 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authenticated;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEndpoint;
+import io.github.lycoriscafe.nexus.http.core.headers.content.ExpectContent;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
@@ -79,6 +80,9 @@ public final class EndpointScanner {
                 HttpRequestMethod reqMethod;
                 switch (method) {
                     case Method m when m.isAnnotationPresent(GET.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        if (m.isAnnotationPresent(ExpectContent.class)) {
+                            throw new ScannerException("@ExpectContent on GET endpoint - " + clazz.getName() + "#" + method.getName());
+                        }
                         endpointValue = m.getAnnotation(GET.class).value();
                         reqMethod = HttpRequestMethod.GET;
                     }
@@ -91,6 +95,9 @@ public final class EndpointScanner {
                         reqMethod = HttpRequestMethod.PUT;
                     }
                     case Method m when m.isAnnotationPresent(DELETE.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        if (m.isAnnotationPresent(ExpectContent.class)) {
+                            throw new ScannerException("@ExpectContent on DELETE endpoint - " + clazz.getName() + "#" + method.getName());
+                        }
                         endpointValue = m.getAnnotation(DELETE.class).value();
                         reqMethod = HttpRequestMethod.DELETE;
                     }
@@ -99,8 +106,18 @@ public final class EndpointScanner {
                         reqMethod = HttpRequestMethod.PATCH;
                     }
                     case Method m when m.isAnnotationPresent(HEAD.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        if (m.isAnnotationPresent(ExpectContent.class)) {
+                            throw new ScannerException("@ExpectContent on HEAD endpoint - " + clazz.getName() + "#" + method.getName());
+                        }
                         endpointValue = m.getAnnotation(HEAD.class).value();
                         reqMethod = HttpRequestMethod.HEAD;
+                    }
+                    case Method m when m.isAnnotationPresent(OPTIONS.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        if (m.isAnnotationPresent(ExpectContent.class)) {
+                            throw new ScannerException("@ExpectContent on OPTIONS endpoint - " + clazz.getName() + "#" + method.getName());
+                        }
+                        endpointValue = m.getAnnotation(OPTIONS.class).value();
+                        reqMethod = HttpRequestMethod.OPTIONS;
                     }
                     case Method m when m.isAnnotationPresent(BearerEndpoint.class) && Modifier.isStatic(m.getModifiers()) -> {
                         endpointValue = m.getAnnotation(BearerEndpoint.class).value().value();

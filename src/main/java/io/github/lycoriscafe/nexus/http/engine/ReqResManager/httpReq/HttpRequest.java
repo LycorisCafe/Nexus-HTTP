@@ -20,6 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
+import io.github.lycoriscafe.nexus.http.core.headers.content.ExpectContent;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -319,6 +321,33 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                         getRequestConsumer().send(new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAUTHORIZED)
                                 .setAuthentications(getRequestConsumer().getHttpServerConfiguration().getDefaultAuthentications()));
                         return;
+                    }
+
+                    if (reqEndpoint.getMethod().isAnnotationPresent(ExpectContent.class)) {
+                        HttpPostRequest tempCast = (HttpPostRequest) this;
+                        switch (reqEndpoint.getMethod().getAnnotation(ExpectContent.class).value().toLowerCase(Locale.US)) {
+                            case String s when s.equals("any") -> {
+                                if (tempCast.getContent() == null) {
+                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                            "Expect content, but not sent", logger);
+                                    return;
+                                }
+                            }
+                            case String s when s.equals("none") -> {
+                                if (tempCast.getContent() != null) {
+                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                            "Didn't expect content, but sent", logger);
+                                    return;
+                                }
+                            }
+                            case String s -> {
+                                if (tempCast.getContent() == null || !tempCast.getContent().getContentType().equals(s)) {
+                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                            "Expect content (" + s + "), but not sent", logger);
+                                    return;
+                                }
+                            }
+                        }
                     }
 
                     Object response = reqEndpoint.getMethod().invoke(null, this, new HttpResponse(getRequestId(), getRequestConsumer()));
