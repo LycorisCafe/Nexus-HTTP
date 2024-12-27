@@ -329,21 +329,21 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                             case String s when s.equals("any") -> {
                                 if (tempCast.getContent() == null) {
                                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Expect content, but not sent", logger);
+                                            "Expect content, but not received", logger);
                                     return;
                                 }
                             }
                             case String s when s.equals("none") -> {
                                 if (tempCast.getContent() != null) {
                                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Didn't expect content, but sent", logger);
+                                            "Didn't expect content, but received", logger);
                                     return;
                                 }
                             }
                             case String s -> {
                                 if (tempCast.getContent() == null || !tempCast.getContent().getContentType().equals(s)) {
                                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Expect content (" + s + "), but not sent", logger);
+                                            "Expect content (" + s + "), but not received", logger);
                                     return;
                                 }
                             }
