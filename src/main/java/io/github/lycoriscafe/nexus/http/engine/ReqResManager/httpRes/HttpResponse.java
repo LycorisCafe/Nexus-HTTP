@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Lycoris Cafe
+ * Copyright 2024 Lycoris Café
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
