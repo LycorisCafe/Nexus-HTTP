@@ -18,7 +18,6 @@ package io.github.lycoriscafe.nexus.http.helper;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenSuccessResponse;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
@@ -244,15 +243,14 @@ public final class Database {
                         } else {
                             switch (authScheme) {
                                 case BASIC -> {}
-                                case BEARER -> {
-                                    requestParamType = BearerTokenRequest.class;
-                                    responseParamType = BearerTokenSuccessResponse.class;
-                                }
+                                case BEARER -> requestParamType = BearerTokenRequest.class;
                             }
                         }
 
                         endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
-                                masterResult.getBoolean(4), clazz, clazz.getMethod(subResult.getString(3), requestParamType, responseParamType),
+                                masterResult.getBoolean(4), clazz,
+                                responseParamType == null ? clazz.getMethod(subResult.getString(3), requestParamType) :
+                                        clazz.getMethod(subResult.getString(3), requestParamType, responseParamType),
                                 subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
                                 subResult.getString(5), authScheme);
                     } finally {

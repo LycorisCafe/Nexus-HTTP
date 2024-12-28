@@ -104,8 +104,7 @@ public final class BearerTokenRequest {
         params = (UrlEncodedData) request.getContent().getData();
 
         if (!params.containsKey("grant_type")) {
-            request.getRequestConsumer()
-                    .dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing", logger);
+            request.getRequestConsumer().dropConnection(request.getRequestId(), HttpStatusCode.BAD_REQUEST, "grant_type missing", logger);
             return null;
         }
 
