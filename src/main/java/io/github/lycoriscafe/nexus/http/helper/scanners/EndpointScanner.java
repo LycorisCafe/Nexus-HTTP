@@ -23,8 +23,6 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerEn
 import io.github.lycoriscafe.nexus.http.core.headers.content.ExpectContent;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.*;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
@@ -134,39 +132,8 @@ public final class EndpointScanner {
                     }
                 }
 
-                String statusAnnotationValue = null;
-                HttpStatusCode statusAnnotation = switch (method) {
-                    case Method m when m.isAnnotationPresent(Gone.class) -> HttpStatusCode.GONE;
-                    case Method m when m.isAnnotationPresent(MovedPermanently.class) -> {
-                        statusAnnotationValue = m.getAnnotation(MovedPermanently.class).value();
-                        yield HttpStatusCode.MOVED_PERMANENTLY;
-                    }
-                    case Method m when m.isAnnotationPresent(Found.class) -> {
-                        statusAnnotationValue = m.getAnnotation(Found.class).value();
-                        yield HttpStatusCode.FOUND;
-                    }
-                    case Method m when m.isAnnotationPresent(PermanentRedirect.class) -> {
-                        statusAnnotationValue = m.getAnnotation(PermanentRedirect.class).value();
-                        yield HttpStatusCode.PERMANENT_REDIRECT;
-                    }
-                    case Method m when m.isAnnotationPresent(TemporaryRedirect.class) -> {
-                        statusAnnotationValue = m.getAnnotation(TemporaryRedirect.class).value();
-                        yield HttpStatusCode.TEMPORARY_REDIRECT;
-                    }
-                    case Method m when m.isAnnotationPresent(UnavailableForLegalReasons.class) -> {
-                        statusAnnotationValue = m.getAnnotation(UnavailableForLegalReasons.class).value();
-                        yield HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS;
-                    }
-                    case Method m when m.isAnnotationPresent(SeeOther.class) -> {
-                        statusAnnotationValue = m.getAnnotation(SeeOther.class).value();
-                        yield HttpStatusCode.SEE_OTHER;
-                    }
-                    default -> null;
-                };
-
                 String endpointUri = serverConfiguration.getUrlPrefix() + "/" + clazz.getAnnotation(HttpEndpoint.class).value() + "/" + endpointValue;
-                database.addEndpointData(new ReqEndpoint(endpointUri, reqMethod, authenticated, clazz, method, statusAnnotation, statusAnnotationValue,
-                        authSchemeAnnotation));
+                database.addEndpointData(new ReqEndpoint(endpointUri, reqMethod, authenticated, clazz, method, authSchemeAnnotation));
                 LogFormatter.log(logger.atDebug(), "Endpoint found (" + reqMethod + ") @ " + clazz.getName() + "#" + method.getName());
             }
         }
