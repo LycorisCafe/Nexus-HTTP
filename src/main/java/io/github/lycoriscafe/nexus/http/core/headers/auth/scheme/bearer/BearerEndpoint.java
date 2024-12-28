@@ -26,21 +26,21 @@ import java.lang.annotation.*;
  * The endpoint annotated with this,
  * <ul>
  *     <li>must {@code public} and {@code static}</li>
- *     <li>must return {@code BearerTokenResponse} as <b>return</b> value</li>
+ *     <li>must return {@code BearerTokenSuccessResponse} as <b>return</b> value</li>
  *     <li>must accept {@code BearerTokenRequest} as <b>only parameter</b></li>
  * </ul>
  * <pre>
  *     {@code
  *     @BearerEndpoint(@POST("/sampleBearerTokenEndpoint"))
- *     public static BearerTokenResponse sampleBearerTokenEndpoint(BearerTokenRequest request,
- *                                                                 BearerTokenResponse response) {
+ *     public static BearerTokenSuccessResponse sampleBearerTokenEndpoint(BearerTokenRequest request,
+ *                                                                 BearerTokenSuccessResponse response) {
  *         // ...
  *         return response;
  *     }
  *     }
  * </pre>
  *
- * @see BearerTokenResponse
+ * @see BearerTokenSuccessResponse
  * @see BearerTokenRequest
  * @see POST
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>

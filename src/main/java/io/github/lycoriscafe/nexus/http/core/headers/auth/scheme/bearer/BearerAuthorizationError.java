@@ -16,21 +16,23 @@
 
 package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
+import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
+
 /**
  * Possible errors for 'Brear' authentication request.
  *
  * @see BearerAuthentication
- * @see io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication Authentication
+ * @see Authentication
  * @see <a href="https://datatracker.ietf.org/doc/rfc6750">The OAuth 2.0 Authorization Framework: Bearer Token Usage (rfc6750)</a>
  * @since v1.0.0
  */
-public enum BearerError {
+public enum BearerAuthorizationError {
     /**
      * The request is missing a required parameter, includes an unsupported parameter or parameter value, repeats the same parameter, uses more than
      * one method for including an access token, or is otherwise malformed. The resource server SHOULD respond with the HTTP 400 (Bad Request) status
      * code.
      *
-     * @see BearerError
+     * @see BearerAuthorizationError
      * @since v1.0.0
      */
     INVALID_REQUEST("invalid_request"),
@@ -38,7 +40,7 @@ public enum BearerError {
      * The access token provided is expired, revoked, malformed, or invalid for other reasons. The resource SHOULD respond with the HTTP 401
      * (Unauthorized) status code. The client MAY request a new access token and retry the protected resource request.
      *
-     * @see BearerError
+     * @see BearerAuthorizationError
      * @since v1.0.0
      */
     INVALID_TOKEN("invalid_token"),
@@ -46,22 +48,22 @@ public enum BearerError {
      * The request requires higher privileges than provided by the access token. The resource server SHOULD respond with the HTTP 403 (Forbidden)
      * status code, and MAY include the "scope" attribute with the scope necessary to access the protected resource.
      *
-     * @see BearerError
+     * @see BearerAuthorizationError
      * @since v1.0.0
      */
     INSUFFICIENT_SCOPE("insufficient_scope");
 
     private final String value;
 
-    BearerError(String value) {
+    BearerAuthorizationError(String value) {
         this.value = value;
     }
 
     /**
-     * Get the target 'BearerError' value to set in the header.
+     * Get the target 'BearerAuthorizationError' value to set in the header.
      *
-     * @return 'BearerError' value to set in the header
-     * @see BearerError
+     * @return 'BearerAuthorizationError' value to set in the header
+     * @see BearerAuthorizationError
      * @since v1.0.0
      */
     public String getValue() {

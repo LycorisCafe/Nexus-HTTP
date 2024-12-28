@@ -20,6 +20,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenSuccessResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.content.ExpectContent;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
@@ -424,9 +425,9 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                 BearerTokenRequest bearerTokenRequest = BearerTokenRequest.parse(request);
                 if (bearerTokenRequest == null) return;
 
-                Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest, new BearerTokenResponse());
-                if ((response instanceof BearerTokenResponse bearerTokenResponse) && bearerTokenResponse.getBearerToken() != null) {
-                    getRequestConsumer().send(BearerTokenResponse.parse(bearerTokenResponse, getRequestId(), getRequestConsumer()));
+                Object response = reqEndpoint.getMethod().invoke(null, bearerTokenRequest);
+                if (response instanceof BearerTokenResponse bearerTokenResponse) {
+                    getRequestConsumer().send(bearerTokenResponse.parse(getRequestId(), getRequestConsumer()));
                 } else {
                     getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.INTERNAL_SERVER_ERROR, "invalid bearer response provided", logger);
                 }

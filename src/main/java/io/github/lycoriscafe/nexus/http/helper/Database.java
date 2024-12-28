@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.helper;
 
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
+import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenSuccessResponse;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
@@ -246,7 +246,7 @@ public final class Database {
                                 case BASIC -> {}
                                 case BEARER -> {
                                     requestParamType = BearerTokenRequest.class;
-                                    responseParamType = BearerTokenResponse.class;
+                                    responseParamType = BearerTokenSuccessResponse.class;
                                 }
                             }
                         }

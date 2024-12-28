@@ -19,6 +19,8 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 
+import java.util.Objects;
+
 /**
  * The {@code Bearer} authentication for HTTP. An instance of this class will send it to the clients when they asked to access to a protected resource
  * without specifying {@code Authorization} header.
@@ -39,8 +41,8 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
  *      {@code
  *      // Example codes
  *      var bearerAuth1 = new BearerAuthentication("specifiedRealm");
- *      var bearerAuth2 = new BearerAuthentication(BearerError.INVALID_TOKEN);
- *      var bearerAuth3 = new BearerAuthentication(BearerError.INVALID_TOKEN)
+ *      var bearerAuth2 = new BearerAuthentication(BearerAuthorizationError.INVALID_TOKEN);
+ *      var bearerAuth3 = new BearerAuthentication(BearerAuthorizationError.INVALID_TOKEN)
  *          .setErrorDescription("The access token expired");
  *      }
  * </pre>
@@ -52,7 +54,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
  * @since v1.0.0
  */
 public final class BearerAuthentication extends Authentication {
-    private BearerError error;
+    private BearerAuthorizationError error;
     private String realm;
     private String scope;
     private String errorDescription;
@@ -62,20 +64,20 @@ public final class BearerAuthentication extends Authentication {
      * Create an instance of {@code BearerAuthentication} with specifying authentication error.
      *
      * @param error Authentication error
-     * @see BearerError
+     * @see BearerAuthorizationError
      * @see #BearerAuthentication(String)
      * @see BearerAuthentication
      * @since v1.0.0
      */
-    public BearerAuthentication(final BearerError error) {
-        this.error = error;
+    public BearerAuthentication(final BearerAuthorizationError error) {
+        this.error = Objects.requireNonNull(error);
     }
 
     /**
      * Create an instance of {@code BearerAuthentication} with specifying realm.
      *
      * @param realm Realm for the target resource
-     * @see #BearerAuthentication(BearerError)
+     * @see #BearerAuthentication(BearerAuthorizationError)
      * @see BearerAuthentication
      * @since v1.0.0
      */
@@ -87,12 +89,12 @@ public final class BearerAuthentication extends Authentication {
      * Get authentication error of the provided instance.
      *
      * @return Specified authentication error
-     * @see #setError(BearerError)
-     * @see BearerError
+     * @see #setError(BearerAuthorizationError)
+     * @see BearerAuthorizationError
      * @see BearerAuthentication
      * @since v1.0.0
      */
-    public BearerError getError() {
+    public BearerAuthorizationError getError() {
         return error;
     }
 
@@ -102,12 +104,12 @@ public final class BearerAuthentication extends Authentication {
      * @param error Authentication error
      * @return Same {@code BearerAuthentication} instance
      * @apiNote if you specify the authentication error with the constructor, reusing this method will change the provided values.
-     * @see BearerError
+     * @see BearerAuthorizationError
      * @see BearerAuthentication
-     * @see #BearerAuthentication(BearerError)
+     * @see #BearerAuthentication(BearerAuthorizationError)
      * @since v1.0.0
      */
-    public BearerAuthentication setError(final BearerError error) {
+    public BearerAuthentication setError(final BearerAuthorizationError error) {
         this.error = error;
         return this;
     }
