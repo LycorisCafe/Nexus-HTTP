@@ -390,17 +390,18 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                     new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.GONE);
             case Method m when m.isAnnotationPresent(MovedPermanently.class) ->
                     new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.MOVED_PERMANENTLY)
-                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+                            .addHeader(new Header("Location", m.getAnnotation(MovedPermanently.class).value()));
             case Method m when m.isAnnotationPresent(PermanentRedirect.class) ->
                     new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.PERMANENT_REDIRECT)
-                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+                            .addHeader(new Header("Location", m.getAnnotation(PermanentRedirect.class).value()));
             case Method m when m.isAnnotationPresent(TemporaryRedirect.class) ->
                     new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.TEMPORARY_REDIRECT)
-                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+                            .addHeader(new Header("Location", m.getAnnotation(TemporaryRedirect.class).value()));
             case Method m when m.isAnnotationPresent(UnavailableForLegalReasons.class) -> {
                 var tempResponse = new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
-                if (!m.getAnnotation(Found.class).value().isEmpty()) {
-                    tempResponse.addHeader(new Header("Link", "<" + m.getAnnotation(Found.class).value() + ">; rel=\"blocked-by\""));
+                if (!m.getAnnotation(UnavailableForLegalReasons.class).value().isEmpty()) {
+                    tempResponse.addHeader(new Header("Link", "<" + m.getAnnotation(UnavailableForLegalReasons.class)
+                            .value() + ">; rel=\"blocked-by\""));
                 }
                 yield tempResponse;
             }
