@@ -117,8 +117,6 @@ public final class Database {
                         "ROWID INTEGER," +
                         "className TEXT NOT NULL," +
                         "methodName TEXT NOT NULL," +
-                        "statusAnnotation TEXT," +
-                        "statusAnnotationValue TEXT," +
                         "authSchemeAnnotation TEXT," +
                         "FOREIGN KEY(ROWID) REFERENCES ReqMaster(ROWID)" +
                         ");",
@@ -174,13 +172,11 @@ public final class Database {
         switch (model) {
             case ReqEndpoint endpoint -> {
                 PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
-                        "(ROWID, className, methodName, statusAnnotation, statusAnnotationValue, authSchemeAnnotation) VALUES (?, ?, ?, ?, ?, ?)");
+                        "(ROWID, className, methodName, authSchemeAnnotation) VALUES (?, ?, ?, ?)");
                 subQuery.setInt(1, rowId);
                 subQuery.setString(2, endpoint.getClazz().getName());
                 subQuery.setString(3, endpoint.getMethod().getName());
-                subQuery.setString(4, endpoint.getStatusAnnotation() == null ? null : endpoint.getStatusAnnotation().toString());
-                subQuery.setString(5, endpoint.getStatusAnnotationValue());
-                subQuery.setString(6, endpoint.getAuthSchemeAnnotation() == null ? null : endpoint.getAuthSchemeAnnotation().toString());
+                subQuery.setString(4, endpoint.getAuthSchemeAnnotation() == null ? null : endpoint.getAuthSchemeAnnotation().toString());
                 subQuery.executeUpdate();
                 subQuery.close();
             }
@@ -226,7 +222,7 @@ public final class Database {
 
                     try {
                         Class<?> clazz = Class.forName(subResult.getString(2));
-                        AuthScheme authScheme = (subResult.getString(6) == null ? null : AuthScheme.valueOf(subResult.getString(6)));
+                        AuthScheme authScheme = (subResult.getString(4) == null ? null : AuthScheme.valueOf(subResult.getString(4)));
                         Class<?> requestParamType = null;
                         Class<?> responseParamType = null;
                         if (authScheme == null) {
@@ -250,9 +246,7 @@ public final class Database {
                         endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
                                 masterResult.getBoolean(4), clazz,
                                 responseParamType == null ? clazz.getMethod(subResult.getString(3), requestParamType) :
-                                        clazz.getMethod(subResult.getString(3), requestParamType, responseParamType),
-                                subResult.getString(4) == null ? null : HttpStatusCode.valueOf(subResult.getString(4)),
-                                subResult.getString(5), authScheme);
+                                        clazz.getMethod(subResult.getString(3), requestParamType, responseParamType), authScheme);
                     } finally {
                         subResult.close();
                         subQuery.close();

@@ -20,12 +20,12 @@ import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authorization;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenResponse;
-import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenSuccessResponse;
 import io.github.lycoriscafe.nexus.http.core.headers.content.ExpectContent;
 import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
+import io.github.lycoriscafe.nexus.http.core.statusCodes.annotations.*;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Locale;
@@ -308,8 +309,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
             switch (endpointDetails) {
                 case ReqEndpoint reqEndpoint -> {
-                    if (reqEndpoint.getStatusAnnotation() != null) {
-                        processStatusAnnotation(reqEndpoint);
+                    if (processStatusAnnotation(reqEndpoint)) {
                         return;
                     }
 
@@ -373,6 +373,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
      * If any status annotation present for the target endpoint method, the {@code finalizeRequest()} call this method to further processing.
      *
      * @param reqEndpoint {@code ReqEndpoint}
+     * @return If annotations processed, true
      * @apiNote Only used for in-API tasks.
      * @see HttpRequest#finalizeRequest()
      * @see ReqEndpoint
@@ -380,26 +381,34 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
      * @see io.github.lycoriscafe.nexus.http.core.statusCodes.annotations
      * @since v1.0.0
      */
-    private void processStatusAnnotation(final ReqEndpoint reqEndpoint) {
-        getRequestConsumer().send(switch (reqEndpoint.getStatusAnnotation()) {
-            case FOUND -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.FOUND)
-                    .addHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case GONE -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.GONE);
-            case MOVED_PERMANENTLY -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.MOVED_PERMANENTLY)
-                    .addHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case PERMANENT_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.PERMANENT_REDIRECT)
-                    .addHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case TEMPORARY_REDIRECT -> new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.TEMPORARY_REDIRECT)
-                    .addHeader(new Header("Location", reqEndpoint.getStatusAnnotationValue()));
-            case UNAVAILABLE_FOR_LEGAL_REASONS -> {
-                var response = new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
-                if (!reqEndpoint.getStatusAnnotationValue().isEmpty()) {
-                    response.addHeader(new Header("Link", "<" + reqEndpoint.getStatusAnnotationValue() + ">; rel=\"blocked-by\""));
+    private boolean processStatusAnnotation(final ReqEndpoint reqEndpoint) {
+        HttpResponse response = switch (reqEndpoint.getMethod()) {
+            case Method m when m.isAnnotationPresent(Found.class) ->
+                    new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.FOUND)
+                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+            case Method m when m.isAnnotationPresent(Gone.class) ->
+                    new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.GONE);
+            case Method m when m.isAnnotationPresent(MovedPermanently.class) ->
+                    new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.MOVED_PERMANENTLY)
+                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+            case Method m when m.isAnnotationPresent(PermanentRedirect.class) ->
+                    new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.PERMANENT_REDIRECT)
+                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+            case Method m when m.isAnnotationPresent(TemporaryRedirect.class) ->
+                    new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.TEMPORARY_REDIRECT)
+                            .addHeader(new Header("Location", m.getAnnotation(Found.class).value()));
+            case Method m when m.isAnnotationPresent(UnavailableForLegalReasons.class) -> {
+                var tempResponse = new HttpResponse(getRequestId(), getRequestConsumer()).setStatusCode(HttpStatusCode.UNAVAILABLE_FOR_LEGAL_REASONS);
+                if (!m.getAnnotation(Found.class).value().isEmpty()) {
+                    tempResponse.addHeader(new Header("Link", "<" + m.getAnnotation(Found.class).value() + ">; rel=\"blocked-by\""));
                 }
-                yield response;
+                yield tempResponse;
             }
-            default -> throw new IllegalStateException("Unexpected value: " + reqEndpoint.getStatusAnnotation());
-        });
+            default -> null;
+        };
+        if (response == null) return false;
+        getRequestConsumer().send(response);
+        return true;
     }
 
     /**

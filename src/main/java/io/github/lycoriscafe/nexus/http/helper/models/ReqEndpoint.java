@@ -35,8 +35,6 @@ import java.lang.reflect.Method;
 public final class ReqEndpoint extends ReqMaster {
     private final Class<?> className;
     private final Method methodName;
-    private final HttpStatusCode statusAnnotation;
-    private final String statusAnnotationValue;
     private final AuthScheme authSchemeAnnotation;
 
     /**
@@ -47,8 +45,6 @@ public final class ReqEndpoint extends ReqMaster {
      * @param authenticated         Is the endpoint authenticated?
      * @param className             Target class
      * @param methodName            Target method
-     * @param statusAnnotation      Available status annotation
-     * @param statusAnnotationValue Available status annotation value
      * @param authSchemeAnnotation  Available authentication scheme annotation
      * @see ReqEndpoint
      * @since v1.0.0
@@ -58,14 +54,10 @@ public final class ReqEndpoint extends ReqMaster {
                        final boolean authenticated,
                        final Class<?> className,
                        final Method methodName,
-                       final HttpStatusCode statusAnnotation,
-                       final String statusAnnotationValue,
                        final AuthScheme authSchemeAnnotation) {
         super(requestEndpoint, reqMethod, authenticated);
         this.className = className;
         this.methodName = methodName;
-        this.statusAnnotation = statusAnnotation;
-        this.statusAnnotationValue = statusAnnotationValue;
         this.authSchemeAnnotation = authSchemeAnnotation;
     }
 
@@ -89,28 +81,6 @@ public final class ReqEndpoint extends ReqMaster {
      */
     public Method getMethod() {
         return methodName;
-    }
-
-    /**
-     * Get provided available status annotation.
-     *
-     * @return Available status annotation
-     * @see ReqEndpoint
-     * @since v1.0.0
-     */
-    public HttpStatusCode getStatusAnnotation() {
-        return statusAnnotation;
-    }
-
-    /**
-     * Get provided available status annotation value.
-     *
-     * @return Available status annotation value
-     * @see ReqEndpoint
-     * @since v1.0.0
-     */
-    public String getStatusAnnotationValue() {
-        return statusAnnotationValue;
     }
 
     /**

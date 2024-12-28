@@ -120,6 +120,11 @@ public final class EndpointScanner {
                         reqMethod = HttpRequestMethod.OPTIONS;
                     }
                     case Method m when m.isAnnotationPresent(BearerEndpoint.class) && Modifier.isStatic(m.getModifiers()) -> {
+                        if (m.isAnnotationPresent(ExpectContent.class) &&
+                                !m.getAnnotation(ExpectContent.class).value().equals("application/x-www-form-urlencoded")) {
+                            throw new ScannerException("@ExpectContent on @BearerEndpoint endpoint with unexpected value " +
+                                    "(possible value: application/x-www-form-urlencoded) - " + clazz.getName() + "#" + method.getName());
+                        }
                         endpointValue = m.getAnnotation(BearerEndpoint.class).value().value();
                         reqMethod = HttpRequestMethod.POST;
                         authSchemeAnnotation = AuthScheme.BEARER;
