@@ -34,7 +34,7 @@
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <gpg.key_name>53D6343ADD375807F4CAF21204CF9748DA106AA5</gpg.key_name>
+        <gpg.key_name>9888843F7DC02452884A5711A1823F26401C9BF1</gpg.key_name>
     </properties>
 
     <dependencies>

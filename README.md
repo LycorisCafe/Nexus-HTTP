@@ -23,6 +23,8 @@ server environment in Java. We aim to make this as lightweight, easy to use, and
 [![Minimum JDK version](https://img.shields.io/badge/Minumum_JDK-v21-yello)](
 https://www.oracle.com/java/technologies/downloads/)
 
+> Verification keys for each release can be found in [here!](https://github.com/LycorisCafe/Nexus-HTTP/releases)
+
 ```xml
 <dependency>
     <groupId>io.github.lycoriscafe</groupId>
