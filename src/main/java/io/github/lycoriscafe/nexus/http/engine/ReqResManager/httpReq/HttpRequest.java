@@ -309,9 +309,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
 
             switch (endpointDetails) {
                 case ReqEndpoint reqEndpoint -> {
-                    if (processStatusAnnotation(reqEndpoint)) {
-                        return;
-                    }
+                    if (processStatusAnnotation(reqEndpoint)) return;
 
                     if (reqEndpoint.getAuthSchemeAnnotation() != null) {
                         processAuthAnnotation(reqEndpoint);
@@ -324,32 +322,7 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
                         return;
                     }
 
-                    if (reqEndpoint.getMethod().isAnnotationPresent(ExpectContent.class)) {
-                        HttpPostRequest tempCast = (HttpPostRequest) this;
-                        switch (reqEndpoint.getMethod().getAnnotation(ExpectContent.class).value().toLowerCase(Locale.US)) {
-                            case String s when s.equals("any") -> {
-                                if (tempCast.getContent() == null) {
-                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Expect content, but not received", logger);
-                                    return;
-                                }
-                            }
-                            case String s when s.equals("none") -> {
-                                if (tempCast.getContent() != null) {
-                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Didn't expect content, but received", logger);
-                                    return;
-                                }
-                            }
-                            case String s -> {
-                                if (tempCast.getContent() == null || !tempCast.getContent().getContentType().equals(s)) {
-                                    getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
-                                            "Expect content (" + s + "), but not received", logger);
-                                    return;
-                                }
-                            }
-                        }
-                    }
+                    if (processExpectContent(reqEndpoint)) return;
 
                     Object response = reqEndpoint.getMethod().invoke(null, this, new HttpResponse(getRequestId(), getRequestConsumer()));
                     if (response instanceof HttpResponse httpResponse) {
@@ -444,5 +417,46 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
             }
             default -> getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_IMPLEMENTED, "auth scheme not implemented", logger);
         }
+    }
+
+    /**
+     * If {@code @ExpectContent} annotation available for the target endpoint, process it.
+     *
+     * @param reqEndpoint {@code ReqEndpoint}
+     * @return Processed annotation and returned exceptions, true. No error, false.
+     * @apiNote Only used for in-API tasks.
+     * @see HttpRequest#finalizeRequest()
+     * @see ReqEndpoint
+     * @see HttpRequest
+     * @since v1.0.0
+     */
+    private boolean processExpectContent(final ReqEndpoint reqEndpoint) {
+        if (reqEndpoint.getMethod().isAnnotationPresent(ExpectContent.class)) {
+            HttpPostRequest tempCast = (HttpPostRequest) this;
+            switch (reqEndpoint.getMethod().getAnnotation(ExpectContent.class).value().toLowerCase(Locale.US)) {
+                case String s when s.equals("any") -> {
+                    if (tempCast.getContent() == null) {
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                "Expect content, but not received", logger);
+                        return true;
+                    }
+                }
+                case String s when s.equals("none") -> {
+                    if (tempCast.getContent() != null) {
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                "Didn't expect content, but received", logger);
+                        return true;
+                    }
+                }
+                case String s -> {
+                    if (tempCast.getContent() == null || !tempCast.getContent().getContentType().equals(s)) {
+                        getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.UNPROCESSABLE_CONTENT,
+                                "Expect content (" + s + "), but not received", logger);
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 }
