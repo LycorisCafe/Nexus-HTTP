@@ -288,14 +288,14 @@ public sealed class HttpRequest permits HttpGetRequest, HttpPostRequest {
         }
 
         try {
-            List<ReqMaster> data = getRequestConsumer().getDatabase().getEndpointData(this);
-            if (data.isEmpty()) {
+            List<ReqMaster> reqMasters = getRequestConsumer().getDatabase().getEndpointData(this);
+            if (reqMasters.isEmpty()) {
                 getRequestConsumer().dropConnection(getRequestId(), HttpStatusCode.NOT_FOUND, "endpoint not found", logger);
                 return;
             }
 
             ReqMaster endpointDetails = null;
-            for (ReqMaster reqMaster : data) {
+            for (ReqMaster reqMaster : reqMasters) {
                 if (reqMaster.getReqMethod() == getRequestMethod()) {
                     endpointDetails = reqMaster;
                     break;
