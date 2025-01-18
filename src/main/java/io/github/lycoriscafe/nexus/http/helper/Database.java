@@ -19,7 +19,6 @@ package io.github.lycoriscafe.nexus.http.helper;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
 import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
@@ -147,46 +146,56 @@ public final class Database {
      * @since v1.0.0
      */
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
-        PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster " +
-                "WHERE endpoint = ? AND reqMethod = ? COLLATE NOCASE");
-        preQuery.setString(1, model.getRequestEndpoint());
-        preQuery.setString(2, model.getReqMethod().toString());
-        ResultSet preResultSet = preQuery.executeQuery();
-        if (preResultSet.getInt(1) != 0) {
-            throw new ScannerException("endpoints with same value found, aborting scanning");
+        try (PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster " +
+                "WHERE endpoint = ? AND reqMethod = ? COLLATE NOCASE")) {
+            preQuery.setString(1, model.getRequestEndpoint());
+            preQuery.setString(2, model.getReqMethod().toString());
+            try (ResultSet preResultSet = preQuery.executeQuery()) {
+                if (preResultSet.getInt(1) != 0) {
+                    throw new ScannerException("endpoints with same value found, aborting scanning");
+                }
+            }
         }
 
-        PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster (endpoint, reqMethod, authenticated, type) " +
-                "VALUES (?, ?, ?, ?)");
-        masterQuery.setString(1, model.getRequestEndpoint());
-        masterQuery.setString(2, model.getReqMethod().toString());
-        masterQuery.setBoolean(3, model.isAuthenticated());
-        masterQuery.setString(4, model instanceof ReqEndpoint ? "endpoint" : "file");
-        masterQuery.executeUpdate();
-        masterQuery.close();
-
-        Statement stmt = databaseConnection.createStatement();
-        int rowId = stmt.executeQuery("SELECT MAX(ROWID) FROM ReqMaster").getInt(1);
-        stmt.close();
+        int rowId;
+        try (PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster " +
+                "(endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+            masterQuery.setString(1, model.getRequestEndpoint());
+            masterQuery.setString(2, model.getReqMethod().toString());
+            masterQuery.setBoolean(3, model.isAuthenticated());
+            masterQuery.setString(4, model instanceof ReqEndpoint ? "endpoint" : "file");
+            if (masterQuery.executeUpdate() != 1) {
+                throw new ScannerException("Error while inserting data to the database");
+            }
+            try (ResultSet masterResultSet = masterQuery.getGeneratedKeys()) {
+                rowId = masterResultSet.getInt(1);
+            }
+        }
 
         switch (model) {
             case ReqEndpoint endpoint -> {
-                PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
-                        "(ROWID, className, methodName, authSchemeAnnotation) VALUES (?, ?, ?, ?)");
-                subQuery.setInt(1, rowId);
-                subQuery.setString(2, endpoint.getClazz().getName());
-                subQuery.setString(3, endpoint.getMethod().getName());
-                subQuery.setString(4, endpoint.getAuthSchemeAnnotation() == null ? null : endpoint.getAuthSchemeAnnotation().toString());
-                subQuery.executeUpdate();
-                subQuery.close();
+                try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
+                        "(ROWID, className, methodName, authSchemeAnnotation) VALUES (?, ?, ?, ?)")) {
+                    subQuery.setInt(1, rowId);
+                    subQuery.setString(2, endpoint.getClazz().getName());
+                    subQuery.setString(3, endpoint.getMethod().getName());
+                    subQuery.setString(4, endpoint.getAuthSchemeAnnotation() == null ?
+                            null : endpoint.getAuthSchemeAnnotation().toString());
+                    if (subQuery.executeUpdate() != 1) {
+                        throw new ScannerException("Error while inserting data to the database");
+                    }
+                }
             }
             case ReqFile file -> {
-                PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile (ROWID, lastModified, eTag) VALUES (?, ?, ?)");
-                subQuery.setInt(1, rowId);
-                subQuery.setString(2, file.getLastModified());
-                subQuery.setString(3, file.getETag());
-                subQuery.executeUpdate();
-                subQuery.close();
+                try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile (ROWID, lastModified, eTag) " +
+                        "VALUES (?, ?, ?)")) {
+                    subQuery.setInt(1, rowId);
+                    subQuery.setString(2, file.getLastModified());
+                    subQuery.setString(3, file.getETag());
+                    if (subQuery.executeUpdate() != 1) {
+                        throw new ScannerException("Error while inserting data to the database");
+                    }
+                }
             }
             default -> throw new IllegalStateException("Unexpected value: " + model);
         }
@@ -206,64 +215,55 @@ public final class Database {
      * @since v1.0.0
      */
     public List<ReqMaster> getEndpointData(final HttpRequest httpRequest) throws SQLException, ClassNotFoundException, NoSuchMethodException {
-        PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? COLLATE NOCASE");
-        masterQuery.setString(1, httpRequest.getEndpoint());
-
-        ResultSet masterResult = masterQuery.executeQuery();
         List<ReqMaster> endpoints = new ArrayList<>();
-        while (masterResult.next()) {
-            switch (masterResult.getString(5)) {
-                case "endpoint" -> {
-                    PreparedStatement subQuery = databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?");
-                    subQuery.setInt(1, masterResult.getInt(1));
+        try (PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? COLLATE NOCASE")) {
+            masterQuery.setString(1, httpRequest.getEndpoint());
+            try (ResultSet masterResult = masterQuery.executeQuery()) {
+                while (masterResult.next()) {
+                    switch (masterResult.getString(5)) {
+                        case "endpoint" -> {
+                            ReqEndpoint endpoint;
+                            try (PreparedStatement subQuery = databaseConnection.prepareStatement("SELECT * FROM ReqEndpoint WHERE ROWID = ?")) {
+                                subQuery.setInt(1, masterResult.getInt(1));
+                                try (ResultSet subResult = subQuery.executeQuery()) {
+                                    Class<?> clazz = Class.forName(subResult.getString(2));
+                                    AuthScheme authScheme = (subResult.getString(4) == null ?
+                                            null : AuthScheme.valueOf(subResult.getString(4)));
+                                    Class<?> requestParamType = null;
+                                    Class<?> responseParamType = null;
+                                    if (authScheme == null) {
+                                        requestParamType = switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
+                                            case DELETE -> HttpDeleteRequest.class;
+                                            case GET -> HttpGetRequest.class;
+                                            case HEAD -> HttpHeadRequest.class;
+                                            case OPTIONS -> HttpOptionsRequest.class;
+                                            case PATCH -> HttpPatchRequest.class;
+                                            case POST -> HttpPostRequest.class;
+                                            case PUT -> HttpPutRequest.class;
+                                        };
+                                        responseParamType = HttpResponse.class;
+                                    } else {
+                                        switch (authScheme) {
+                                            case BASIC -> {}
+                                            case BEARER -> requestParamType = BearerTokenRequest.class;
+                                        }
+                                    }
 
-                    ResultSet subResult = subQuery.executeQuery();
-                    ReqEndpoint endpoint;
-
-                    try {
-                        Class<?> clazz = Class.forName(subResult.getString(2));
-                        AuthScheme authScheme = (subResult.getString(4) == null ? null : AuthScheme.valueOf(subResult.getString(4)));
-                        Class<?> requestParamType = null;
-                        Class<?> responseParamType = null;
-                        if (authScheme == null) {
-                            requestParamType = switch (HttpRequestMethod.valueOf(masterResult.getString(3))) {
-                                case DELETE -> HttpDeleteRequest.class;
-                                case GET -> HttpGetRequest.class;
-                                case HEAD -> HttpHeadRequest.class;
-                                case OPTIONS -> HttpOptionsRequest.class;
-                                case PATCH -> HttpPatchRequest.class;
-                                case POST -> HttpPostRequest.class;
-                                case PUT -> HttpPutRequest.class;
-                            };
-                            responseParamType = HttpResponse.class;
-                        } else {
-                            switch (authScheme) {
-                                case BASIC -> {}
-                                case BEARER -> requestParamType = BearerTokenRequest.class;
+                                    endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
+                                            masterResult.getBoolean(4), clazz,
+                                            responseParamType == null ? clazz.getMethod(subResult.getString(3), requestParamType) :
+                                                    clazz.getMethod(subResult.getString(3), requestParamType, responseParamType), authScheme);
+                                }
                             }
+                            endpoints.add(endpoint);
                         }
-
-                        endpoint = new ReqEndpoint(masterResult.getString(2), HttpRequestMethod.valueOf(masterResult.getString(3)),
-                                masterResult.getBoolean(4), clazz,
-                                responseParamType == null ? clazz.getMethod(subResult.getString(3), requestParamType) :
-                                        clazz.getMethod(subResult.getString(3), requestParamType, responseParamType), authScheme);
-                    } finally {
-                        subResult.close();
-                        subQuery.close();
-                        masterResult.close();
-                        masterQuery.close();
+                        case "file" -> {
+                            // TODO implement for file access
+                        }
                     }
-
-                    endpoints.add(endpoint);
-                }
-                case "file" -> {
-                    // TODO implement for file access
                 }
             }
         }
-
-        masterResult.close();
-        masterQuery.close();
         return endpoints;
     }
 }
