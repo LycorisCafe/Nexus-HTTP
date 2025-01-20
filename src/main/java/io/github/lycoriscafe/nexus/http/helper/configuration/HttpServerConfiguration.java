@@ -51,7 +51,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
 
     private final String basePackage;
     private final String tempDirectory;
-    private String urlExtension = "";
+    private String urlPrefix = "";
     private String staticFilesDirectory;
     private DatabaseType databaseType = DatabaseType.MEMORY;
 
@@ -302,7 +302,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
      */
     public HttpServerConfiguration setUrlPrefix(final String urlPrefix) {
         Objects.requireNonNull(urlPrefix);
-        this.urlExtension = urlPrefix.startsWith("\\") ? urlPrefix : "\\" + urlPrefix;
+        this.urlPrefix = urlPrefix;
         return this;
     }
 
@@ -315,7 +315,7 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
      * @since v1.0.0
      */
     public String getUrlPrefix() {
-        return urlExtension;
+        return urlPrefix;
     }
 
     /**
