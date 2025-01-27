@@ -311,7 +311,7 @@ public final class Content {
          * @param gzipped         {@code Content-Encoding} gzipped?
          * @return New instance of {@code Content}
          * @throws IOException Error while reading data from the socket input stream
-         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
          * @see RequestConsumer
          * @see Content
          * @since v1.0.0
@@ -351,7 +351,7 @@ public final class Content {
          * @param requestConsumer {@code RequestConsumer} bound to the {@code HttpRequest}
          * @return Read process success or fail status
          * @throws IOException Error while reading data from the socket input stream
-         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
          * @see RequestConsumer
          * @see Path
          * @since v1.0.0
@@ -405,7 +405,7 @@ public final class Content {
          * @return Type of decompressed data
          * @throws IOException Error while decompressing data
          * @see RequestConsumer
-         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+         * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
          * @since v1.0.0
          */
         private static Object readGzip(final Object content,
@@ -453,7 +453,7 @@ public final class Content {
          * @param content                 {@code Content} that need to be processed
          * @return HTTP content-related headers
          * @throws IOException Error while processing content
-         * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+         * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
          * @see io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration HttpServerConfiguration
          * @see Content
          * @since v1.0.0

@@ -17,7 +17,7 @@
 package io.github.lycoriscafe.nexus.http.core.headers.content;
 
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 import org.slf4j.Logger;

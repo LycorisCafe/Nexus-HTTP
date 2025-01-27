@@ -36,7 +36,7 @@ import java.util.Objects;
  * @see ContentSecurityPolicy
  * @see ContentSecurityPolicyReportOnly
  * @see CSPDirective
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
  * @since v1.0.0
  */
@@ -87,7 +87,7 @@ public final class ReportingEndpoint {
      * @return Processed {@code Reporting-Endpoints} HTTP header string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see ReportingEndpoint
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
      * @since v1.0.0
      */
     public static String processOutgoingReportingEndpoints(final List<ReportingEndpoint> reportingEndpoints) {

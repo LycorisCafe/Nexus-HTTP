@@ -61,7 +61,7 @@ public final class UrlEncodedData extends HashMap<String, String> {
      * @return New instance of {@code Content}
      * @throws IOException Error while reading data from the socket input stream
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
      * @see RequestConsumer
      * @see Content
      * @since v1.0.0

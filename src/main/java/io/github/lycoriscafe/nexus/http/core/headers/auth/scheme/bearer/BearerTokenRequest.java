@@ -18,7 +18,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer;
 
 import io.github.lycoriscafe.nexus.http.core.headers.content.UrlEncodedData;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpPostRequest;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpPostRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

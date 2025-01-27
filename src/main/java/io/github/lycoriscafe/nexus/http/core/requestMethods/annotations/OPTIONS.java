@@ -18,8 +18,8 @@ package io.github.lycoriscafe.nexus.http.core.requestMethods.annotations;
 
 import io.github.lycoriscafe.nexus.http.core.HttpEndpoint;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpOptionsRequest;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpOptionsRequest;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse;
 
 import java.lang.annotation.*;
 

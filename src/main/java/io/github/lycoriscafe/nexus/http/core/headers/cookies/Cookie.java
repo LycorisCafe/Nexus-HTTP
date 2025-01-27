@@ -32,8 +32,8 @@ import java.util.Objects;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://datatracker.ietf.org/doc/rfc6265">HTTP State Management Mechanism (rfc6265)</a>
  * @since v1.0.0
  */
@@ -299,7 +299,7 @@ public final class Cookie {
      * @param headerValue {@code Cookie} header values came along with {@code HttpRequest}
      * @return {@code List} of {@code Cookie} that come along with the request
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
      * @see Cookie
      * @since v1.0.0
      */
@@ -319,7 +319,7 @@ public final class Cookie {
      * @param cookies {@code List} of {@code Cookie} that send along with {@code HttpResponse}
      * @return {@code Set-Cookie} header string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
      * @see Cookie
      * @since v1.0.0
      */
