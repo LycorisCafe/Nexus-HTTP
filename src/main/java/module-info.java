@@ -21,7 +21,9 @@ module io.github.lycoriscafe.nexus.http {
     exports io.github.lycoriscafe.nexus.http.core.statusCodes.annotations;
     exports io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq;
     exports io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes;
+    exports io.github.lycoriscafe.nexus.http.helper;
     exports io.github.lycoriscafe.nexus.http.helper.configuration;
     exports io.github.lycoriscafe.nexus.http.helper.models;
     exports io.github.lycoriscafe.nexus.http.helper.scanners;
+    exports io.github.lycoriscafe.nexus.http.helper.util;
 }
