@@ -26,7 +26,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicy;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyReportOnly;
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;
 

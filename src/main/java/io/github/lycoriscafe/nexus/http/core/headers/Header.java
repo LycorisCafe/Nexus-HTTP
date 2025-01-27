@@ -32,8 +32,8 @@ import java.util.Objects;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc9110">HTTP Semantics (rfc 9110)</a>
  * @since v1.0.0
  */
@@ -84,7 +84,7 @@ public final class Header {
      * @return New {@code Header} instance
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Header
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
      * @since v1.0.0
      */
     public static Header parseIncomingHeader(final String[] headerParts) {
@@ -98,7 +98,7 @@ public final class Header {
      * @return HTTP headers string
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see Header
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
      * @since v1.0.0
      */
     public static String parseOutgoingHeaders(final List<Header> headers) {

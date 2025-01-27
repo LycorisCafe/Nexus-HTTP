@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes;
+package io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.Authentication;
@@ -27,7 +27,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.csp.ContentSecurityPolicyRe
 import io.github.lycoriscafe.nexus.http.core.headers.csp.ReportingEndpoint;
 import io.github.lycoriscafe.nexus.http.core.headers.hsts.StrictTransportSecurity;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.util.NonDuplicateList;

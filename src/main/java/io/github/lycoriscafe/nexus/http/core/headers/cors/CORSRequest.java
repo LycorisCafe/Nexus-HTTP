@@ -32,7 +32,7 @@ import java.util.Locale;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.HttpRequest HttpRequest
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.HttpRequest HttpRequest
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (MDN Docs)</a>
  * @since v1.0.0
  */

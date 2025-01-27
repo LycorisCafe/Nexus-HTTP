@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
+package io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.HEAD;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.OPTIONS;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 /**
- * HTTP HEAD request method.
+ * HTTP OPTIONS request method.
  *
- * @apiNote Since {@code HEAD} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
- * @see HEAD
+ * @apiNote Since {@code OPTIONS} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
+ * @see OPTIONS
  * @see #finalizeRequest()
  * @see HttpRequest
  * @since v1.0.0
  */
-public final class HttpHeadRequest extends HttpGetRequest {
+public final class HttpOptionsRequest extends HttpGetRequest {
     /**
      * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
      * @param requestId       Request id bound to the HTTP request
      * @param requestMethod   HTTP request method of the request
-     * @see HttpHeadRequest
+     * @see HttpOptionsRequest
      * @since v1.0.0
      */
-    public HttpHeadRequest(final RequestConsumer requestConsumer,
-                           final long requestId,
-                           final HttpRequestMethod requestMethod) {
+    public HttpOptionsRequest(final RequestConsumer requestConsumer,
+                              final long requestId,
+                              final HttpRequestMethod requestMethod) {
         super(requestConsumer, requestId, requestMethod);
     }
 }

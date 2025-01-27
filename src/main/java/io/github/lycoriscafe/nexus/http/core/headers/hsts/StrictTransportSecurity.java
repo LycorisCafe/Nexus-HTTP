@@ -25,7 +25,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.hsts;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://datatracker.ietf.org/doc/html/rfc6797">HTTP Strict Transport Security (HSTS) (rfc6797)</a>
  * @since v1.0.0
  */
@@ -112,7 +112,7 @@ public final class StrictTransportSecurity {
      * @return Processed {@code Strict-Transport-Security} HTTP header
      * @apiNote This method is public but not useful for the API users. Only used for in-API tasks.
      * @see StrictTransportSecurity
-     * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+     * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
      * @since v1.0.0
      */
     public static String processOutgoingHSTS(final StrictTransportSecurity hsts) {

@@ -31,7 +31,7 @@ import java.util.List;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS">Cross-Origin Resource Sharing (MDN Docs)</a>
  * @since v1.0.0
  */

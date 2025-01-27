@@ -30,7 +30,7 @@ import java.util.List;
  * @apiNote When using {@code REPORT_TO} directive, you should specify it by passing an instance of {@code ReportingEndpoint} to the
  * {@code HttpResponse}.
  * @see ReportingEndpoint
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://www.w3.org/TR/CSP">Content Security Policy (w3c)</a>
  * @since v1.0.0
  */

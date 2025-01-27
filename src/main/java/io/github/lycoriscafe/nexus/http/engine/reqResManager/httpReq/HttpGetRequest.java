@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
+package io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.headers.Header;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;

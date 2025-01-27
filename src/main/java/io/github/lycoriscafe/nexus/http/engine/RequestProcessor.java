@@ -22,7 +22,7 @@ import io.github.lycoriscafe.nexus.http.core.headers.cookies.Cookie;
 import io.github.lycoriscafe.nexus.http.core.headers.cors.CORSRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.core.statusCodes.HttpStatusCode;
-import io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq.*;
+import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.*;
 import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

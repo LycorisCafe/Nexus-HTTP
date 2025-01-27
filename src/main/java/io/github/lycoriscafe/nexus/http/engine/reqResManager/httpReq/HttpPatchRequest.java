@@ -14,32 +14,30 @@
  * limitations under the License.
  */
 
-package io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpReq;
+package io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq;
 
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
-import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.OPTIONS;
+import io.github.lycoriscafe.nexus.http.core.requestMethods.annotations.PATCH;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 
 /**
- * HTTP OPTIONS request method.
+ * HTTP PATCH request method.
  *
- * @apiNote Since {@code OPTIONS} request method doesn't accept content, all request headers beginning with {@code Content-} must be avoided.
- * @see OPTIONS
- * @see #finalizeRequest()
+ * @see PATCH
  * @see HttpRequest
  * @since v1.0.0
  */
-public final class HttpOptionsRequest extends HttpGetRequest {
+public final class HttpPatchRequest extends HttpPostRequest {
     /**
      * @param requestConsumer {@code RequestConsumer} bound to the HTTP request
      * @param requestId       Request id bound to the HTTP request
      * @param requestMethod   HTTP request method of the request
-     * @see HttpOptionsRequest
+     * @see HttpPatchRequest
      * @since v1.0.0
      */
-    public HttpOptionsRequest(final RequestConsumer requestConsumer,
-                              final long requestId,
-                              final HttpRequestMethod requestMethod) {
+    public HttpPatchRequest(final RequestConsumer requestConsumer,
+                            final long requestId,
+                            final HttpRequestMethod requestMethod) {
         super(requestConsumer, requestId, requestMethod);
     }
 }

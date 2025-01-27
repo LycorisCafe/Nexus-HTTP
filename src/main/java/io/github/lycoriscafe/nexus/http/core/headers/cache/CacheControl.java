@@ -31,7 +31,7 @@ package io.github.lycoriscafe.nexus.http.core.headers.cache;
  *     }
  * </pre>
  *
- * @see io.github.lycoriscafe.nexus.http.engine.ReqResManager.httpRes.HttpResponse HttpResponse
+ * @see io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse HttpResponse
  * @see <a href="https://datatracker.ietf.org/doc/rfc9111">HTTP Caching (rfc9111)</a>
  * @since v1.0.0
  */
