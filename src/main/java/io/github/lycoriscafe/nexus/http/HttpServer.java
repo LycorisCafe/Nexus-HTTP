@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.Database;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.PropertiesProcessor;
 import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.helper.scanners.EndpointScanner;
 import io.github.lycoriscafe.nexus.http.helper.scanners.FileScanner;
@@ -33,6 +34,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.Comparator;
 import java.util.Objects;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -52,6 +54,10 @@ public sealed class HttpServer permits HttpsServer {
     ExecutorService executorService;
     final Database database;
 
+    public HttpServer() throws IOException, ScannerException, SQLException {
+        this(PropertiesProcessor.process(true, null));
+    }
+
     /**
      * Create an instance for an HTTP server.
      *
@@ -67,7 +73,18 @@ public sealed class HttpServer permits HttpsServer {
         serverConfiguration = Objects.requireNonNull(httpServerConfiguration);
 
         Path tempPath = Paths.get(httpServerConfiguration.getTempDirectory());
-        if (Files.exists(tempPath))  Files.delete(tempPath);
+        if (Files.exists(tempPath)) {
+            try (var walker = Files.walk(tempPath)) {
+                walker.sorted(Comparator.reverseOrder())
+                        .forEach(e -> {
+                            try {
+                                Files.delete(e);
+                            } catch (IOException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                        });
+            }
+        }
         Files.createDirectory(tempPath);
 
         if (httpServerConfiguration.getStaticFilesDirectory() != null) {
