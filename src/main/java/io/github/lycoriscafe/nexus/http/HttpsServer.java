@@ -19,6 +19,7 @@ package io.github.lycoriscafe.nexus.http;
 import io.github.lycoriscafe.nexus.http.engine.RequestConsumer;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpsServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.PropertiesProcessor;
 import io.github.lycoriscafe.nexus.http.helper.scanners.ScannerException;
 import io.github.lycoriscafe.nexus.http.helper.util.LogFormatter;
 import org.slf4j.Logger;
@@ -40,6 +41,10 @@ import java.sql.SQLException;
 public final class HttpsServer extends HttpServer {
     private static final Logger logger = LoggerFactory.getLogger(HttpsServer.class);
     private final HttpsServerConfiguration serverConfiguration = (HttpsServerConfiguration) super.serverConfiguration;
+
+    public HttpsServer() throws IOException, ScannerException, SQLException {
+        this((HttpsServerConfiguration) PropertiesProcessor.process(false, null));
+    }
 
     /**
      * Create an instance for an HTTP server.
@@ -82,7 +87,8 @@ public final class HttpsServer extends HttpServer {
                 SSLServerSocketFactory sslServerSocketFactory = initializeSslContext().getServerSocketFactory();
                 SSLServerSocket sslServerSocket = (SSLServerSocket) (serverConfiguration.getInetAddress() == null ?
                         sslServerSocketFactory.createServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog()) :
-                        sslServerSocketFactory.createServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(), serverConfiguration.getInetAddress()));
+                        sslServerSocketFactory.createServerSocket(serverConfiguration.getPort(), serverConfiguration.getBacklog(),
+                                serverConfiguration.getInetAddress()));
                 sslServerSocket.setEnabledProtocols(serverConfiguration.getTlsVersions());
                 serverSocket = sslServerSocket;
                 serverThread.setName("Nexus-HTTP@" + serverSocket.getLocalPort());
@@ -90,7 +96,8 @@ public final class HttpsServer extends HttpServer {
                 while (!serverSocket.isClosed()) {
                     executorService.execute(new RequestConsumer(serverConfiguration, database, serverSocket.accept()));
                 }
-            } catch (IOException | UnrecoverableKeyException | CertificateException | KeyStoreException | NoSuchAlgorithmException | KeyManagementException e) {
+            } catch (IOException | UnrecoverableKeyException | CertificateException | KeyStoreException |
+                     NoSuchAlgorithmException | KeyManagementException e) {
                 throw new RuntimeException(e);
             }
         });

@@ -49,8 +49,8 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     private int connectionTimeout = 60_000;
     private ThreadType threadType = ThreadType.VIRTUAL;
 
-    private final String basePackage;
-    private final String tempDirectory;
+    private String basePackage;
+    private String tempDirectory;
     private String urlPrefix = "";
     private String staticFilesDirectory;
     private DatabaseType databaseType = DatabaseType.MEMORY;
@@ -74,6 +74,8 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
     private boolean defaultXContentTypeOptionsNoSniff;
 
     private boolean addErrorMessageToResponseHeaders = true;
+
+    HttpServerConfiguration() {}
 
     /**
      * Create an instance of {@code HttpServerConfiguration}.
@@ -112,6 +114,11 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
         this.tempDirectory = tempDirectory;
     }
 
+    public HttpServerConfiguration setBasePackage(String basePackage) {
+        this.basePackage = basePackage;
+        return this;
+    }
+
     /**
      * Get the provided base package.
      *
@@ -122,6 +129,11 @@ public sealed class HttpServerConfiguration permits HttpsServerConfiguration {
      */
     public String getBasePackage() {
         return basePackage;
+    }
+
+    public HttpServerConfiguration setTempDirectory(String tempDirectory) {
+        this.tempDirectory = tempDirectory;
+        return this;
     }
 
     /**

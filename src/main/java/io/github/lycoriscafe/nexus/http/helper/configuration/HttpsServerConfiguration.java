@@ -28,23 +28,25 @@ import java.util.Objects;
  * @since v1.0.0
  */
 public final class HttpsServerConfiguration extends HttpServerConfiguration {
-    private final String trustStoreName;
-    private final char[] trustStorePassword;
-    private final String keyStoreName;
-    private final char[] keyStorePassword;
-    private final String[] tlsVersions;
+    private String trustStoreName;
+    private char[] trustStorePassword;
+    private String keyStoreName;
+    private char[] keyStorePassword;
+    private String[] tlsVersions;
+
+    HttpsServerConfiguration() {}
 
     /**
      * Create an instance of {@code HttpServerConfiguration}.
      *
-     * @param basePackage   Package that needs to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
-     * @param tempDirectory Temporary directory location for in-API server tasks. It must be separated directories if you implement more than one
-     *                      server.
-     * @param trustStoreName Trust store name (can pass the keystore)
+     * @param basePackage        Package that needs to scan for {@code HttpEndpoint} classes. Sub packages will be also included.
+     * @param tempDirectory      Temporary directory location for in-API server tasks. It must be separated directories if you implement more than one
+     *                           server.
+     * @param trustStoreName     Trust store name (can pass the keystore)
      * @param trustStorePassword Trust store password
-     * @param keyStoreName Key store name
-     * @param keyStorePassword Key store password
-     * @param tlsVersions Supported TLS versions. If you didn't specify the {@code tlsVersions}, {@code TLSv1.3} will be used.
+     * @param keyStoreName       Key store name
+     * @param keyStorePassword   Key store password
+     * @param tlsVersions        Supported TLS versions. If you didn't specify the {@code tlsVersions}, {@code TLSv1.3} will be used.
      * @apiNote <pre>
      * {@code
      * // Example endpoint scan scenario
@@ -83,6 +85,11 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
         setPort(443);
     }
 
+    public HttpServerConfiguration setTrustStoreName(String trustStoreName) {
+        this.trustStoreName = trustStoreName;
+        return this;
+    }
+
     /**
      * Get provided trust store path.
      *
@@ -92,6 +99,11 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      */
     public String getTrustStoreName() {
         return trustStoreName;
+    }
+
+    public HttpServerConfiguration setTrustStorePassword(char[] trustStorePassword) {
+        this.trustStorePassword = trustStorePassword;
+        return this;
     }
 
     /**
@@ -105,6 +117,11 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
         return trustStorePassword;
     }
 
+    public HttpServerConfiguration setKeyStoreName(String keyStoreName) {
+        this.keyStoreName = keyStoreName;
+        return this;
+    }
+
     /**
      * Get provided key store.
      *
@@ -116,6 +133,11 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
         return keyStoreName;
     }
 
+    public HttpServerConfiguration setKeyStorePassword(char[] keyStorePassword) {
+        this.keyStorePassword = keyStorePassword;
+        return this;
+    }
+
     /**
      * Get provided key store password.
      *
@@ -125,6 +147,11 @@ public final class HttpsServerConfiguration extends HttpServerConfiguration {
      */
     public char[] getKeyStorePassword() {
         return keyStorePassword;
+    }
+
+    public HttpServerConfiguration setTlsVersions(String[] tlsVersions) {
+        this.tlsVersions = tlsVersions;
+        return this;
     }
 
     /**

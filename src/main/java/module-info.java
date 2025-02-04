@@ -1,7 +1,9 @@
 module io.github.lycoriscafe.nexus.http {
-    requires java.sql;
     requires org.reflections;
     requires org.slf4j;
+    requires org.xerial.sqlitejdbc;
+    requires com.zaxxer.hikari;
+    requires java.sql;
 
     exports io.github.lycoriscafe.nexus.http;
     exports io.github.lycoriscafe.nexus.http.core;
@@ -19,6 +21,7 @@ module io.github.lycoriscafe.nexus.http {
     exports io.github.lycoriscafe.nexus.http.core.requestMethods.annotations;
     exports io.github.lycoriscafe.nexus.http.core.statusCodes;
     exports io.github.lycoriscafe.nexus.http.core.statusCodes.annotations;
+    exports io.github.lycoriscafe.nexus.http.engine;
     exports io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq;
     exports io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes;
     exports io.github.lycoriscafe.nexus.http.helper;

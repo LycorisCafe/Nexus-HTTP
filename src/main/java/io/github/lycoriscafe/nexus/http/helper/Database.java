@@ -16,12 +16,16 @@
 
 package io.github.lycoriscafe.nexus.http.helper;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.AuthScheme;
 import io.github.lycoriscafe.nexus.http.core.headers.auth.scheme.bearer.BearerTokenRequest;
 import io.github.lycoriscafe.nexus.http.core.requestMethods.HttpRequestMethod;
 import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpReq.*;
 import io.github.lycoriscafe.nexus.http.engine.reqResManager.httpRes.HttpResponse;
+import io.github.lycoriscafe.nexus.http.helper.configuration.DatabaseType;
 import io.github.lycoriscafe.nexus.http.helper.configuration.HttpServerConfiguration;
+import io.github.lycoriscafe.nexus.http.helper.configuration.ThreadType;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqEndpoint;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqFile;
 import io.github.lycoriscafe.nexus.http.helper.models.ReqMaster;
@@ -43,7 +47,7 @@ import java.util.Objects;
  * @since v1.0.0
  */
 public final class Database {
-    private final Connection databaseConnection;
+    private final HikariDataSource dataSource;
 
     /**
      * Create instance of {@code Database} and initialize connection according to {@code HttpServerConfiguration} settings.
@@ -56,7 +60,8 @@ public final class Database {
      */
     public Database(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
         Objects.requireNonNull(serverConfiguration);
-        databaseConnection = initializeDatabaseConnection(serverConfiguration);
+        dataSource = initializeDatabaseConnection(serverConfiguration);
+        buildDatabase(dataSource.getConnection());
     }
 
     /**
@@ -66,30 +71,34 @@ public final class Database {
      * @see Database
      * @since v1.0.0
      */
-    public Connection getDatabaseConnection() {
-        return databaseConnection;
+    public Connection getDatabaseConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 
     /**
-     * Initialize database connection.
+     * Initialize database pool using HikariCP.
      *
      * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
-     * @return Established connection
-     * @throws SQLException Error while establishing the database connection
+     * @return Established connection pool
      * @see Database
      * @since v1.0.0
      */
-    public static Connection initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws SQLException, IOException {
-        Connection conn = switch (serverConfiguration.getDatabaseType()) {
-            case TEMPORARY -> {
-                Path path = Paths.get(serverConfiguration.getTempDirectory() + "/NexusHttp.db");
-                if (Files.exists(path)) Files.delete(path);
-                yield DriverManager.getConnection("jdbc:sqlite:" + path);
-            }
-            case MEMORY -> DriverManager.getConnection("jdbc:sqlite::memory:");
-        };
-        buildDatabase(conn);
-        return conn;
+    public static HikariDataSource initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws IOException {
+        String databaseLocation = serverConfiguration.getDatabaseType() == DatabaseType.TEMPORARY ?
+                serverConfiguration.getTempDirectory() + "/NexusHttp.db" : ":memory:";
+        if (serverConfiguration.getDatabaseType() == DatabaseType.TEMPORARY) {
+            Path path = Paths.get(databaseLocation);
+            if (Files.exists(path)) Files.delete(path);
+        }
+        HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setPoolName("Nexus-HTTP Connection Pool");
+        hikariConfig.setDataSourceClassName("org.sqlite.SQLiteDataSource");
+        hikariConfig.setJdbcUrl("jdbc:sqlite:" + databaseLocation);
+        hikariConfig.setConnectionInitSql("PRAGMA foreign_keys = ON");
+        hikariConfig.setLeakDetectionThreshold(10_000L);
+        hikariConfig.setThreadFactory(serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
+                Thread.ofPlatform().factory() : Thread.ofVirtual().factory());
+        return new HikariDataSource(hikariConfig);
     }
 
     /**
@@ -101,36 +110,44 @@ public final class Database {
      * @since v1.0.0
      */
     private static void buildDatabase(final Connection conn) throws SQLException {
-        Objects.requireNonNull(conn);
-        String[] queries = {"PRAGMA foreign_keys = ON;",
-                // Mater table
-                "CREATE TABLE ReqMaster(" +
-                        "ROWID INTEGER PRIMARY KEY," +
-                        "endpoint TEXT NOT NULL," +
-                        "reqMethod TEXT NOT NULL," +
-                        "authenticated TEXT NOT NULL," +
-                        "type TEXT NOT NULL" +
-                        ");",
-                // Handle GET, POST, PUT, PATCH, DELETE
-                "CREATE TABLE ReqEndpoint(" +
-                        "ROWID INTEGER," +
-                        "className TEXT NOT NULL," +
-                        "methodName TEXT NOT NULL," +
-                        "authSchemeAnnotation TEXT," +
-                        "FOREIGN KEY(ROWID) REFERENCES ReqMaster(ROWID)" +
-                        ");",
-                // Handle static files GET
-                "CREATE TABLE ReqFile(" +
-                        "ROWID INTEGER," +
-                        "lastModified TEXT NOT NULL," +
-                        "eTag TEXT NOT NULL," +
-                        "FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)" +
-                        ");"
-        };
+        try (conn) {
+            String[] queries = {
+                    // Master table
+                    """
+                    CREATE TABLE ReqMaster (
+                        ROWID INTEGER PRIMARY KEY,
+                        endpoint TEXT NOT NULL,
+                        reqMethod TEXT NOT NULL,
+                        authenticated TEXT NOT NULL,
+                        type TEXT NOT NULL,
+                        UNIQUE (endpoint, reqMethod)
+                    );""",
+                    // Handle GET, POST, PUT, PATCH, DELETE
+                    """
+                    CREATE TABLE ReqEndpoint (
+                        ROWID INTEGER,
+                        className TEXT NOT NULL,
+                        methodName TEXT NOT NULL,
+                        authSchemeAnnotation TEXT,
+                        UNIQUE (className, methodName),
+                        FOREIGN KEY (ROWID) REFERENCES ReqMaster(ROWID)
+                            ON UPDATE CASCADE ON DELETE CASCADE
+                    );""",
+                    // Handle static files GET
+                    """
+                    CREATE TABLE ReqFile (
+                        ROWID INTEGER,
+                        lastModified TEXT NOT NULL,
+                        eTag TEXT NOT NULL,
+                        FOREIGN KEY (ROWID) REFERENCES ReqMater(ROWID)
+                            ON UPDATE CASCADE ON DELETE CASCADE
+                    );"""
+            };
 
-        for (String query : queries) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(query);
+            for (String query : queries) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute(query);
+                }
             }
         }
     }
@@ -146,58 +163,60 @@ public final class Database {
      * @since v1.0.0
      */
     public synchronized void addEndpointData(final ReqMaster model) throws SQLException, ScannerException {
-        try (PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster " +
-                "WHERE endpoint = ? AND reqMethod = ? COLLATE NOCASE")) {
-            preQuery.setString(1, model.getRequestEndpoint());
-            preQuery.setString(2, model.getReqMethod().toString());
-            try (ResultSet preResultSet = preQuery.executeQuery()) {
-                if (preResultSet.getInt(1) != 0) {
-                    throw new ScannerException("endpoints with same value found, aborting scanning");
-                }
-            }
-        }
-
-        int rowId;
-        try (PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster " +
-                "(endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
-            masterQuery.setString(1, model.getRequestEndpoint());
-            masterQuery.setString(2, model.getReqMethod().toString());
-            masterQuery.setBoolean(3, model.isAuthenticated());
-            masterQuery.setString(4, model instanceof ReqEndpoint ? "endpoint" : "file");
-            if (masterQuery.executeUpdate() != 1) {
-                throw new ScannerException("Error while inserting data to the database");
-            }
-            try (ResultSet masterResultSet = masterQuery.getGeneratedKeys()) {
-                rowId = masterResultSet.getInt(1);
-            }
-        }
-
-        switch (model) {
-            case ReqEndpoint endpoint -> {
-                try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
-                        "(ROWID, className, methodName, authSchemeAnnotation) VALUES (?, ?, ?, ?)")) {
-                    subQuery.setInt(1, rowId);
-                    subQuery.setString(2, endpoint.getClazz().getName());
-                    subQuery.setString(3, endpoint.getMethod().getName());
-                    subQuery.setString(4, endpoint.getAuthSchemeAnnotation() == null ?
-                            null : endpoint.getAuthSchemeAnnotation().toString());
-                    if (subQuery.executeUpdate() != 1) {
-                        throw new ScannerException("Error while inserting data to the database");
+        try (Connection databaseConnection = getDatabaseConnection()) {
+            try (PreparedStatement preQuery = databaseConnection.prepareStatement("SELECT COUNT(endpoint) FROM ReqMaster " +
+                    "WHERE endpoint = ? AND reqMethod = ? COLLATE NOCASE")) {
+                preQuery.setString(1, model.getRequestEndpoint());
+                preQuery.setString(2, model.getReqMethod().toString());
+                try (ResultSet preResultSet = preQuery.executeQuery()) {
+                    if (preResultSet.getInt(1) != 0) {
+                        throw new ScannerException("endpoints with same value found, aborting scanning");
                     }
                 }
             }
-            case ReqFile file -> {
-                try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile (ROWID, lastModified, eTag) " +
-                        "VALUES (?, ?, ?)")) {
-                    subQuery.setInt(1, rowId);
-                    subQuery.setString(2, file.getLastModified());
-                    subQuery.setString(3, file.getETag());
-                    if (subQuery.executeUpdate() != 1) {
-                        throw new ScannerException("Error while inserting data to the database");
-                    }
+
+            int rowId;
+            try (PreparedStatement masterQuery = databaseConnection.prepareStatement("INSERT INTO ReqMaster " +
+                    "(endpoint, reqMethod, authenticated, type) VALUES (?, ?, ?, ?)", Statement.RETURN_GENERATED_KEYS)) {
+                masterQuery.setString(1, model.getRequestEndpoint());
+                masterQuery.setString(2, model.getReqMethod().toString());
+                masterQuery.setBoolean(3, model.isAuthenticated());
+                masterQuery.setString(4, model instanceof ReqEndpoint ? "endpoint" : "file");
+                if (masterQuery.executeUpdate() != 1) {
+                    throw new ScannerException("Error while inserting data to the database");
+                }
+                try (ResultSet masterResultSet = masterQuery.getGeneratedKeys()) {
+                    rowId = masterResultSet.getInt(1);
                 }
             }
-            default -> throw new IllegalStateException("Unexpected value: " + model);
+
+            switch (model) {
+                case ReqEndpoint endpoint -> {
+                    try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqEndpoint " +
+                            "(ROWID, className, methodName, authSchemeAnnotation) VALUES (?, ?, ?, ?)")) {
+                        subQuery.setInt(1, rowId);
+                        subQuery.setString(2, endpoint.getClazz().getName());
+                        subQuery.setString(3, endpoint.getMethod().getName());
+                        subQuery.setString(4, endpoint.getAuthSchemeAnnotation() == null ?
+                                null : endpoint.getAuthSchemeAnnotation().toString());
+                        if (subQuery.executeUpdate() != 1) {
+                            throw new ScannerException("Error while inserting data to the database");
+                        }
+                    }
+                }
+                case ReqFile file -> {
+                    try (PreparedStatement subQuery = databaseConnection.prepareStatement("INSERT INTO ReqFile " +
+                            "(ROWID, lastModified, eTag) VALUES (?, ?, ?)")) {
+                        subQuery.setInt(1, rowId);
+                        subQuery.setString(2, file.getLastModified());
+                        subQuery.setString(3, file.getETag());
+                        if (subQuery.executeUpdate() != 1) {
+                            throw new ScannerException("Error while inserting data to the database");
+                        }
+                    }
+                }
+                default -> throw new IllegalStateException("Unexpected value: " + model);
+            }
         }
     }
 
@@ -216,7 +235,8 @@ public final class Database {
      */
     public List<ReqMaster> getEndpointData(final HttpRequest httpRequest) throws SQLException, ClassNotFoundException, NoSuchMethodException {
         List<ReqMaster> endpoints = new ArrayList<>();
-        try (PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? COLLATE NOCASE")) {
+        try (Connection databaseConnection = getDatabaseConnection();
+             PreparedStatement masterQuery = databaseConnection.prepareStatement("SELECT * FROM ReqMaster WHERE endpoint = ? COLLATE NOCASE")) {
             masterQuery.setString(1, httpRequest.getEndpoint());
             try (ResultSet masterResult = masterQuery.executeQuery()) {
                 while (masterResult.next()) {
