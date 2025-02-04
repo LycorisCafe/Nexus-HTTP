@@ -76,10 +76,10 @@ public final class Database {
     }
 
     /**
-     * Initialize database connection.
+     * Initialize database pool using HikariCP.
      *
      * @param serverConfiguration {@code HttpServerConfiguration} bound to the server
-     * @return Established connection
+     * @return Established connection pool
      * @see Database
      * @since v1.0.0
      */

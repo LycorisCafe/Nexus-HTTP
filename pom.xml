@@ -22,7 +22,7 @@
 
     <groupId>io.github.lycoriscafe</groupId>
     <artifactId>nexus-http</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>Nexus-HTTP</name>
@@ -47,11 +47,6 @@
             <groupId>com.zaxxer</groupId>
             <artifactId>HikariCP</artifactId>
             <version>6.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.12.1</version>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>
