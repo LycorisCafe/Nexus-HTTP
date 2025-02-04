@@ -115,6 +115,10 @@ public final class RequestProcessor {
         boolean hostAvailable = false;
         CORSRequest corsRequest = null;
         for (String header : headers) {
+            if (!header.contains(":")) {
+                requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "Invalid header provided", logger);
+                return;
+            }
             String[] parts = header.split(":", 2);
             String headerName = parts[0].toLowerCase(Locale.US);
             switch (headerName) {
