@@ -91,9 +91,9 @@ public final class Database {
             if (Files.exists(path)) Files.delete(path);
         }
         HikariConfig hikariConfig = new HikariConfig();
+        hikariConfig.setPoolName("Nexus-HTTP Connection Pool");
         hikariConfig.setDataSourceClassName("org.sqlite.SQLiteDataSource");
         hikariConfig.setJdbcUrl("jdbc:sqlite:" + databaseLocation);
-        hikariConfig.setPoolName("Nexus-HTTP Connection Pool");
         hikariConfig.setConnectionInitSql("PRAGMA foreign_keys = ON");
         hikariConfig.setLeakDetectionThreshold(10_000L);
         hikariConfig.setThreadFactory(serverConfiguration.getThreadType() == ThreadType.PLATFORM ?
@@ -119,7 +119,8 @@ public final class Database {
                         endpoint TEXT NOT NULL,
                         reqMethod TEXT NOT NULL,
                         authenticated TEXT NOT NULL,
-                        type TEXT NOT NULL
+                        type TEXT NOT NULL,
+                        UNIQUE (endpoint, reqMethod)
                     );""",
                     // Handle GET, POST, PUT, PATCH, DELETE
                     """
@@ -128,7 +129,9 @@ public final class Database {
                         className TEXT NOT NULL,
                         methodName TEXT NOT NULL,
                         authSchemeAnnotation TEXT,
+                        UNIQUE (className, methodName),
                         FOREIGN KEY (ROWID) REFERENCES ReqMaster(ROWID)
+                            ON UPDATE CASCADE ON DELETE CASCADE
                     );""",
                     // Handle static files GET
                     """
@@ -137,6 +140,7 @@ public final class Database {
                         lastModified TEXT NOT NULL,
                         eTag TEXT NOT NULL,
                         FOREIGN KEY (ROWID) REFERENCES ReqMater(ROWID)
+                            ON UPDATE CASCADE ON DELETE CASCADE
                     );"""
             };
 
