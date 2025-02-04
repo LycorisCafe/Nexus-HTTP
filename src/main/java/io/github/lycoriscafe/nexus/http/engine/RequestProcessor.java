@@ -99,6 +99,11 @@ public final class RequestProcessor {
             case 1 -> httpRequest.setEndpoint(decodeUri(uriParts[0]));
             case 2 -> {
                 httpRequest.setEndpoint(decodeUri(uriParts[0]));
+                var queryParams = decodeQueryParams(uriParts[1]);
+                if (queryParams == null) {
+                    requestConsumer.dropConnection(requestId, HttpStatusCode.BAD_REQUEST, "invalid query parameters provided", logger);
+                    return;
+                }
                 httpRequest.setParameters(decodeQueryParams(uriParts[1]));
             }
             default -> {
@@ -149,8 +154,9 @@ public final class RequestProcessor {
         Map<String, String> decodedParams = new HashMap<>();
         String[] parts = params.split("&", 0);
         for (String part : parts) {
-            String[] keyValue = part.split("=", 2);
-            decodedParams.put(decodeUri(keyValue[0]), decodeUri(keyValue[1]));
+            String[] keyValue = part.split("=", 0);
+            if (keyValue.length > 2) return null;
+            decodedParams.put(decodeUri(keyValue[0]), keyValue.length == 2 ? decodeUri(keyValue[1]) : null);
         }
         return decodedParams;
     }
