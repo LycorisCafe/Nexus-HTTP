@@ -84,14 +84,15 @@ public final class Database {
      * @since v1.0.0
      */
     public static HikariDataSource initializeDatabaseConnection(final HttpServerConfiguration serverConfiguration) throws IOException {
+        String databaseLocation = serverConfiguration.getDatabaseType() == DatabaseType.TEMPORARY ?
+                serverConfiguration.getTempDirectory() + "/NexusHttp.db" : ":memory:";
         if (serverConfiguration.getDatabaseType() == DatabaseType.TEMPORARY) {
-            Path path = Paths.get(serverConfiguration.getTempDirectory() + "/NexusHttp.db");
+            Path path = Paths.get(databaseLocation);
             if (Files.exists(path)) Files.delete(path);
         }
         HikariConfig hikariConfig = new HikariConfig();
         hikariConfig.setDataSourceClassName("org.sqlite.SQLiteDataSource");
-        hikariConfig.setJdbcUrl(serverConfiguration.getDatabaseType() == DatabaseType.TEMPORARY ?
-                "jdbc:sqlite:" + serverConfiguration.getTempDirectory() + "/NexusHttp.db" : "jdbc:sqlite::memory:");
+        hikariConfig.setJdbcUrl("jdbc:sqlite:" + databaseLocation);
         hikariConfig.setPoolName("Nexus-HTTP Connection Pool");
         hikariConfig.setConnectionInitSql("PRAGMA foreign_keys = ON");
         hikariConfig.setLeakDetectionThreshold(10_000L);
@@ -109,39 +110,40 @@ public final class Database {
      * @since v1.0.0
      */
     private static void buildDatabase(final Connection conn) throws SQLException {
-        Objects.requireNonNull(conn);
-        String[] queries = {
-                // Master table
-                """
-                CREATE TABLE ReqMaster(
-                    ROWID INTEGER PRIMARY KEY,
-                    endpoint TEXT NOT NULL,
-                    reqMethod TEXT NOT NULL,
-                    authenticated TEXT NOT NULL,
-                    type TEXT NOT NULL
-                );""",
-                // Handle GET, POST, PUT, PATCH, DELETE
-                """
-                CREATE TABLE ReqEndpoint(" +
-                    ROWID INTEGER,
-                    className TEXT NOT NULL,
-                    methodName TEXT NOT NULL,
-                    authSchemeAnnotation TEXT,
-                    FOREIGN KEY(ROWID) REFERENCES ReqMaster(ROWID)
-                );""",
-                // Handle static files GET
-                """
-                CREATE TABLE ReqFile(
-                    ROWID INTEGER,
-                    lastModified TEXT NOT NULL,
-                    eTag TEXT NOT NULL,
-                    FOREIGN KEY(ROWID) REFERENCES ReqMater(ROWID)
-                );"""
-        };
+        try (conn) {
+            String[] queries = {
+                    // Master table
+                    """
+                    CREATE TABLE ReqMaster (
+                        ROWID INTEGER PRIMARY KEY,
+                        endpoint TEXT NOT NULL,
+                        reqMethod TEXT NOT NULL,
+                        authenticated TEXT NOT NULL,
+                        type TEXT NOT NULL
+                    );""",
+                    // Handle GET, POST, PUT, PATCH, DELETE
+                    """
+                    CREATE TABLE ReqEndpoint (
+                        ROWID INTEGER,
+                        className TEXT NOT NULL,
+                        methodName TEXT NOT NULL,
+                        authSchemeAnnotation TEXT,
+                        FOREIGN KEY (ROWID) REFERENCES ReqMaster(ROWID)
+                    );""",
+                    // Handle static files GET
+                    """
+                    CREATE TABLE ReqFile (
+                        ROWID INTEGER,
+                        lastModified TEXT NOT NULL,
+                        eTag TEXT NOT NULL,
+                        FOREIGN KEY (ROWID) REFERENCES ReqMater(ROWID)
+                    );"""
+            };
 
-        for (String query : queries) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute(query);
+            for (String query : queries) {
+                try (Statement stmt = conn.createStatement()) {
+                    stmt.execute(query);
+                }
             }
         }
     }
