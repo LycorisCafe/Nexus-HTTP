@@ -55,7 +55,7 @@ public sealed class HttpServer permits HttpsServer {
     final Database database;
 
     public HttpServer() throws IOException, ScannerException, SQLException {
-        this(PropertiesProcessor.process(true, null));
+        this(PropertiesProcessor.process(true));
     }
 
     /**

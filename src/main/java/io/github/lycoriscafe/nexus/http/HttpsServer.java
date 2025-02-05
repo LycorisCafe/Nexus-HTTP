@@ -43,7 +43,7 @@ public final class HttpsServer extends HttpServer {
     private final HttpsServerConfiguration serverConfiguration = (HttpsServerConfiguration) super.serverConfiguration;
 
     public HttpsServer() throws IOException, ScannerException, SQLException {
-        this((HttpsServerConfiguration) PropertiesProcessor.process(false, null));
+        this((HttpsServerConfiguration) PropertiesProcessor.process(false));
     }
 
     /**
