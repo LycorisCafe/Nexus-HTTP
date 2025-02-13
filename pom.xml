@@ -22,7 +22,7 @@
 
     <groupId>io.github.lycoriscafe</groupId>
     <artifactId>nexus-http</artifactId>
-    <version>1.0.5</version>
+    <version>2.0.0</version>
     <packaging>jar</packaging>
 
     <name>Nexus-HTTP</name>
@@ -36,29 +36,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <gpg.key_name>9888843F7DC02452884A5711A1823F26401C9BF1</gpg.key_name>
     </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.xerial</groupId>
-            <artifactId>sqlite-jdbc</artifactId>
-            <version>3.47.1.0</version>
-        </dependency>
-        <dependency>
-            <groupId>com.zaxxer</groupId>
-            <artifactId>HikariCP</artifactId>
-            <version>6.2.1</version>
-        </dependency>
-        <dependency>
-            <groupId>org.reflections</groupId>
-            <artifactId>reflections</artifactId>
-            <version>0.10.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>2.0.16</version>
-        </dependency>
-    </dependencies>
 
     <licenses>
         <license>
